@@ -12,8 +12,6 @@
     "bin",
     "test",
     "tests",
-    "Makefile",
-    "gulpfile.js",
-    "package.json",
+    "package.json"
   ]
 }
