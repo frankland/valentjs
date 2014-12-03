@@ -2,12 +2,6 @@ import { resolveTemplateUrl } from '../url-manager';
 
 var register = function (route, $routeProvider) {
 
-  angular.extend(route.config.resolve, {
-    done: function () {
-      console.log('route ' + route.config.url + ' resolving: Controller: ' + route.config.controller);
-    }
-  });
-
   var { base, url, resolve, controller, template, templateUrl }  = route.config;
 
   var config = {
