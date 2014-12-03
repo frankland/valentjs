@@ -2,22 +2,26 @@
 
 
 var Boop = require('boop'),
-  Type = Boop.extend({
-    initialize: function () {
-      this.copy = false;
-    },
+    Type = Boop.extend({
+      initialize: function() {
+        this.copy = false;
+      },
 
-    translate: function (source) {
-      return source;
-    },
+      translate: function(source) {
+        return source;
+      },
 
-    process: function () {
+      process: function() {
 
-    },
+      },
 
-    normalize: function (name) {
-      return name;
-    }
-  });
+      finish: function(){
+
+      },
+
+      normalize: function(name) {
+        return name;
+      }
+    });
 
 module.exports = Type;

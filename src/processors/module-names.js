@@ -7,7 +7,7 @@ var ModuleNames = function(source, config) {
       output = config.getDist(),
       root = config.getRoot();
 
-  var argumentsStr = "'" + src + "', '" + output + "', '" + root  + "'",
+  var argumentsStr = "'" + src + "', '" + output + "', '" + root + "'",
       replacement = '$1.path(__moduleName, ' + argumentsStr + ')';
 
 

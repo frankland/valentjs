@@ -1,22 +1,21 @@
 "use strict";
 var read = require('fs').readFileSync,
-  write = require('fs').writeFileSync,
-  join = require('path').join;
+    write = require('fs').writeFileSync,
+    join = require('path').join;
 //p = require('process');
 
 
 var path = join(__dirname, 'inject', 'script.js'),
-  Script = read(path).toString();
+    Script = read(path).toString();
 
 
-
-var getSource = function (file) {
+var getSource = function(file) {
   var path = join('./', file);
 
   return read(path).toString();
 }
 
-var Inject = function (file, errors) {
+var Inject = function(file, errors) {
   var str = '[]';
 
   if (!!errors.length) {
@@ -25,23 +24,23 @@ var Inject = function (file, errors) {
 
 
   var InjectErrors = Script.replace('BuildErrors', str),
-    InjectWrapper = '<script data-inject="build-errors">' + InjectErrors + '</script>';
+      InjectWrapper = '<script data-inject="build-errors">' + InjectErrors + '</script>';
 
   Write(file, InjectWrapper);
 }
 
-var Clear = function (file) {
+var Clear = function(file) {
   Write(file, '');
 }
 
-var Write = function (file, inject) {
+var Write = function(file, inject) {
   var source = getSource(file),
-    expr = new RegExp('<script\\s+data\\-inject=\"build\\-errors\"[^\\>]*>([\\s\\S]*)<\/script>', 'gmi'),
-    isAlreadyInjected = expr.test(source);
+      expr = new RegExp('<script\\s+data\\-inject=\"build\\-errors\"[^\\>]*>([\\s\\S]*)<\/script>', 'gmi'),
+      isAlreadyInjected = expr.test(source);
 
   if (!isAlreadyInjected) {
     expr = '</body>';
-    inject = inject + "\n" + '</body>';
+    inject = inject + '</body>';
   }
 
   var injected = source.replace(expr, inject);

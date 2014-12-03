@@ -1,7 +1,7 @@
 "use strict";
 
 var Boop = require('boop'),
-  join = require('path').join;
+    join = require('path').join;
 
 var Config = Boop.extend({
   initialize: function(options) {
@@ -23,7 +23,11 @@ var Config = Boop.extend({
     return this.dist;
   },
 
-  getRoot: function(){
+  getOutput: function() {
+    return this.output;
+  },
+
+  getRoot: function() {
     return this.root;
   }
 });

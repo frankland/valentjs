@@ -1,29 +1,30 @@
 "use strict";
 
 var Boop = require('boop'),
-  read = require('fs').readFileSync,
-  write = require('fs').writeFileSync,
-  mkdirp = require('mkdirp'),
-  rimraf = require('rimraf').sync,
-  dirname = require('path').dirname,
-  extname = require('path').extname,
-  join = require('path').join;
+    read = require('fs').readFileSync,
+    write = require('fs').writeFileSync,
+    mkdirp = require('mkdirp'),
+    rimraf = require('rimraf').sync,
+    dirname = require('path').dirname,
+    extname = require('path').extname,
+    join = require('path').join,
+    readdir = require('fs').readdirSync;
 
 var Deployment = Boop.extend({
-  initialize: function (config) {
+  initialize: function(config) {
     this.config = config;
     this.types = {};
   },
 
-  add: function (Type) {
+  add: function(Type) {
     this.types[Type.extname] = Type;
   },
 
-  exists: function (type) {
+  exists: function(type) {
     return this.types.hasOwnProperty(type);
   },
 
-  get: function (type) {
+  get: function(type) {
     if (!this.exists(type)) {
       throw new Error('Type ' + type + ' is not registered');
     }
@@ -31,20 +32,19 @@ var Deployment = Boop.extend({
     return this.types[type];
   },
 
-  getExtname: function (file) {
+  getExtname: function(file) {
     return extname(file).slice(1);
   },
 
-  getByFile: function (file) {
+  getByFile: function(file) {
     var ext = this.getExtname(file);
 
     return this.get(ext);
   },
 
-  copy: function (item) {
-    var ext = this.getExtname(item),
-      isCopy = false;
+  copy: function(ext) {
 
+    var isCopy = false;
     if (this.exists(ext)) {
       var Type = this.get(ext);
       if (Type.copy) {
@@ -55,55 +55,80 @@ var Deployment = Boop.extend({
     return isCopy;
   },
 
-  translate: function (item) {
+  translate: function(item) {
     var Type = this.getByFile(item),
-      source = read(item).toString();
+        source = read(item).toString();
 
     return Type.translate(source);
   },
 
-  normalize: function (item) {
+  normalize: function(item) {
     var Type = this.getByFile(item);
     return Type.normalize(item);
   },
 
-  process: function (item) {
-    var Type = this.getByFile(item),
-      source = read(item).toString();
+  process: function(item, source) {
+    var Type = this.getByFile(item);
 
-    Type.process(item, source);
+    Type.process(item, source, this.config);
   },
 
-  clear: function(){
+  clear: function() {
     var dist = this.config.getDistDir();
 
-    rimraf(dist);
+    var list = readdir(dist),
+        output = this.config.getOutput(),
+        sourceMaps = output.replace(/\.js$/, '.map');
+
+    for (var i = 0, size = list.length; i < size; i++) {
+      var item = list[i];
+
+      if (item != output && item != sourceMaps) {
+        var path = join(dist, item);
+        rimraf(path);
+      }
+    }
+  },
+  
+  finish: function(){
+    var dist = this.config.getDistDir();
+    for (var type in this.types) {
+      if (this.types.hasOwnProperty(type)) {
+        var instance = this.types[type];
+
+        instance.finish(dist);
+      }
+    }
   },
 
-  run: function (tree) {
+  run: function(tree) {
     this.clear();
 
     var src = this.config.getSrcDir(),
-      dist = this.config.getDistDir();
+        dist = this.config.getDistDir();
 
     for (var i = 0, size = tree.length; i < size; i++) {
-      var item = tree[i].path;
+      var item = tree[i].path,
+          ext = this.getExtname(item);
 
-
-      if (this.copy(item)) {
+      if (this.exists(ext)) {
         var distScript = this.normalize(item),
-          source = this.translate(item);
+            source = this.translate(item);
 
         this.process(item, source);
 
-        var file = join('.', dist, distScript.replace(src, '')),
-          dir = dirname(file);
+        if (this.copy(ext)) {
+          var file = join('.', dist, distScript.replace(src, '')),
+              dir = dirname(file);
 
-        mkdirp.sync(dir);
+          mkdirp.sync(dir);
 
-        write(file, source);
+          write(file, source);
+        }
       }
     }
+
+    this.finish();
   }
 });
 

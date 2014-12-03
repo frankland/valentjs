@@ -5,8 +5,8 @@ var Logger = {
   items: {
     start: Chalk.green('Build #') + '{n}' + Chalk.green(' started.'),
     finish: Chalk.green('Build #') + '{n}'
-        + Chalk.green(' finished. Elapsed time: ')
-        + '{elapsed}' + Chalk.green('ms'),
+    + Chalk.green(' finished. Elapsed time: ')
+    + '{elapsed}' + Chalk.green('ms'),
     deploy: Chalk.blue('... deploy'),
     compile: Chalk.blue('... compiling'),
     processing: Chalk.blue('... processing'),

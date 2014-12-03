@@ -2,10 +2,10 @@
 
 
 var Traceur = require('traceur'),
-  Boop = require('boop'),
-  read = require('fs').readFileSync,
-  write = require('fs').writeFileSync,
-  extname = require('path').extname;
+    Boop = require('boop'),
+    read = require('fs').readFileSync,
+    write = require('fs').writeFileSync,
+    extname = require('path').extname;
 
 
 var compile = Traceur.recursiveModuleCompileToSingleFile.bind(Traceur);
@@ -34,7 +34,7 @@ function getScripts(tree) {
 }
 
 var Compiler = Boop.extend({
-  initialize: function (config) {
+  initialize: function(config) {
 
     this.config = config;
 
@@ -43,7 +43,7 @@ var Compiler = Boop.extend({
     this.options = new Traceur.util.CommandOptions();
   },
 
-  setOptions: function (options) {
+  setOptions: function(options) {
 
     for (var option in options) {
       if (options.hasOwnProperty(option)) {
@@ -52,24 +52,24 @@ var Compiler = Boop.extend({
     }
   },
 
-  compile: function (tree) {
+  compile: function(tree) {
 
     var dist = this.config.getDist(),
-      sources = getScripts(tree),
-      options = this.options;
+        sources = getScripts(tree),
+        options = this.options;
 
     return build(dist, sources, options);
   },
 
-  getSource: function () {
+  getSource: function() {
     var dist = this.config.getDist();
 
     return read(dist).toString();
   },
 
-  process: function () {
+  process: function() {
     var source = this.getSource(),
-      config = this.config;
+        config = this.config;
 
     for (var i = 0; i < this.processors.length; i++) {
       var processor = this.processors[i];
@@ -79,11 +79,11 @@ var Compiler = Boop.extend({
     return source;
   },
 
-  addProcessor: function (processor) {
+  addProcessor: function(processor) {
     this.processors.push(processor);
   },
 
-  save: function(source){
+  save: function(source) {
     var dist = this.config.getDist();
 
     write(dist, source);

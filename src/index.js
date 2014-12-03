@@ -52,7 +52,6 @@ function compile(Compiler, Deployment, Tree) {
     });
   }).catch(function(e) {
 
-    console.log(e);
     if (LocalConfig.inject) {
       Injector.add(LocalConfig.inject, e);
     }
@@ -83,7 +82,6 @@ function addDefaultTypes(Deployment) {
 
 
 module.exports = function(options) {
-
 
   var Config = new ConfigClass(options),
       Compiler = new CompilerClass(Config),
