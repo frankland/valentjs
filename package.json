@@ -22,7 +22,7 @@
     "mkdirp": "~0.3.5",
     "rimraf": "~2.2.1",
     "traceur": "0.0.78",
-    "enchup": "0.0.4",
+    "enchup": "0.0.6",
     "chalk": "0.5.1"
   },
   "devDependencies": {},
