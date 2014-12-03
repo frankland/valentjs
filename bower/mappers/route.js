@@ -1,3 +1,5 @@
+import { resolveTemplateUrl } from '../url-manager';
+
 var register = function (route, $routeProvider) {
 
   angular.extend(route.config.resolve, {
@@ -21,7 +23,7 @@ var register = function (route, $routeProvider) {
   if (template){
     config.template = template;
   } else if(templateUrl) {
-    config.templateUrl = templateUrl;
+    config.templateUrl = resolveTemplateUrl(route);
   } else {
     throw new Error('System.Route mapper: @template or @templateUrl should be described');
   }

@@ -1,8 +1,28 @@
+function resolveTemplateUrl(component){
+  var resolved = component.config.templateUrl;
+
+  if (!isAbsolute(resolved)) {
+    var deployDir = component.paths.output.replace(/\/[^\/]+$/, ''),
+        output = component.paths.output,
+        modulePath = component.paths.modulePath,
+        srcDir = component.paths.src,
+        root = component.paths.root;
+
+    resolved = resolveUrl(output, modulePath);
+
+    var expr = new RegExp('^' + root);
+    resolved = resolved.replace(srcDir, deployDir).replace(expr, '');
+
+    resolved = resolveUrl(resolved.replace(/[^\/]+$/, ''), component.config.templateUrl);
+  }
+
+  return resolved;
+}
+
 /**
  * Get at traceur
  * https://github.com/google/traceur-compiler/blob/5559a4d1da9424dd8784e5ab6ec17bbc11118648/src/runtime/url.js
  */
-
 var splitRe = new RegExp('^' + '(?:' + '([^:/?#.]+)' + ':)?' + '(?://' + '(?:([^/?#]*)@)?' + '([\\w\\d\\-\\u0100-\\uffff.%]*)' + '(?::([0-9]+))?' + ')?' + '([^?#]+)?' + '(?:\\?([^#]*))?' + '(?:#(.*))?' + '$');
 var ComponentIndex = {
   SCHEME: 1,
@@ -126,5 +146,6 @@ function isAbsolute(name) {
   return false;
 }
 
-export { resolveUrl };
-export { isAbsolute };
+export { resolveUrl }
+export { isAbsolute }
+export { resolveTemplateUrl }

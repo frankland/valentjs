@@ -38,10 +38,14 @@ class Component {
 
   }
 
-  path(modulePath, baseDir, buildScript){
-    this.modulePath = modulePath;
-    this.baseDir = baseDir;
-    this.buildScript = buildScript;
+  path(modulePath, src, output, root){
+    this.paths = {
+      modulePath: modulePath,
+      src: src,
+      output: output,
+      root: root
+    };
+
 
     return this;
   }

@@ -24,6 +24,11 @@ class Route {
 
   controller(controller){
     this.config.controller = controller;
+
+    if (!this.config.templateUrl){
+      this.config.templateUrl = controller.split('.').pop() + '.html';
+    }
+
     return this;
   }
 
@@ -47,6 +52,18 @@ class Route {
       console.log('resolve: ' + resolve);
     }
     console.groupEnd(group);
+  }
+
+  path(modulePath, src, output, root){
+    this.paths = {
+      modulePath: modulePath,
+      src: src,
+      output: output,
+      root: root
+    };
+
+
+    return this;
   }
 }
 

@@ -8,7 +8,7 @@ class Controller extends Component {
    */
   constructor(name) {
     super(name);
-    if (!name){
+    if (!name) {
       this.isDirective = true;
     }
   }
@@ -28,12 +28,12 @@ class Controller extends Component {
     }
 
     var resolve = arguments[0];
-    if (arguments.length == 2){
+    if (arguments.length == 2) {
       resolve = {};
       resolve[arguments[0]] = arguments[1];
     }
 
-    for (var key of Object.keys(resolve)){
+    for (var key of Object.keys(resolve)) {
       this.routeInstance.resolve(key, resolve[key]);
       this.dependencies(key);
     }
@@ -48,8 +48,11 @@ class Controller extends Component {
     }
 
     this.routeInstance
-      .url(url)
-      .templateUrl(template);
+        .url(url);
+
+    if (template){
+      this.routeInstance.templateUrl(template);
+    }
 
     return this;
   }
@@ -59,6 +62,17 @@ class Controller extends Component {
    */
   src(src) {
     this.config.src = src;
+    return this;
+  }
+
+
+  path() {
+    if (!this.routeInstance || this.isDirective) {
+      throw new Error('Controller Flow. Router is not defined or is not allowed');
+    }
+
+    this.routeInstance.path.apply(this.routeInstance, arguments);
+
     return this;
   }
 }

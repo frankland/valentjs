@@ -1,6 +1,5 @@
 import { ControllerTranslate } from './controller';
-import { resolveUrl } from '../url-manager';
-import { isAbsolute } from '../url-manager';
+import { resolveTemplateUrl } from '../url-manager';
 
 
 var register = function (directive) {
@@ -27,19 +26,7 @@ var register = function (directive) {
   if (directive.config.template) {
     config.template = directive.config.template;
   } else if (directive.config.templateUrl) {
-
-    var resolved = directive.config.templateUrl;
-
-    if (!isAbsolute(resolved)) {
-      var deployDir = directive.buildScript.replace(/\/[^\/]+$/, '');
-
-      resolved = resolveUrl(directive.buildScript, directive.modulePath);
-      resolved = resolved.replace(directive.baseDir, deployDir).replace('src', '');
-
-      resolved = resolveUrl(resolved.replace(/[^\/]+$/, ''), directive.config.templateUrl);
-    }
-
-    config.templateUrl = resolved;
+    config.templateUrl = resolveTemplateUrl(directive);
   } else {
     throw new Error('System.Directive mapper: @template or @templateUrl should be described');
   }
