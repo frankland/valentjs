@@ -4,6 +4,7 @@
 var Traceur = require('traceur'),
   Boop = require('boop'),
   read = require('fs').readFileSync,
+  write = require('fs').writeFileSync,
   extname = require('path').extname;
 
 
@@ -74,10 +75,18 @@ var Compiler = Boop.extend({
       var processor = this.processors[i];
       source = processor(source, config);
     }
+
+    return source;
   },
 
   addProcessor: function (processor) {
     this.processors.push(processor);
+  },
+
+  save: function(source){
+    var dist = this.config.getDist();
+
+    write(dist, source);
   }
 });
 

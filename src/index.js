@@ -1,14 +1,14 @@
 "use strict";
 
 var DeploymentClass = require('./deployment/deployment'),
-  Type = require('./deployment/types/type'),
-  Html = require('./deployment/types/html'),
-  CompilerClass = require('./compiler'),
-  ConfigClass = require('./config'),
-  ModuleNames = require('./processors/module-names'),
-  TreeClass = require('./tree'),
-  Messages = require('./messages'),
-  Injector = require('./inject');
+    Type = require('./deployment/types/type'),
+    Html = require('./deployment/types/html'),
+    CompilerClass = require('./compiler'),
+    ConfigClass = require('./config'),
+    ModuleNames = require('./processors/module-names'),
+    TreeClass = require('./tree'),
+    Messages = require('./messages'),
+    Injector = require('./inject');
 
 
 var LocalConfig = {
@@ -20,11 +20,12 @@ var counter = 1;
 
 
 function compile(Compiler, Deployment, Tree) {
-  var n = counter++;
+  var n = counter++,
+      start = new Date();
 
   Messages.start();
 
-  if (LocalConfig.inject){
+  if (LocalConfig.inject) {
     Injector.clear(LocalConfig.inject);
   }
 
@@ -33,7 +34,7 @@ function compile(Compiler, Deployment, Tree) {
   });
 
   var onlyFiles = true,
-    list = Tree.get(onlyFiles);
+      list = Tree.get(onlyFiles);
 
   Messages.write('deploy');
   Deployment.run(list);
@@ -41,22 +42,25 @@ function compile(Compiler, Deployment, Tree) {
   Messages.write('compile');
   return Compiler.compile(list).then(function(e) {
     Messages.write('processing');
-    Compiler.process();
+    var processed = Compiler.process();
+
+    Compiler.save(processed);
 
     Messages.write('finish', {
-      n: n
+      n: n,
+      elapsed: ( new Date() - start) / 1000
     });
-  }).catch(function(e){
+  }).catch(function(e) {
 
     console.log(e);
-    if (LocalConfig.inject){
+    if (LocalConfig.inject) {
       Injector.add(LocalConfig.inject, e);
     }
 
     Messages.write('failed', {
       n: n
     });
-  }).finally(function(){
+  }).finally(function() {
     Messages.end();
   });
 }
@@ -78,11 +82,13 @@ function addDefaultTypes(Deployment) {
 }
 
 
-module.exports = function(src, dist, build) {
-  var Config = new ConfigClass(src, dist, build),
-    Compiler = new CompilerClass(Config),
-    Deployment = new DeploymentClass(Config),
-    Tree = new TreeClass(Config);
+module.exports = function(options) {
+
+
+  var Config = new ConfigClass(options),
+      Compiler = new CompilerClass(Config),
+      Deployment = new DeploymentClass(Config),
+      Tree = new TreeClass(Config);
 
 
   setDefaultOptions(Compiler);
