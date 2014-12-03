@@ -40,6 +40,7 @@ function compile(Compiler, Deployment, Tree) {
   Deployment.run(list);
 
   Messages.write('compile');
+
   return Compiler.compile(list).then(function(e) {
     Messages.write('processing');
     var processed = Compiler.process();
@@ -59,6 +60,8 @@ function compile(Compiler, Deployment, Tree) {
     Messages.write('failed', {
       n: n
     });
+
+    console.log(e);
   }).finally(function() {
     Messages.end();
   });

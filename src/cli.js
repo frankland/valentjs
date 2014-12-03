@@ -7,6 +7,10 @@ var program = require('commander'),
     ngx = require('./index');
 
 
+var Config = enchup.getConfig();
+
+Config.repository.init = 'tuchk4/angular-ngx';
+
 function setup() {
   program
       .usage('ngx [command]');
@@ -17,8 +21,13 @@ function setup() {
   program
       .command('setup [repository]')
       .option('-f, --force', 'Clear directory if it is not empty')
-      .description('Initialize application structure. Plugins will be generated automatically.')
+      .description('Setup enchup config and templates')
       .action(enchup.setup);
+
+  program
+      .command('init [repository]')
+      .description('Initialize application')
+      .action(enchup.init);
 
   program
       .command('info [component]')
@@ -38,8 +47,7 @@ function setup() {
       .action(compile);
 }
 
-var available = ['setup', 'info', 'create', 'compile', '-V', '--version'];
-
+var available = ['setup', 'init', 'info', 'create', 'compile', '-V', '--version'];
 
 function compile(src, dist, script) {
   console.log('');
