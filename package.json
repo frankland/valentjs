@@ -2,16 +2,13 @@
   "author": "tuchk4",
   "name": "ngx",
   "description": "ES6 angular",
-  "version": "0.0.1",
-  "repository": {
-
-  },
+  "version": "0.0.3",
+  "repository": {},
   "keywords": [
     "ngx",
     "angular",
     "traceur"
   ],
-
   "main": "src/index",
   "bin": {
     "ngx": "./bin/ngx"
@@ -28,9 +25,7 @@
     "enchup": "0.0.4",
     "chalk": "0.5.1"
   },
-  "devDependencies": {
-
-  },
+  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
