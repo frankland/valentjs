@@ -1,0 +1,19 @@
+{
+  "name": "ngx-runtime",
+  "version": "0.0.8",
+  "main": "bower/runtime.js",
+  "authors": [
+    "tuchk4"
+  ],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "src",
+    "bin",
+    "test",
+    "tests",
+    "Makefile",
+    "gulpfile.js",
+    "package.json",
+  ]
+}
