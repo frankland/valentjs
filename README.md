@@ -1,3 +1,5 @@
+04.12.14 README file will be amended and supplemented in few days.
+
 # NGX
 
 ## 1. Overview
