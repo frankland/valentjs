@@ -3,12 +3,15 @@
 var Boop = require('boop'),
     read = require('fs').readFileSync,
     write = require('fs').writeFileSync,
-    mkdirp = require('mkdirp'),
+    rename = require('fs').renameSync,
+    mkdirp = require('mkdirp').sync,
     rimraf = require('rimraf').sync,
     dirname = require('path').dirname,
     extname = require('path').extname,
     join = require('path').join,
-    readdir = require('fs').readdirSync;
+    fs = require('fs'),
+    readdir = require('fs').readdirSync,
+    exists = require('fs').existsSync;
 
 var Deployment = Boop.extend({
   initialize: function(config) {
@@ -42,6 +45,60 @@ var Deployment = Boop.extend({
     return this.get(ext);
   },
 
+  backup: function() {
+    var dir = this.config.getDistDir(),
+        backupDir = this.config.getBackupDir(),
+        items = readdir(dir);
+
+    rimraf(backupDir);
+
+    for (var i = 0, size = items.length; i < size; i++) {
+      var item = items[i],
+          path = join(dir, item),
+          backupPath = join(backupDir, item);
+
+      mkdirp(dirname(backupPath));
+
+      rename(path, backupPath);
+    }
+  },
+
+  isBackupExists: function() {
+
+  },
+
+  restore: function() {
+    this.clean();
+
+    var dir = this.config.getDistDir(),
+        backupDir = this.config.getBackupDir();
+
+    if (exists(backupDir)) {
+      var items = readdir(backupDir);
+
+      for (var i = 0, size = items.length; i < size; i++) {
+        var item = items[i],
+            path = join(dir, item),
+            backupPath = join(backupDir, item);
+
+        // TODO:
+        rename(backupPath, path);
+      }
+    }
+  },
+
+  clean: function() {
+    var dir = this.config.getDistDir(),
+        items = readdir(dir);
+
+    for (var i = 0, size = items.length; i < size; i++) {
+      var item = items[i],
+          path = join(dir, item);
+
+      rimraf(path);
+    }
+  },
+
   copy: function(ext) {
 
     var isCopy = false;
@@ -73,24 +130,7 @@ var Deployment = Boop.extend({
     Type.process(item, source, this.config);
   },
 
-  clear: function() {
-    var dist = this.config.getDistDir();
-
-    var list = readdir(dist),
-        output = this.config.getOutput(),
-        sourceMaps = output.replace(/\.js$/, '.map');
-
-    for (var i = 0, size = list.length; i < size; i++) {
-      var item = list[i];
-
-      if (item != output && item != sourceMaps) {
-        var path = join(dist, item);
-        rimraf(path);
-      }
-    }
-  },
-  
-  finish: function(){
+  finish: function() {
     var dist = this.config.getDistDir();
     for (var type in this.types) {
       if (this.types.hasOwnProperty(type)) {
@@ -102,7 +142,6 @@ var Deployment = Boop.extend({
   },
 
   run: function(tree) {
-    this.clear();
 
     var src = this.config.getSrcDir(),
         dist = this.config.getDistDir();
@@ -121,7 +160,7 @@ var Deployment = Boop.extend({
           var file = join('.', dist, distScript.replace(src, '')),
               dir = dirname(file);
 
-          mkdirp.sync(dir);
+          mkdirp(dir);
 
           write(file, source);
         }

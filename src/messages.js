@@ -8,6 +8,9 @@ var Logger = {
     + Chalk.green(' finished. Elapsed time: ')
     + '{elapsed}' + Chalk.green('ms'),
     deploy: Chalk.blue('... deploy'),
+    clean: Chalk.blue('... clean'),
+    backup: Chalk.yellow('... backup build'),
+    restore: Chalk.yellow('... restore last successful build'),
     compile: Chalk.blue('... compiling'),
     processing: Chalk.blue('... processing'),
     failed: Chalk.red('Build #') + '{n}' + Chalk.red(' failed.')

@@ -38,7 +38,7 @@ var Type = require('./type'),
       },
 
       finish: function(dist) {
-        var cache = "angular.module('app').run(function($templateCache) {"
+        var cache = "angular.module('app').run(function($templateCache) {";
 
         for (var path in this.cache) {
           if (this.cache.hasOwnProperty(path)) {

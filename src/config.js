@@ -9,6 +9,12 @@ var Config = Boop.extend({
     this.dist = options.dist;
     this.output = options.output;
     this.root = options.root;
+
+    this.inject = false;
+  },
+
+  getBackupDir: function(){
+    return 'build-backup';
   },
 
   getSrcDir: function() {
@@ -29,6 +35,14 @@ var Config = Boop.extend({
 
   getRoot: function() {
     return this.root;
+  },
+
+  setIndexHtml: function(index) {
+    this.index = index;
+  },
+
+  getIndexHtml: function() {
+    return this.index || false;
   }
 });
 

@@ -11,22 +11,20 @@ var DeploymentClass = require('./deployment/deployment'),
     Injector = require('./inject');
 
 
-var LocalConfig = {
-  inject: false
-};
-
 
 var counter = 1;
 
 
-function compile(Compiler, Deployment, Tree) {
+
+function compile(Config, Compiler, Deployment, Tree) {
   var n = counter++,
-      start = new Date();
+      start = new Date(),
+      index = Config.getIndexHtml();
 
   Messages.start();
 
-  if (LocalConfig.inject) {
-    Injector.clear(LocalConfig.inject);
+  if (index) {
+    Injector.clear(index);
   }
 
   Messages.write('start', {
@@ -36,12 +34,16 @@ function compile(Compiler, Deployment, Tree) {
   var onlyFiles = true,
       list = Tree.get(onlyFiles);
 
-  Messages.write('deploy');
-  Deployment.run(list);
-
   Messages.write('compile');
 
+  Messages.write('clean');
+  Deployment.clean();
+
   return Compiler.compile(list).then(function(e) {
+
+    Messages.write('deploy');
+    Deployment.run(list);
+
     Messages.write('processing');
     var processed = Compiler.process();
 
@@ -49,12 +51,18 @@ function compile(Compiler, Deployment, Tree) {
 
     Messages.write('finish', {
       n: n,
-      elapsed: ( new Date() - start) / 1000
+      elapsed: (new Date() - start) / 1000
     });
+
+    //Messages.write('backup');
+    //Deployment.backup();
   }).catch(function(e) {
 
-    if (LocalConfig.inject) {
-      Injector.add(LocalConfig.inject, e);
+    //Messages.write('restore');
+    //Deployment.restore();
+
+    if (index) {
+      Injector.add(index, e);
     }
 
     Messages.write('failed', {
@@ -98,12 +106,13 @@ module.exports = function(options) {
 
 
   return {
-    compile: compile.bind(null, Compiler, Deployment, Tree),
+    compile: compile.bind(null, Config, Compiler, Deployment, Tree),
 
     setOptions: Compiler.setOptions.bind(Compiler),
     addProcessor: Compiler.addProcessor.bind(Compiler),
 
-    config: LocalConfig,
+    config: Config,
+    //config: LocalConfig,
     type: Type,
     addType: Deployment.add.bind(Deployment)
   }
