@@ -37,7 +37,7 @@ function compile(Config, Compiler, Deployment, Tree) {
   Messages.write('compile');
 
   Messages.write('clean');
-  Deployment.clean();
+  //Deployment.clean();
 
   return Compiler.compile(list).then(function(e) {
 
