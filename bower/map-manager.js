@@ -5,7 +5,7 @@ import RouteMapper from './mappers/route';
 
 class MapManager {
 
-  constructor(){
+  constructor() {
     this.mappers = {
       controller: ControllerMapper,
       route: RouteMapper,
@@ -14,24 +14,17 @@ class MapManager {
     }
   }
 
-  clear(){
-    this.mappers = {};
-  }
 
-  get(type){
-    if (!this.mappers.hasOwnProperty(type)){
+  get(type) {
+    if (!this.mappers.hasOwnProperty(type)) {
       throw new Error('MapManager: Type "' + type + '" is not defined');
     }
 
     return this.mappers[type];
   }
 
-  map(type, components){
+  map(type, components) {
     var mapper = this.get(type);
-
-    if (!Array.isArray(components)){
-      components = [components];
-    }
 
     mapper(components);
   }

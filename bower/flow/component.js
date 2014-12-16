@@ -1,7 +1,7 @@
 class Component {
 
   constructor(name) {
-    if (name){
+    if (name) {
       this.name = name;
     }
 
@@ -11,7 +11,7 @@ class Component {
     this.config.defaults = {};
   }
 
-  at(name){
+  at(name) {
     this.module = name;
     return this;
   }
@@ -22,7 +22,7 @@ class Component {
   }
 
   dependencies(dependencies) {
-    if (!Array.isArray(dependencies)){
+    if (!Array.isArray(dependencies)) {
       dependencies = [dependencies];
     }
 
@@ -30,15 +30,11 @@ class Component {
     return this;
   }
 
-  statistics(){
+  statistics() {
 
   }
 
-  compile(){
-
-  }
-
-  path(modulePath, src, output, root){
+  path(modulePath, src, output, root) {
     this.paths = {
       modulePath: modulePath,
       src: src,

@@ -1,17 +1,23 @@
 import { ControllerTranslate } from './controller';
-import { resolveTemplateUrl } from '../url-manager';
+import { ResolveTemplateUrl } from '../url-utils';
+
+class DirectiveMapperError extends Error {
+  constructor(message) {
+    this.message = 'ngx runtime: Directive mapper. ' + message;
+  }
+}
 
 
-var register = function (directive) {
+var register = function(directive) {
   var module_name = directive.module;
 
   if (!module_name) {
-    throw new Error('System.Directive mapper: application name is not described for directive: "' + directive.name + '"');
+    throw new DirectiveMapperError('application name is not described for directive: "' + directive.name + '"');
   }
 
   var di = ControllerTranslate(directive.config.controller);
 
-  var config = {
+  var DirectiveConfig = {
     restrict: directive.config.restrict,
     replace: directive.config.replace,
     link: directive.config.link,
@@ -19,30 +25,26 @@ var register = function (directive) {
     controller: di
   };
 
-  if (config.template && config.templateUrl) {
-    throw new Error('For route "' + url + '" @template and @templateUrl is described');
-  }
-
   if (directive.config.template) {
-    config.template = directive.config.template;
+    DirectiveConfig.template = directive.config.template;
   } else if (directive.config.templateUrl) {
-    config.templateUrl = resolveTemplateUrl(directive);
+    DirectiveConfig.templateUrl = ResolveTemplateUrl(directive);
   } else {
-    throw new Error('System.Directive mapper: @template or @templateUrl should be described');
+    throw new DirectiveMapperError('@template or @templateUrl should be described');
   }
 
-  var src = function () {
-    return config;
+  var DirectiveConstructor = function() {
+    return DirectiveConfig;
   };
 
   angular.module(module_name)
-    .directive(directive.name, src);
+      .directive(directive.name, DirectiveConstructor);
 };
 
-var DirectiveMapper = function (components) {
+var DirectiveMapper = function(components) {
   for (var component of components) {
     register(component);
   }
 };
 
-export default  DirectiveMapper;
+export default DirectiveMapper;

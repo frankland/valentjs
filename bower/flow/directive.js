@@ -8,11 +8,11 @@ function camelCase(input) {
   });
 }
 
-function getTemplateUrl(name){
+function getTemplateUrl(name) {
   return name + '.html';
 }
 
-class Directive extends Component{
+class Directive extends Component {
 
   constructor(name) {
     super(camelCase(name));
