@@ -1,4 +1,3 @@
-import { ResolveTemplateUrl } from '../url-utils';
 import UrlManager from '../url-manager.js';
 
 class RouteMapperError extends Error {
@@ -25,7 +24,7 @@ var register = function(route, $routeProvider) {
   if (template) {
     config.template = template;
   } else if (templateUrl) {
-    config.templateUrl = ResolveTemplateUrl(route);
+    config.templateUrl = templateUrl;
   } else {
     throw new RouteMapperError('@template or @templateUrl should be described');
   }

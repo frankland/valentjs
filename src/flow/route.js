@@ -29,7 +29,7 @@ class Route {
     this.config.controller = controller;
 
     if (!this.config.templateUrl) {
-      this.config.templateUrl = controller.split('.').pop() + '.html';
+      //this.config.templateUrl = controller.split('.').pop() + '.html';
     }
 
     return this;
@@ -75,7 +75,7 @@ class Route {
     if (this.config.templateUrl) {
       console.log('templateUrl: ' + ResolveTemplateUrl(this));
     } else if (this.config.template) {
-      console.log('template: ' + this.template.slice(1, 20));
+      console.log('template: ' + this.config.template.slice(1, 20));
     } else {
       console.log('template is wrong');
     }

@@ -1,5 +1,5 @@
 import { ControllerTranslate } from './controller';
-import { ResolveTemplateUrl } from '../url-utils';
+
 
 class DirectiveMapperError extends Error {
   constructor(message) {
@@ -28,7 +28,7 @@ var register = function(directive) {
   if (directive.config.template) {
     DirectiveConfig.template = directive.config.template;
   } else if (directive.config.templateUrl) {
-    DirectiveConfig.templateUrl = ResolveTemplateUrl(directive);
+    DirectiveConfig.templateUrl = directive.config.templateUrl;
   } else {
     throw new DirectiveMapperError('@template or @templateUrl should be described');
   }

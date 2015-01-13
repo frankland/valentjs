@@ -1,7 +1,7 @@
 {
-  "name": "ngx-runtime",
+  "name": "ngx",
   "version": "0.0.8",
-  "main": "bower/runtime.js",
+  "main": "src/runtime.js",
   "authors": [
     "tuchk4"
   ],

@@ -1,6 +1,7 @@
 function ResolveTemplateUrl(component) {
   var resolved = component.config.templateUrl;
 
+  return 'yo.html';
   if (!isAbsolute(resolved)) {
     var deployDir = component.paths.output.replace(/\/[^\/]+$/, ''),
         output = component.paths.output,

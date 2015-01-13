@@ -64,6 +64,19 @@ class Controller extends Component {
     return this;
   }
 
+  template (template){
+
+    if (!this.routeInstance || this.isDirective) {
+      throw new ControllerFlowError('Router is not defined or is not allowed');
+    }
+
+    if (template) {
+      this.routeInstance.template(template);
+    }
+
+    return this;
+  }
+
   generate(generate) {
     if (!this.routeInstance || this.isDirective) {
       throw new ControllerFlowError('Router is not defined or is not allowed');
