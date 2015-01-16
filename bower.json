@@ -8,7 +8,6 @@
   "ignore": [
     "**/.*",
     "node_modules",
-    "src",
     "bin",
     "test",
     "tests"
