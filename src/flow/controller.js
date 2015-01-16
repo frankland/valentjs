@@ -1,4 +1,4 @@
-import Component from './component';
+import Component from '../flow-component';
 
 class ControllerFlowError extends Error {
   constructor(message) {
@@ -10,17 +10,6 @@ class ControllerFlowError extends Error {
 class Controller extends Component {
 
   /**
-   * Controller without name will be considered as directive controller
-   * @param name
-   */
-  constructor(name) {
-    super(name);
-    if (!name) {
-      this.isDirective = true;
-    }
-  }
-
-  /**
    * Route flow
    */
   router(routeInstance) {
@@ -30,7 +19,7 @@ class Controller extends Component {
   }
 
   resolve() {
-    if (!this.routeInstance || this.isDirective) {
+    if (!this.routeInstance) {
       throw new ControllerFlowError('Router is not defined or is not allowed');
     }
 
@@ -50,7 +39,7 @@ class Controller extends Component {
 
 
   route(url, template) {
-    if (!this.routeInstance || this.isDirective) {
+    if (!this.routeInstance) {
       throw new ControllerFlowError('Router is not defined or is not allowed');
     }
 
@@ -66,7 +55,7 @@ class Controller extends Component {
 
   template (template){
 
-    if (!this.routeInstance || this.isDirective) {
+    if (!this.routeInstance) {
       throw new ControllerFlowError('Router is not defined or is not allowed');
     }
 
@@ -77,13 +66,13 @@ class Controller extends Component {
     return this;
   }
 
-  generate(generate) {
-    if (!this.routeInstance || this.isDirective) {
+  buildUrl(builder) {
+    if (!this.routeInstance) {
       throw new ControllerFlowError('Router is not defined or is not allowed');
     }
 
     this.routeInstance
-        .generate(generate);
+        .buildUrl(builder);
 
     return this;
   }
@@ -96,14 +85,16 @@ class Controller extends Component {
     return this;
   }
 
-  path() {
-    if (!this.routeInstance || this.isDirective) {
-      throw new ControllerFlowError('Router is not defined or is not allowed');
+  logInfo() {
+    var group = `${this.name} at ${this.module}`;
+
+    console.groupCollapsed(group);
+
+    if (!!Object.keys(this.config.defaults).length) {
+      console.log(`defaults:`, this.config.defaults);
     }
 
-    this.routeInstance.path.apply(this.routeInstance, arguments);
-
-    return this;
+    console.groupEnd(group);
   }
 }
 

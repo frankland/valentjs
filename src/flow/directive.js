@@ -1,6 +1,5 @@
-import Component from './component';
+import Component from '../flow-component';
 import Controller from './controller';
-
 
 function camelCase(input) {
   return input.toLowerCase().replace(/-(.)/g, function(match, group1) {
@@ -8,23 +7,18 @@ function camelCase(input) {
   });
 }
 
-function getTemplateUrl(name) {
-  return name + '.html';
-}
-
 class Directive extends Component {
 
   constructor(name) {
-    super(camelCase(name));
-
-    var templateUrl = getTemplateUrl(name);
-    this.templateUrl(templateUrl);
+    var directiveName = camelCase(name);
+    super(directiveName);
 
     this.config.restrict = 'E';
     this.config.replace = true;
     this.config.scope = {};
 
-    this.config.controller = new Controller();
+    this.controllerName = `<${name}>`;
+    this.config.controller = new Controller(this.controllerName);
   }
 
   dependencies(dependencies) {
@@ -71,6 +65,36 @@ class Directive extends Component {
   templateUrl(template) {
     this.config.templateUrl = template;
     return this;
+  }
+
+  logInfo() {
+    var group = `${this.controllerName} at ${this.module}`;
+
+    console.groupCollapsed(group);
+
+    console.log(`restrict: ${this.config.restrict}`);
+    console.log(`replace: ${this.config.replace}`);
+
+    if (!!Object.keys(this.config.scope).length) {
+      console.log(`scope:`, this.config.scope);
+    }
+
+
+    if (!!Object.keys(this.config.defaults).length) {
+      console.log(`defaults:`, this.config.defaults);
+    }
+
+
+
+    if (this.config.templateUrl) {
+      console.log(`templateUrl: ${this.config.templateUrl}`);
+    } else if (this.config.template) {
+      console.log(`template: ${this.config.template.slice(0, 50).replace(/\n|\r|\r\n/mg, '')}`);
+    } else {
+      console.log(`template is wrong`);
+    }
+
+    console.groupEnd(group);
   }
 }
 

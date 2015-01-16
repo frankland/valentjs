@@ -1,4 +1,4 @@
-import Component from './component';
+import Component from '../flow-component';
 
 class Service extends Component {
 

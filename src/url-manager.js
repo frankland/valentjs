@@ -1,19 +1,37 @@
+// not tested
 class UrlManager {
 
   constructor() {
     this.routes = {};
   }
 
-  addRoute(route, url) {
-    this.routes[route] = url;
+  serialize(obj) {
+    return Object.keys(obj).map(function(key) {
+      return encodeURIComponent(key) + "=" + encodeURIComponent(obj[k]);
+    }).join('&')
   }
 
-  build(route, params) {
-    if (!this.routes.hasOwnProperty(route)) {
-      throw new Error('Route "' + route + '" does not exist');
-    }
+  addRoute(namespace, builder) {
+    this.routes[namespace] = builder;
+  }
 
-    var url = this.routes[route];
+  build(namespace, params) {
+    if (!this.routes.hasOwnProperty(namespace)) {
+      throw new Error('Route "' + namespace + '" does not exist');
+    }
+    var builder = this.routes[namespace];
+
+    var url;
+
+    if (angular.isFunction(builder)) {
+      url = builder(params);
+    } else {
+      url = builder;
+
+      if (params) {
+        url += '?' + serialize(params);
+      }
+    }
 
     return url;
   }

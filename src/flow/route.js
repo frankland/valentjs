@@ -1,10 +1,8 @@
-import { ResolveTemplateUrl } from '../url-utils';
-
 class Route {
 
   constructor(name) {
 
-    this.module_name = name;
+    this.module = name;
     this.config = {};
 
     this.config.base = '';
@@ -13,6 +11,11 @@ class Route {
 
   url(url) {
     this.config.url = url;
+
+    if (!this.config.hasOwnProperty('buildUrl')) {
+      this.buildUrl(url);
+    }
+
     return this;
   }
 
@@ -22,15 +25,12 @@ class Route {
 
   resolve(key, expr) {
     this.config.resolve[key] = expr;
+
     return this;
   }
 
   controller(controller) {
     this.config.controller = controller;
-
-    if (!this.config.templateUrl) {
-      //this.config.templateUrl = controller.split('.').pop() + '.html';
-    }
 
     return this;
   }
@@ -47,42 +47,31 @@ class Route {
     return this;
   }
 
-  generate(generate) {
-    this.config.generate = generate;
+  buildUrl(builder) {
+    this.config.buildUrl = builder;
 
     return this;
   }
 
-  path(modulePath, src, output, root) {
-    this.paths = {
-      modulePath: modulePath,
-      src: src,
-      output: output,
-      root: root
-    };
+  logInfo() {
 
-    return this;
-  }
-
-  statistics() {
-    var group = 'Route for ' + this.config.base + this.config.url,
-        resolve = Object.keys(this.config.resolve);
+    var group = `${this.config.base + this.config.url}`;
+    var resolve = Object.keys(this.config.resolve);
 
 
-    console.group(group);
-    console.log('controller: ' + this.config.controller);
+    console.groupCollapsed(group);
+    console.log(`controller: ${this.config.controller}`);
 
     if (this.config.templateUrl) {
-      console.log('templateUrl: ' + ResolveTemplateUrl(this));
+      console.log(`templateUrl: ${this.config.templateUrl}`);
     } else if (this.config.template) {
-      console.log('template: ' + this.config.template.slice(1, 20));
+      console.log(`template: ${this.config.template.slice(0, 50).replace(/\n|\r|\r\n/mg, '')}`);
     } else {
-      console.log('template is wrong');
+      console.log(`template is wrong`);
     }
 
-
     if (resolve.length) {
-      console.log('resolve: ' + resolve);
+      console.log(`resolve: '${resolve}`);
     }
     console.groupEnd(group);
   }

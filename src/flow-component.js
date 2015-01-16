@@ -29,22 +29,6 @@ class Component {
     this.config.dependencies = this.config.dependencies.concat(dependencies);
     return this;
   }
-
-  statistics() {
-
-  }
-
-  path(modulePath, src, output, root) {
-    this.paths = {
-      modulePath: modulePath,
-      src: src,
-      output: output,
-      root: root
-    };
-
-
-    return this;
-  }
 }
 
 

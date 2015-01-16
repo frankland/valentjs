@@ -11,6 +11,6 @@
     "src",
     "bin",
     "test",
-    "tests",
+    "tests"
   ]
 }

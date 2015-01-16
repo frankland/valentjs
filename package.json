@@ -1,0 +1,21 @@
+{
+  "name": "ngx",
+  "version": "0.0.8",
+  "description": "Helpfull ES6 runtime for angualr",
+
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "directories": {
+    "lib": "./src"
+  },
+  "main": "index.js",
+  "keywords": [
+    "angular",
+    "es6",
+    "controller",
+    "directive",
+    "magic"
+  ],
+  "license": "MIT"
+}
