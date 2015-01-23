@@ -17,6 +17,7 @@ class Directive extends Component {
     this.config.replace = true;
     this.config.scope = {};
 
+    this.originalName = name;
     this.controllerName = `<${name}>`;
     this.config.controller = new Controller(this.controllerName);
   }
@@ -45,9 +46,14 @@ class Directive extends Component {
     return this;
   }
 
-  link(link) {
+  stateModel(stateModel){
+    this.config.stateModel = stateModel;
+    return this;
+  }
 
-    this.config.link = link;
+  model(key) {
+    this.config.model = key;
+
     return this;
   }
 
@@ -79,12 +85,12 @@ class Directive extends Component {
       console.log(`scope:`, this.config.scope);
     }
 
-
-    if (!!Object.keys(this.config.defaults).length) {
-      console.log(`defaults:`, this.config.defaults);
+    /**
+     * TODO: add getters
+     */
+    if (!!Object.keys(this.config.controller.config.defaults).length) {
+      console.log(`defaults:`, this.config.controller.config.defaults);
     }
-
-
 
     if (this.config.templateUrl) {
       console.log(`templateUrl: ${this.config.templateUrl}`);

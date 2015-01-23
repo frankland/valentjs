@@ -1,4 +1,4 @@
-export default class BaseInjector {
+export default class Injector {
   constructor(injector) {
     this.injector = injector;
   }

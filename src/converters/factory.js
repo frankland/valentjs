@@ -1,5 +1,5 @@
-import EnchantDi from './enchant/di';
-import InjectorApi from '../components/injector-api';
+import ConvertDi from './utils/convert-to-di';
+import Injector from '../components/injector';
 
 class FactoryConverterError extends Error {
   constructor(message) {
@@ -15,12 +15,12 @@ function Convert(factory) {
   }
 
   var DiConstructor = function($injector, ...dependencies) {
-    var injectorApi = new InjectorApi($injector);
+    var injector = new Injector($injector);
 
-    return new FactoryConstructor(...[$injectorApi].concat(dependencies));
+    return new FactoryConstructor(...[injector].concat(dependencies));
   };
 
-  return EnchantDi(factory, DiConstructor);
+  return ConvertDi(factory, DiConstructor);
 }
 
 export default function(factory) {
