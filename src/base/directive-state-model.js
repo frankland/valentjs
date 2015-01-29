@@ -1,36 +1,21 @@
+import EventManager from './event-manager';
+
 var listenersKey = Symbol('listeners');
 
-export default class DirectiveStateModel {
+export default class DirectiveStateModel extends EventManager {
   constructor() {
+    super();
+
     this.state = {};
-    this[listenersKey] = new Set();
   }
 
-  listen(func) {
-
-    var listeners = this[listenersKey];
-
-    if (listeners.has(func)) {
-      throw new Error('Duplicate listener');
-    }
-
-    listeners.add(func);
-    var state = this.getState();
-    func(state);
-
-    return () => listeners.delete(func);
-  }
-
-  getState(){
+  getState() {
     return angular.copy(this.state);
   }
 
-  trigger() {
-    var listeners = this[listenersKey];
+  sync() {
+    var state = this.getState();
 
-    for (var listener of listeners) {
-      var copy = this.getState();
-      listener(copy);
-    }
+    this.trigger('sync', state);
   }
 }

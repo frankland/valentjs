@@ -1,42 +1,19 @@
 import ConvertDi from './utils/convert-to-di';
 import FillDefaults from './utils/fill-defaults';
-import DirectiveScope from '../components/directive-scope';
-import Injector from '../components/injector';
-import NgxModel from '../components/ngx-model';
+import DirectiveScope from '../wrappers/scope/directive-scope';
+import Injector from '../wrappers/injector';
+import NgxModel from '../wrappers/ng-model';
+import Logger from '../components/logger';
 
 class DirectiveConverterError extends Error {
   constructor(message) {
-    this.message = 'ngx runtime: Directive mapper. ' + message;
+    this.message = 'ngx convert: Directive mapper. ' + message;
   }
 }
 
-function applyModel(scope, ngModel, directive, controller) {
-  /**
-   * Model
-   */
-
-  if (directive.config.model) {
-    var key = directive.config.model;
-
-    scope[key] = undefined;
-
-    ngModel.$render = function() {
-      var value = ngModel.$viewValue;
-      scope[key] = value;
-
-      if (angular.isFunction(controller.onRender)) {
-        controller.onRender(value)
-      }
-    };
-
-    scope.$watch(key, function(value) {
-
-      ngModel.$setViewValue(value);
-
-      if (angular.isFunction(controller.onChange)) {
-        controller.onChange(value);
-      }
-    });
+class DirectiveRuntimeError extends Error {
+  constructor(message) {
+    this.message = 'ngx runtime: Directive mapper. ' + message;
   }
 }
 
@@ -45,19 +22,31 @@ function Convert(directive) {
   var controller = directive.config.controller;
   var ControllerConstructor = controller.config.src;
 
+  var loggerKey = Symbol('logger');
+
   var ControllerDi = function($injector, $scope, $attrs, ...dependencies) {
 
     if (typeof ControllerConstructor != 'function') {
       throw new DirectiveConverterError('Wrong controller source definition. Expect function (constructor)');
     }
 
+    /**
+     * Create scope logger
+     */
+    var logger = Logger.create(controller.name);
+    $scope[loggerKey] = logger;
+
+    /**
+     * Fill $scope with default values
+     */
     FillDefaults(controller, $scope);
+
 
     /**
      * Create controller Instance
      */
     var injector = new Injector($injector);
-    var scope = new DirectiveScope($scope, injector, controller.name);
+    var scope = new DirectiveScope($scope, injector, logger);
 
     /**
      * Apply directive state model
@@ -85,16 +74,50 @@ function Convert(directive) {
     /**
      * Create controller Instance
      */
-    $scope.controller = new ControllerConstructor(...[scope, injector].concat(dependencies));
+    var ControllerInstance = new ControllerConstructor(...[scope, injector].concat(dependencies));
 
-    $scope.$on('$destroy', function(){
-      console.info(`Directive ${directive.name} destroyed`);
-      scope.unsubscribeAll();
+    $scope.controller = ControllerInstance;
+    $scope.$on('$destroy', function() {
+      //scope.unsubscribeDefault();
+
+      if (angular.isFunction(ControllerInstance.onDestroy)) {
+        ControllerInstance.onDestroy();
+      }
+
+      var stateModel = scope.getStateModel();
+
+      if (stateModel.listeners != 0) {
+        var logger = $scope[loggerKey];
+        logger.warnColored(`directive destroyed. There are ${stateModel.listeners} unsubscribed listeners`);
+      }
     });
+
+    return $scope.controller;
   };
 
   var di = ConvertDi(directive, ['$scope', '$attrs', ControllerDi]);
 
+  var link = function($scope, element, attrs, ngModel) {
+    var Model = null;
+
+    if (directive.config.withNgModel) {
+      var logger = $scope[loggerKey];
+      Model = new NgxModel(ngModel, logger);
+    }
+
+    if (angular.isFunction($scope.controller.link)) {
+
+      if (directive.config.withNgModel) {
+        $scope.controller.link(element, attrs, Model);
+
+        if (!Model.isListening()) {
+          throw new DirectiveRuntimeError('NgModel should be attached to local scope. Use Modal.listen(()=>{})');
+        }
+      } else {
+        $scope.controller.link(element, attrs);
+      }
+    }
+  };
 
   var scopeConfig = directive.config.scope;
   scopeConfig.pipe = '&pipe';
@@ -104,28 +127,10 @@ function Convert(directive) {
     replace: directive.config.replace,
     scope: directive.config.scope,
     controller: di,
-    link: function(scope, element, attrs, ngModel) {
-      var Model = null;
-
-      if (directive.config.model) {
-        Model = new NgxModel(ngModel);
-      }
-
-      if (angular.isFunction(scope.controller.link)) {
-        if (directive.config.model) {
-          scope.controller.link(element, attrs);
-        } else {
-          scope.controller.link(element, attrs, Model);
-
-          if (!Model.isListening()) {
-            throw new Error('NgModel should be attached to local scope. Use Modal.listen(()=>{})');
-          }
-        }
-      }
-    }
+    link: link
   };
 
-  if (directive.config.model) {
+  if (directive.config.withNgModel) {
     DirectiveConfig.require = 'ngModel';
   }
 

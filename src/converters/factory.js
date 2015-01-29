@@ -1,5 +1,5 @@
 import ConvertDi from './utils/convert-to-di';
-import Injector from '../components/injector';
+import Injector from '../wrappers/injector';
 
 class FactoryConverterError extends Error {
   constructor(message) {

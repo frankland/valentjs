@@ -1,4 +1,4 @@
-import Component from '../flow-component';
+import Component from '../components/flow-component';
 import Controller from './controller';
 
 function camelCase(input) {
@@ -51,8 +51,8 @@ class Directive extends Component {
     return this;
   }
 
-  model(key) {
-    this.config.model = key;
+  hasNgModel() {
+    this.config.withNgModel = true;
 
     return this;
   }

@@ -1,4 +1,4 @@
-import Component from '../flow-component';
+import Component from '../components/flow-component';
 
 class ControllerFlowError extends Error {
   constructor(message) {

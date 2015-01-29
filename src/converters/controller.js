@@ -1,7 +1,9 @@
 import ConvertDi from './utils/convert-to-di';
 import FillDefaults from './utils/fill-defaults';
-import Scope from '../components/scope';
-import Injector from '../components/injector';
+import Scope from '../wrappers/scope/scope';
+import Injector from '../wrappers/injector';
+import Logger from '../components/logger';
+
 
 class ControllerConverterError extends Error {
   constructor(message) {
@@ -18,13 +20,30 @@ export function ControllerConvert(controller) {
       throw new ControllerConverterError('Wrong controller source definition. Expect function (constructor)');
     }
 
+    /**
+     * Fill $scope with default values
+     */
     FillDefaults(controller, $scope);
 
+    /**
+     * Create scope logger
+     */
+    var logger = Logger.create(controller.name);
+
+
     var injector = new Injector($injector);
-    var scope = new Scope($scope, injector, controller.name);
+    var scope = new Scope($scope, injector, logger);
 
 
-    $scope.controller = new ControllerConstructor(...[scope, injector].concat(dependencies));
+    var ControllerInstance = new ControllerConstructor(...[scope, injector].concat(dependencies));
+    $scope.controller = ControllerInstance;
+
+
+    $scope.$on('$destroy', function() {
+      if (angular.isFunction(ControllerInstance.onDestroy)) {
+        ControllerInstance.onDestroy();
+      }
+    });
   };
 
   return ConvertDi(controller, ['$scope', ControllerDi]);
