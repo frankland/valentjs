@@ -7,6 +7,7 @@ export default class DirectiveController extends Controller {
   constructor(scope, injector) {
     super(scope, injector);
 
+    //TODO:
     this.stateModel = this.scope.getStateModel();
   }
   listen(event, func) {

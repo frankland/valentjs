@@ -34,6 +34,12 @@ class Directive extends Component {
     return this;
   }
 
+  transclude() {
+    this.config.transclude = true;
+
+    return this;
+  }
+
   scope(scope) {
 
     this.config.scope = scope;

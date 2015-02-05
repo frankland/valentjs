@@ -86,6 +86,12 @@ export default class Logger {
     }
   }
 
+  error (message){
+    var completeMessage = `${this[nameKey]} ${message}`;
+
+    throw new Error(completeMessage);
+  }
+
   warnColored(message, value) {
     if (this.isEnabled) {
       var completeMessage = `${this[nameKey]} ${message}`;

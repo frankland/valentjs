@@ -4,7 +4,9 @@ export default function FillDefaults(Component, $scope) {
     var defaults = Component.config.defaults;
 
     for (var item of Object.keys(defaults)) {
-      $scope[item] = defaults[item];
+      if (!$scope.hasOwnProperty(item)) {
+        $scope[item] = defaults[item];
+      }
     }
   }
 }

@@ -13,8 +13,13 @@ export default class Controller {
     return this.scope;
   }
 
+  error(message) {
+    this.scope.error(message);
+  }
+
   /**
    * Scope shortcuts
+   * TODO: remove arguments. pass args 1to1
    */
   push() {
     this.scope.push.apply(this.scope, arguments);

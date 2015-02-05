@@ -39,8 +39,7 @@ function Convert(directive) {
     /**
      * Fill $scope with default values
      */
-    FillDefaults(controller, $scope);
-
+    //FillDefaults(controller, $scope);
 
     /**
      * Create controller Instance
@@ -111,7 +110,7 @@ function Convert(directive) {
         $scope.controller.link(element, attrs, Model);
 
         if (!Model.isListening()) {
-          throw new DirectiveRuntimeError('NgModel should be attached to local scope. Use Modal.listen(()=>{})');
+          throw new DirectiveRuntimeError('NgModel should be attached to local scope. Use Modal.listen((value) => { ... })');
         }
       } else {
         $scope.controller.link(element, attrs);
@@ -123,6 +122,7 @@ function Convert(directive) {
   scopeConfig.pipe = '&pipe';
 
   var DirectiveConfig = {
+    transclude: !!directive.config.transclude,
     restrict: directive.config.restrict,
     replace: directive.config.replace,
     scope: directive.config.scope,

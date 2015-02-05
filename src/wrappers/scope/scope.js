@@ -66,6 +66,10 @@ export default class Scope {
     log(compeleteMessage);
   }
 
+  error(message) {
+    this.logger.error(message);
+  }
+
   push() {
     var pushCounter = ++this.pushCounter;
 
