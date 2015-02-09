@@ -43,8 +43,12 @@ export default class EventManager {
     }
     var listeners = storage.get(event);
 
-    for (var listener of listeners) {
+    listeners.forEach(function(listener){
       listener(...args);
-    }
+    });
+
+    //for (var listener of listeners) {
+    //  listener(...args);
+    //}
   }
 }

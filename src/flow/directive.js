@@ -17,7 +17,6 @@ class Directive extends Component {
     this.config.replace = true;
     this.config.scope = {};
 
-    this.originalName = name;
     this.controllerName = `<${name}>`;
     this.config.controller = new Controller(this.controllerName);
   }
