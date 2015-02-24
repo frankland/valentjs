@@ -25,6 +25,10 @@ export default class Controller {
     this.scope.push.apply(this.scope, arguments);
   }
 
+  pushAndApply() {
+    this.scope.pushAndApply.apply(this.scope, arguments);
+  }
+
   commit() {
     this.scope.commit.apply(this.scope, arguments);
   }

@@ -104,9 +104,22 @@ export default class Scope {
     this.clearScopeState();
   }
 
-  pushAndApply() {
+  safeApply(fn) {
     var scope = this[scopeKey];
-    scope.$apply(() => this.push(arguments));
+
+    var phase = scope.$root.$$phase;
+    if(phase == '$apply' || phase == '$digest') {
+      if(fn && (typeof(fn) === 'function')) {
+        fn();
+      }
+    } else {
+      scope.$apply(fn);
+    }
+  };
+
+  pushAndApply(...args) {
+    var scope = this[scopeKey];
+    this.safeApply(() => this.push(...args));
   }
 }
 
