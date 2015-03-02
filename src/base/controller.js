@@ -23,10 +23,12 @@ export default class Controller {
    */
   push() {
     this.scope.push.apply(this.scope, arguments);
+    return this;
   }
 
   commit() {
     this.scope.commit.apply(this.scope, arguments);
+    return this;
   }
 
   get() {
