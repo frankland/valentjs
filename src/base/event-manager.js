@@ -39,7 +39,7 @@ export default class EventManager {
     var storage = this[listenersKey];
 
     if (!storage.has(event)) {
-      throw new Error(`There are no listeners for "${event}" event at state model`);
+      //throw new Error(`There are no listeners for "${event}" event at state model`);
     }
     var listeners = storage.get(event);
 
