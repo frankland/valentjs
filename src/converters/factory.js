@@ -10,7 +10,7 @@ class FactoryConverterError extends Error {
 function Convert(factory) {
   var FactoryConstructor = factory.config.src;
 
-  if (angular.isFunction(FactoryConstructor)) {
+  if (!angular.isFunction(FactoryConstructor)) {
     throw new FactoryConverterError('Wrong factory source definition. Expect function (constructor)');
   }
 
