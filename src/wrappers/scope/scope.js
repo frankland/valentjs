@@ -1,24 +1,21 @@
 import Config from '../../components/config';
-import Logger from '../../components/logger';
-
 
 var scopeKey = Symbol('$scope');
 
 export default class Scope {
-
   constructor($scope, InjectorApi, Logger) {
 
     /**
      * private attributes
      */
-
     this[scopeKey] = $scope;
 
     /**
      * public attributes
      */
     this.logger = Logger;
-    this.scopeState = new Map();
+    this.transition = new Map();
+
     this.parse = InjectorApi.get('$parse');
 
     this.pushCounter = 0;
@@ -26,7 +23,6 @@ export default class Scope {
 
   getter(key) {
     var parse = this.parse;
-
     return parse(key);
   }
 
@@ -46,28 +42,26 @@ export default class Scope {
     return this.getter(key).bind(null, scope);
   }
 
-  getScopeState() {
-    return this.scopeState;
+  getTransition() {
+    return this.transition;
   }
 
-  clearScopeState() {
-    this.scopeState.clear();
+  clearTransition() {
+    this.transition.clear();
   }
 
   commit(key, value) {
-    var scopeState = this.getScopeState();
+    var scopeState = this.getTransition();
     scopeState.set(key, value);
   }
 
   log(message) {
-    var log = this[logKey];
-    var compeleteMessage = `${this.controllerName}: ${message}`;
-
-    log(compeleteMessage);
+    this.logger.log(message);
   }
 
   error(message) {
-    this.logger.error(message);
+    var completeMessage = this.logger.getCompleteMessage(message);
+    throw new Error(completeMessage);
   }
 
   push() {
@@ -79,18 +73,18 @@ export default class Scope {
       console.warn('Wrong arguments for scopeApi.push');
     }
 
-    var scopeState = this.getScopeState();
+    var transition = this.getTransition();
 
     var keys = [];
-    scopeState.forEach((value, key) => keys.push(key));
+    transition.forEach((value, key) => keys.push(key));
 
-    var message = `#${pushCounter} push ${scopeState.size} changes: [${keys.join(', ')}]`;
-    this.logger.logColored(message, scopeState);
+    var message = `#${pushCounter} push ${transition.size} changes: [${keys.join(', ')}]`;
+    this.logger.logColored(message, transition);
 
 
     var scope = this[scopeKey];
 
-    scopeState.forEach((value, key) => {
+    transition.forEach((value, key) => {
       var setter = this.setter(key);
       var current = this.get(key);
 
@@ -101,7 +95,7 @@ export default class Scope {
       }
     });
 
-    this.clearScopeState();
+    this.clearTransition();
   }
 
   safeApply(fn) {
@@ -118,7 +112,6 @@ export default class Scope {
   };
 
   pushAndApply(...args) {
-    var scope = this[scopeKey];
     this.safeApply(() => this.push(...args));
   }
 }
