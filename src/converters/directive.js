@@ -5,18 +5,6 @@ import Injector from '../wrappers/injector';
 import NgxModel from '../wrappers/ng-model';
 import Logger from '../components/logger';
 
-class DirectiveConverterError extends Error {
-  constructor(message) {
-    this.message = 'ngx convert: Directive mapper. ' + message;
-  }
-}
-
-class DirectiveRuntimeError extends Error {
-  constructor(message) {
-    this.message = 'ngx runtime: Directive mapper. ' + message;
-  }
-}
-
 function Convert(directive) {
 
   var controller = directive.config.controller;
@@ -27,7 +15,7 @@ function Convert(directive) {
   var ControllerDi = function($injector, $scope, $attrs, ...dependencies) {
 
     if (typeof ControllerConstructor != 'function') {
-      throw new DirectiveConverterError('Wrong controller source definition. Expect function (constructor)');
+      throw new Error('Wrong controller source definition. Expect function (constructor)');
     }
 
     /**
@@ -58,7 +46,7 @@ function Convert(directive) {
         stateModelInstance = $scope.pipe();
 
         if (!(stateModelInstance instanceof stateModel)) {
-          throw new DirectiveConverterError('Wrong instance of pipe');
+          throw new Error('Wrong instance of pipe');
         }
       } else {
         stateModelInstance = new stateModel();
@@ -67,7 +55,7 @@ function Convert(directive) {
       scope.setStateModel(stateModelInstance);
 
     } else if ($attrs.hasOwnProperty('pipe')) {
-      throw new DirectiveConverterError('State model is not defined but pipe attribute is exists');
+      throw new Error('State model is not defined but pipe attribute is exists');
     }
 
     /**
@@ -110,7 +98,7 @@ function Convert(directive) {
         $scope.controller.link(element, attrs, Model);
 
         if (!Model.isListening()) {
-          throw new DirectiveRuntimeError('NgModel should be attached to local scope. Use Modal.listen((value) => { ... })');
+          throw new Error('NgModel should be attached to local scope. Use Modal.listen((value) => { ... })');
         }
       } else {
         $scope.controller.link(element, attrs);
@@ -139,7 +127,7 @@ function Convert(directive) {
   } else if (directive.config.templateUrl) {
     DirectiveConfig.templateUrl = directive.config.templateUrl;
   } else {
-    throw new DirectiveConverterError('@template or @templateUrl should be described');
+    throw new Error('@template or @templateUrl should be described');
   }
 
   return function() {
@@ -151,7 +139,7 @@ export default function(directive) {
   var moduleName = directive.module;
 
   if (!moduleName) {
-    throw new DirectiveConverterError('application name is not described for directive: "' + directive.name + '"');
+    throw new Error('application name is not described for directive: "' + directive.name + '"');
   }
 
   var DirectiveConstructor = Convert(directive);

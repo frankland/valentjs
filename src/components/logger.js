@@ -13,11 +13,11 @@ function getColor() {
 }
 
 
-var nameKey = Symbol('controller-name-key');
+var controllerName = Symbol('controller-name-key');
 
 export default class Logger {
   constructor(name, background, color){
-    this[nameKey] = name;
+    this[controllerName] = name;
 
     this.background = background;
     this.color = color;
@@ -62,6 +62,11 @@ export default class Logger {
     this.isEnabled = false;
   }
 
+
+  getCompleteMessage(message) {
+    return `${this[controllerName]}: ${message}`;
+  }
+
   log(){
     if (this.isEnabled) {
       console.log.apply(console, arguments);
@@ -74,9 +79,15 @@ export default class Logger {
     }
   }
 
+  error (message){
+    var completeMessage = this.getCompleteMessage(message);
+    console.error(completeMessage);
+  }
+
+
   logColored(message, value) {
     if (this.isEnabled) {
-      var completeMessage = `${this[nameKey]} ${message}`;
+      var completeMessage = this.getCompleteMessage(message);
 
       console.log(`%c ${completeMessage}`, `background: ${this.background}; color: ${this.color}`);
 
@@ -86,15 +97,9 @@ export default class Logger {
     }
   }
 
-  error (message){
-    var completeMessage = `${this[nameKey]} ${message}`;
-
-    throw new Error(completeMessage);
-  }
-
   warnColored(message, value) {
     if (this.isEnabled) {
-      var completeMessage = `${this[nameKey]} ${message}`;
+      var completeMessage = this.getCompleteMessage(message);
 
       console.warn(`%c ${completeMessage}`, `background: ${this.background}; color: ${this.color}`);
 

@@ -1,17 +1,12 @@
 import ConvertDi from './utils/convert-to-di';
 import Injector from '../wrappers/injector';
 
-class FactoryConverterError extends Error {
-  constructor(message) {
-    this.message = 'ngx runtime: Factory mapper. ' + message;
-  }
-}
 
 function Convert(factory) {
   var FactoryConstructor = factory.config.src;
 
   if (!angular.isFunction(FactoryConstructor)) {
-    throw new FactoryConverterError('Wrong factory source definition. Expect function (constructor)');
+    throw new Error('Wrong factory source definition. Expect function (constructor)');
   }
 
   var DiConstructor = function($injector, ...dependencies) {
@@ -27,7 +22,7 @@ export default function(factory) {
   var moduleName = factory.module;
 
   if (!moduleName) {
-    throw new FactoryConverterError('application name is not described for factory: "' + factory.name + '"');
+    throw new Error('application name is not described for factory: "' + factory.name + '"');
   }
 
   var di = Convert(factory);

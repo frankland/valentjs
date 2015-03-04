@@ -1,10 +1,5 @@
 import UrlManager from '../url-manager.js';
 
-class RouteConverterError extends Error {
-  constructor(message) {
-    this.message = 'ngx runtime: Route mapper. ' + message;
-  }
-}
 
 function Convert(route, $routeProvider) {
 
@@ -17,7 +12,7 @@ function Convert(route, $routeProvider) {
 
   var { template, templateUrl } = route.config;
   if (template && templateUrl) {
-    throw new RouteConverterError(`For route "${url}" @template and @templateUrl is described`);
+    throw new Error(`For route "${url}" @template and @templateUrl is described`);
   }
 
   if (template) {
@@ -25,7 +20,7 @@ function Convert(route, $routeProvider) {
   } else if (templateUrl) {
     config.templateUrl = templateUrl;
   } else {
-    throw new RouteConverterError('@template or @templateUrl should be described');
+    throw new Error('@template or @templateUrl should be described');
   }
 
   var { base, buildUrl } = route.config;

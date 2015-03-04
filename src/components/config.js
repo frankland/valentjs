@@ -38,6 +38,11 @@ class Config {
   isScopeLogsEnabled() {
     return !!this.config.scopeLogs;
   }
+
+  setRouteProvider(provider) {
+    //...
+  }
+
 }
 
 
