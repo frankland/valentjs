@@ -51,8 +51,8 @@ class Directive extends Component {
     return this;
   }
 
-  stateModel(stateModel){
-    this.config.stateModel = stateModel;
+  pipe(pipe){
+    this.config.pipe = pipe;
     return this;
   }
 
