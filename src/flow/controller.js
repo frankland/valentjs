@@ -1,12 +1,5 @@
 import Component from '../components/flow-component';
 
-class ControllerFlowError extends Error {
-  constructor(message) {
-    this.message = 'ngx runtime: Controller flow. ' + message;
-  }
-}
-
-
 class Controller extends Component {
 
   /**
@@ -20,7 +13,7 @@ class Controller extends Component {
 
   resolve() {
     if (!this.routeInstance) {
-      throw new ControllerFlowError('Router is not defined or is not allowed');
+      throw new Error('Router is not defined or is not allowed');
     }
 
     var resolve = arguments[0];
@@ -40,7 +33,7 @@ class Controller extends Component {
 
   route(url, template) {
     if (!this.routeInstance) {
-      throw new ControllerFlowError('Router is not defined or is not allowed');
+      throw new Error('Router is not defined or is not allowed');
     }
 
     this.routeInstance
@@ -56,7 +49,7 @@ class Controller extends Component {
   template (template){
 
     if (!this.routeInstance) {
-      throw new ControllerFlowError('Router is not defined or is not allowed');
+      throw new Error('Router is not defined or is not allowed');
     }
 
     if (template) {
@@ -68,7 +61,7 @@ class Controller extends Component {
 
   buildUrl(builder) {
     if (!this.routeInstance) {
-      throw new ControllerFlowError('Router is not defined or is not allowed');
+      throw new Error('Router is not defined or is not allowed');
     }
 
     this.routeInstance
