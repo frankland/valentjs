@@ -53,6 +53,7 @@ function Convert(DirectiveModel) {
       var pipe = scope.getPipe();
 
       if (pipe.listeners != 0) {
+        var Controller = $scope.controller;
         var scopeWrapper = Controller.getScope();
         var logger = scopeWrapper.getLogger();
 

@@ -62,8 +62,8 @@ export default class Controller {
   onDestroy() {
     var storage = this[unsubscribe];
 
-    for (var unsubscribe of storage) {
-      unsubscribe();
+    for (var detach of storage) {
+      detach();
     }
   }
 }
