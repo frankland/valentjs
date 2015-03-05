@@ -2,6 +2,8 @@ import ControllerConverter from './converters/controller';
 import DirectiveConverter from './converters/directive';
 import FactoryConverter from './converters/factory';
 import RouteConverter from './converters/route';
+import Injector from './components/injector';
+import Config from './components/config';
 
 export default class Manager {
   constructor() {
@@ -63,46 +65,70 @@ export default class Manager {
   registerControllers(moduleName){
     var controllers = this.storage.controller;
 
-    for (var controller of controllers) {
-      if (moduleName) {
-        controller.at(moduleName);
-      }
+    if (moduleName) {
+      for (var controller of controllers) {
+        if (!controller.hasModule()) {
+          controller.at(moduleName);
+        }
 
-      ControllerConverter(controller);
+        ControllerConverter(controller);
+      }
     }
   }
 
   registerDirectives(moduleName){
     var directives = this.storage.directive;
 
-    for (var directive of directives) {
-      if (moduleName) {
-        directive.at(moduleName);
-      }
+    if (moduleName) {
+      for (var directive of directives) {
+        if (!directive.hasModule()) {
+          directive.at(moduleName);
+        }
 
-      DirectiveConverter(directive);
+        DirectiveConverter(directive);
+      }
     }
   }
 
   registerFactories(moduleName){
     var factories = this.storage.factory;
 
-    for (var factory of factories) {
-      if (moduleName) {
-        factory.at(moduleName);
-      }
+    if (moduleName) {
+      for (var factory of factories) {
+        if (!factory.hasModule()) {
+          factory.at(moduleName);
+        }
 
-      FactoryConverter(factory);
+        FactoryConverter(factory);
+      }
     }
   }
 
   registerRoutes(moduleName){
     var routes = this.storage.route;
 
-    RouteConverter(routes, moduleName);
+    if (moduleName) {
+      for (var route of routes) {
+        if (!route.hasModule()) {
+          route.at(moduleName);
+        }
+      }
+    }
+
+    RouteConverter(routes);
   }
 
-  register(moduleName) {
+  initializeInjector(moduleName) {
+    angular.module(moduleName)
+        .run(['$injector', function($injector) {
+          Injector.setInjector($injector);
+        }]);
+  }
+
+  register() {
+    var moduleName = Config.getModuleName();
+
+    this.initializeInjector(moduleName);
     this.registerControllers(moduleName);
     this.registerDirectives(moduleName);
     this.registerFactories(moduleName);

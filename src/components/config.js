@@ -23,13 +23,17 @@ var colors = [
 
 var config = {
   colors,
-  scopeLogs: true,
+  scopeLogs: false,
   moduleName: 'ngx.default'
 };
 
 class ConfigManager {
   constructor() {
 
+  }
+
+  getColors() {
+    return config.colors;
   }
 
   enableScopeLogs(){

@@ -1,6 +1,6 @@
 import Config from './config';
 
-var colors = Config.colors;
+var colors = Config.getColors();
 
 var counter = 0;
 
@@ -13,14 +13,14 @@ function getColor() {
 }
 
 
-var controllerName = Symbol('controller-name-key');
+var id = Symbol('id');
 
 export default class Logger {
   constructor(name, background, color){
-    this[controllerName] = name;
+    this[id] = name;
 
-    this.background = background;
-    this.color = color;
+    this.background = background || '#ffff';
+    this.color = color || '#000';
 
     this.isEnabled = Config.isScopeLogsEnabled();
     this.isDetailed = false;
@@ -34,11 +34,7 @@ export default class Logger {
     var background = this.getNextColor();
     var color = '#fff;';
 
-    var logger = new Logger(name, '#fff', '#999');
-    logger.setBackgroundColor(background);
-    logger.setColor(color);
-
-    return logger;
+    return new Logger(name, background, color);
   }
 
   setBackgroundColor(background) {
@@ -64,19 +60,7 @@ export default class Logger {
 
 
   getCompleteMessage(message) {
-    return `${this[controllerName]}: ${message}`;
-  }
-
-  log(){
-    if (this.isEnabled) {
-      console.log.apply(console, arguments);
-    }
-  }
-
-  warn() {
-    if (this.isEnabled) {
-      console.warn.apply(console, arguments);
-    }
+    return `${this[id]}: ${message}`;
   }
 
   error (message){
@@ -84,20 +68,19 @@ export default class Logger {
     console.error(completeMessage);
   }
 
-
-  logColored(message, value) {
+  log(message, value) {
     if (this.isEnabled) {
       var completeMessage = this.getCompleteMessage(message);
 
       console.log(`%c ${completeMessage}`, `background: ${this.background}; color: ${this.color}`);
 
-      if (this.isDetailed  && arguments.length == 2) {
+      if (this.isDetailed && arguments.length == 2) {
         this.log(value);
       }
     }
   }
 
-  warnColored(message, value) {
+  warn(message, value) {
     if (this.isEnabled) {
       var completeMessage = this.getCompleteMessage(message);
 
@@ -106,12 +89,6 @@ export default class Logger {
       if (this.isDetailed && arguments.length == 2) {
         this.warn(value);
       }
-    }
-  }
-
-  warnEqualsValues(key, value) {
-    if (this.isEnabled) {
-      this.warnColored(`Exisitng value by path "${key}" is same`, value);
     }
   }
 }

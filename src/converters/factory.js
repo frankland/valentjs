@@ -1,32 +1,31 @@
-import ConvertDi from './utils/convert-to-di';
-import Injector from '../wrappers/injector';
-
-
-function Convert(factory) {
-  var FactoryConstructor = factory.config.src;
+function Convert(FactoryModel) {
+  var FactoryConstructor = FactoryModel.src;
 
   if (!angular.isFunction(FactoryConstructor)) {
     throw new Error('Wrong factory source definition. Expect function (constructor)');
   }
 
-  var DiConstructor = function($injector, ...dependencies) {
+  var FactoryFunction = function($injector, ...dependencies) {
     var injector = new Injector($injector);
 
     return new FactoryConstructor(...[injector].concat(dependencies));
   };
 
-  return ConvertDi(factory, DiConstructor);
+  var deps = FactoryModel.dependencies;
+  return [...deps, FactoryFunction];
 }
 
 export default function(factory) {
-  var moduleName = factory.module;
+  var FactoryModel = factory.model;
+
+  var moduleName = FactoryModel.module;
 
   if (!moduleName) {
-    throw new Error('application name is not described for factory: "' + factory.name + '"');
+    throw new Error(`Application name is not described for factory: "${FactoryModel.name}"`);
   }
 
-  var di = Convert(factory);
+  var di = Convert(FactoryModel);
 
   angular.module(moduleName)
-      .factory(factory.name, di);
+      .factory(FactoryModel.name, di);
 };

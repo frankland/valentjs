@@ -1,9 +1,11 @@
-import Config from '../../components/config';
+import Config from '../components/config';
+import Logger from '../components/logger';
+import Injector from '../components/injector';
 
 var scopeKey = Symbol('$scope');
 
 export default class Scope {
-  constructor($scope, InjectorApi, Logger) {
+  constructor(name, $scope) {
 
     /**
      * private attributes
@@ -13,14 +15,25 @@ export default class Scope {
     /**
      * public attributes
      */
-    this.logger = Logger;
+    this.logger = Logger.create(name);
     this.transition = new Map();
 
-    this.parse = InjectorApi.get('$parse');
+    this.parse = Injector.get('$parse');
 
     this.pushCounter = 0;
   }
 
+  getLogger() {
+    return this.logger;
+  }
+
+  getTransition() {
+    return this.transition;
+  }
+
+  /**
+   * Scope methods
+   */
   getter(key) {
     var parse = this.parse;
     return parse(key);
@@ -42,8 +55,19 @@ export default class Scope {
     return this.getter(key).bind(null, scope);
   }
 
-  getTransition() {
-    return this.transition;
+
+
+  log(message) {
+    var logger = this.getLogger();
+
+    logger.log(message);
+  }
+
+  error(message) {
+    var logger = this.getLogger();
+    var completeMessage = logger.getCompleteMessage(message);
+
+    throw new Error(completeMessage);
   }
 
   clearTransition() {
@@ -55,22 +79,14 @@ export default class Scope {
     scopeState.set(key, value);
   }
 
-  log(message) {
-    this.logger.log(message);
-  }
-
-  error(message) {
-    var completeMessage = this.logger.getCompleteMessage(message);
-    throw new Error(completeMessage);
-  }
-
   push() {
     var pushCounter = ++this.pushCounter;
+    var logger = this.getLogger();
 
     if (arguments.length == 2) {
       this.commit.apply(this, arguments);
     } else if (!!arguments.length) {
-      console.warn('Wrong arguments for scopeApi.push');
+      logger.warn('Wrong arguments for scopeApi.push');
     }
 
     var transition = this.getTransition();
@@ -79,7 +95,7 @@ export default class Scope {
     transition.forEach((value, key) => keys.push(key));
 
     var message = `#${pushCounter} push ${transition.size} changes: [${keys.join(', ')}]`;
-    this.logger.logColored(message, transition);
+    logger.log(message, transition);
 
 
     var scope = this[scopeKey];
@@ -89,7 +105,8 @@ export default class Scope {
       var current = this.get(key);
 
       if (angular.equals(value, current)) {
-        this.logger.warnEqualsValues(key, value);
+        var equalsMessage = `value by path "${key}" is not changed`;
+        logger.log(equalsMessage, value);
       } else {
         setter(scope, value);
       }

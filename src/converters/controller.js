@@ -1,36 +1,22 @@
-import ConvertDi from './utils/convert-to-di';
-import FillDefaults from './utils/fill-defaults';
-import Scope from '../wrappers/scope/scope';
-import Injector from '../wrappers/injector';
-import Logger from '../components/logger';
+import Scope from '../wrappers/scope';
+import Config from '../components/config';
 
-export function ControllerConvert(controller) {
-  var ControllerConstructor = controller.config.src;
+function Convert(ControllerModel) {
 
-  var ControllerDi = function($injector, $scope, ...dependencies) {
+  var ControllerFunction = function($scope, ...dependencies) {
+    var ControllerConstructor = ControllerModel.src;
 
     if (typeof ControllerConstructor != 'function') {
       throw new Error('Wrong controller source definition. Expect function (constructor)');
     }
 
     /**
-     * Fill $scope with default values
-     */
-    FillDefaults(controller, $scope);
-
-    /**
      * Create scope logger
      */
-    var logger = Logger.create(controller.name);
+    var scope = new Scope(ControllerModel.name, $scope);
 
-
-    var injector = new Injector($injector);
-    var scope = new Scope($scope, injector, logger);
-
-
-    var ControllerInstance = new ControllerConstructor(...[scope, injector].concat(dependencies));
+    var ControllerInstance = new ControllerConstructor(...[scope].concat(dependencies));
     $scope.controller = ControllerInstance;
-
 
     $scope.$on('$destroy', function() {
       if (angular.isFunction(ControllerInstance.onDestroy)) {
@@ -39,24 +25,28 @@ export function ControllerConvert(controller) {
     });
   };
 
-  return ConvertDi(controller, ['$scope', ControllerDi]);
+  var deps = ControllerModel.dependencies;
+
+  return ['$scope'].concat([...deps, ControllerFunction]);
 }
 
 
 export default function(controller) {
-  var moduleName = controller.module;
+  var ControllerModel = controller.model;
+
+  var moduleName = ControllerModel.module;
 
   if (!moduleName) {
-    throw new Error('application name is not described for controller: "' + controller.name + '"');
+    throw new Error(`Module is not defined for controller: "${ControllerModel.name}"`);
   }
 
-  if (!controller.config.src) {
-    throw new Error('Controller source is not set');
+  if (!ControllerModel.src) {
+    throw new Error('Controller source is not defined');
   }
 
-  var di = ControllerConvert(controller);
+  var di = Convert(ControllerModel);
 
   angular.module(moduleName)
-      .controller(controller.name, di);
+      .controller(ControllerModel.name, di);
 };
 

@@ -35,12 +35,11 @@ export default class NgxModel {
   }
 
   set(value) {
-    this.logger.logColored('push ng-model to parent scope', value);
+    this.logger.log('push ng-model to parent scope', value);
 
     if (value == this.get()) {
       var message = 'existing ng-model value equals to new value';
-
-      this.logger.warnColored(message, value);
+      this.logger.warn(message, value);
     }
 
     var model = this[modelKey];

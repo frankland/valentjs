@@ -1,6 +1,5 @@
-export default class Injector {
-
-  constructor($injector) {
+class Injector {
+  setInjector($injector) {
     this.$injector = $injector;
   }
 
@@ -14,7 +13,9 @@ export default class Injector {
       throw new Error('Dependency "' + dependency + '" does not exist');
     }
 
+
     return $injector.get(dependency);
   }
 }
 
+export default new Injector;

@@ -1,4 +1,4 @@
-import Component from '../components/flow-component';
+import Config from '../components/config';
 import Controller from './controller';
 
 function camelCase(input) {
@@ -7,100 +7,115 @@ function camelCase(input) {
   });
 }
 
-class Directive extends Component {
+class DirectiveModel {
+  constructor(name) {
+    if (name) {
+      this.name = camelCase(name);
+    }
+
+    this.dependencies = [];
+
+
+    this.restrict = 'E';
+    this.replace = true;
+    this.scope = {};
+
+    this.controller = new Controller( `<${name}>`);
+  }
+
+  hasModel() {
+    return !!this.ngModel;
+  }
+
+  hasPipe() {
+    return this.hasOwnProperty('pipe');
+  }
+
+  getControllerModel() {
+    return this.controller.model;
+  }
+}
+
+export default class DirectiveFlow  {
 
   constructor(name) {
-    var directiveName = camelCase(name);
-    super(directiveName);
+    this.model = new DirectiveModel(name);
+  }
 
-    this.config.restrict = 'E';
-    this.config.replace = true;
-    this.config.scope = {};
+  at(name) {
+    this.model.module = name;
+    return this;
+  }
 
-    this.controllerName = `<${name}>`;
-    this.config.controller = new Controller(this.controllerName);
+  hasModule() {
+    return !!this.model.module;
   }
 
   dependencies(dependencies) {
 
-    this.config.controller.dependencies(dependencies);
-    return this;
-  }
-
-  defaults(defaults) {
-
-    this.config.controller.defaults(defaults);
+    this.model.controller.dependencies(dependencies);
     return this;
   }
 
   transclude() {
-    this.config.transclude = true;
+    this.model.transclude = true;
 
     return this;
   }
 
   scope(scope) {
-
-    this.config.scope = scope;
+    this.model.scope = scope;
     return this;
   }
 
   restrict(restrict) {
-
-    this.config.restrict = restrict;
+    this.model.restrict = restrict;
     return this;
   }
 
   pipe(pipe){
-    this.config.pipe = pipe;
+    this.model.pipe = pipe;
     return this;
   }
 
-  hasNgModel() {
-    this.config.withNgModel = true;
-
+  withModel() {
+    this.model.ngModel = true;
     return this;
   }
 
   controller(controller) {
-
-    this.config.controller.src(controller);
+    this.model.controller.src(controller);
     return this;
   }
 
   template(template) {
-    this.config.template = template;
+    this.model.template = template;
     return this;
   }
 
   templateUrl(template) {
-    this.config.templateUrl = template;
+    this.model.templateUrl = template;
     return this;
   }
 
   logInfo() {
-    var group = `${this.controllerName} at ${this.module}`;
+    var moduleName = this.model.module || Config.getModuleName();
+    var ControllerModel = this.model.getControllerModel();
+    var group = `${ControllerModel.name} at ${moduleName}`;
 
     console.groupCollapsed(group);
 
-    console.log(`restrict: ${this.config.restrict}`);
-    console.log(`replace: ${this.config.replace}`);
+    console.log(`restrict: ${this.model.restrict}`);
+    console.log(`replace: ${this.model.replace}`);
 
-    if (!!Object.keys(this.config.scope).length) {
-      console.log(`scope:`, this.config.scope);
+    if (!!Object.keys(this.model.scope).length) {
+      console.log(`scope:`, this.model.scope);
     }
 
-    /**
-     * TODO: add getters
-     */
-    if (!!Object.keys(this.config.controller.config.defaults).length) {
-      console.log(`defaults:`, this.config.controller.config.defaults);
-    }
-
-    if (this.config.templateUrl) {
-      console.log(`templateUrl: ${this.config.templateUrl}`);
-    } else if (this.config.template) {
-      console.log(`template: ${this.config.template.slice(0, 50).replace(/\n|\r|\r\n/mg, '')}`);
+    if (this.model.templateUrl) {
+      console.log(`templateUrl: ${this.model.templateUrl}`);
+    } else if (this.model.template) {
+      console.log(`template: ${this.model.template.slice(0, 50).replace(/\n|\r|\r\n/mg, '')}`);
     } else {
       console.log(`template is wrong`);
     }
@@ -108,5 +123,3 @@ class Directive extends Component {
     console.groupEnd(group);
   }
 }
-
-export default Directive;

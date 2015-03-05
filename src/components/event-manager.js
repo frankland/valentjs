@@ -1,7 +1,8 @@
 var listenersKey = Symbol('listeners');
 
 export default class EventManager {
-  constructor() {
+  constructor(name) {
+    this.name = name;
     this.listeners = 0;
     this[listenersKey] = new Map();
   }
@@ -36,21 +37,30 @@ export default class EventManager {
   }
 
   trigger(event, ...args) {
-    var storage = this[listenersKey];
 
-    if (!storage.has(event)) {
-      //throw new Error(`There are no listeners for "${event}" event at state model`);
-       console.info(`There are no listeners for "${event}" event at state model`);
+    if (this.name) {
+      //console.log(`triggered event "${event}" on "${this.name}"`);
     }
 
-    var listeners = storage.get(event);
+    var storage = this[listenersKey];
 
-    listeners.forEach(function(listener){
-      listener(...args);
-    });
+    if (storage.has(event)) {
+      var listeners = storage.get(event);
 
-    //for (var listener of listeners) {
-    //  listener(...args);
-    //}
+      listeners.forEach(function(listener){
+        listener(...args);
+      });
+
+      //for (var listener of listeners) {
+      //  listener(...args);
+      //}
+    } else {
+      //throw new Error(`There are no listeners for "${event}" event at state model`);
+      if (this.name) {
+        //console.info(`There are no listeners for "${event}" event at pipe "${this.name}"`);
+      } else {
+        //console.info(`There are no listeners for "${event}" event at pipe`);
+      }
+    }
   }
 }

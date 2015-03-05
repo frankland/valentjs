@@ -1,18 +1,58 @@
-import Component from '../components/flow-component';
+import Config from '../components/config';
 
-class Controller extends Component {
+class ControllerModel {
+  constructor(name) {
+    if (name) {
+      this.name = name;
+    }
+
+    this.dependencies = [];
+  }
+
+  hasRoute() {
+    return this.hasOwnProperty('route');
+  }
+}
+
+export default class ControllerFlow  {
+
+  constructor(name) {
+    this.model = new ControllerModel(name);
+  }
+
+  at(name) {
+    this.model.module = name;
+
+    if (this.model.hasRoute()) {
+      this.model.route.at(name);
+    }
+
+    return this;
+  }
+
+  hasModule() {
+    return !!this.model.module;
+  }
+
+  dependencies(dependencies) {
+    if (!Array.isArray(dependencies)) {
+      dependencies = [dependencies];
+    }
+
+    this.model.dependencies = this.model.dependencies.concat(dependencies);
+    return this;
+  }
 
   /**
    * Route flow
    */
   router(routeInstance) {
-    this.routeInstance = routeInstance;
-
+    this.model.route = routeInstance;
     return this;
   }
 
   resolve() {
-    if (!this.routeInstance) {
+    if (!this.model.hasRoute()) {
       throw new Error('Router is not defined or is not allowed');
     }
 
@@ -23,7 +63,7 @@ class Controller extends Component {
     }
 
     for (var key of Object.keys(resolve)) {
-      this.routeInstance.resolve(key, resolve[key]);
+      this.model.route.resolve(key, resolve[key]);
       this.dependencies(key);
     }
 
@@ -31,41 +71,42 @@ class Controller extends Component {
   }
 
 
-  route(url, template) {
-    if (!this.routeInstance) {
+  route(url) {
+    if (!this.model.hasRoute()) {
       throw new Error('Router is not defined or is not allowed');
     }
 
-    this.routeInstance
-        .url(url);
-
-    if (template) {
-      this.routeInstance.templateUrl(template);
-    }
+    this.model.route.url(url);
 
     return this;
   }
 
-  template (template){
-
-    if (!this.routeInstance) {
+  template(template){
+    if (!this.model.hasRoute()) {
       throw new Error('Router is not defined or is not allowed');
     }
 
-    if (template) {
-      this.routeInstance.template(template);
-    }
+    this.model.route.template(template);
 
     return this;
   }
 
-  buildUrl(builder) {
-    if (!this.routeInstance) {
+  templateUrl(templateUrl){
+    if (!this.model.hasRoute()) {
       throw new Error('Router is not defined or is not allowed');
     }
 
-    this.routeInstance
-        .buildUrl(builder);
+    this.model.route.templateUrl(templateUrl);
+
+    return this;
+  }
+
+  urlBuilder(builder) {
+    if (!this.model.hasRoute()) {
+      throw new Error('Router is not defined or is not allowed');
+    }
+
+    this.model.route.urlBuilder(builder);
 
     return this;
   }
@@ -74,21 +115,21 @@ class Controller extends Component {
    * Controller flow
    */
   src(src) {
-    this.config.src = src;
+    this.model.src = src;
     return this;
   }
 
   logInfo() {
-    var group = `${this.name} at ${this.module}`;
+    var moduleName = this.model.module || Config.getModuleName();
+    var group = `${this.model.name} at ${moduleName}`;
 
     console.groupCollapsed(group);
 
-    if (!!Object.keys(this.config.defaults).length) {
-      console.log(`defaults:`, this.config.defaults);
+    if (!!Object.keys(this.model.dependencies).length) {
+      console.log(`dependecies:`, this.model.dependencies);
     }
 
     console.groupEnd(group);
   }
 }
 
-export default Controller;

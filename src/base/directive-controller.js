@@ -7,15 +7,32 @@ export default class DirectiveController extends Controller {
   constructor(scope, injector) {
     super(scope, injector);
 
-    //TODO:
-    this.stateModel = this.scope.getStateModel();
+    this.pipe = this.scope.getPipe();
   }
-  listen(event, func) {
 
-    super(this.stateModel, event, func);
+  listen() {
+    var pipe;
+    var event;
+    var func;
+
+    if (arguments.length === 3) {
+      pipe = arguments[0];
+      event = arguments[1];
+      func = arguments[2];
+    } else {
+      pipe = this.pipe;
+      event = arguments[0];
+      func = arguments[1];
+    }
+
+    super(pipe, event, func);
   }
 
   sync() {
-    this.stateModel.sync();
+    this.pipe.sync();
+  }
+
+  syncState() {
+    this.listen('sync', (state) => this.push('state', state));
   }
 }

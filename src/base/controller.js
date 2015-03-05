@@ -1,12 +1,14 @@
-var unsubscribeKey = Symbol('unsubscribe-storage');
+import Injector from '../components/injector';
+
+var unsubscribe = Symbol('unsubscribe');
 
 export default class Controller {
 
-  constructor(scope, injector) {
+  constructor(scope) {
     this.scope = scope;
-    this.injector = injector;
+    this.injector = Injector;
 
-    this[unsubscribeKey] = [];
+    this[unsubscribe] = [];
   }
 
   getScope() {
@@ -19,7 +21,6 @@ export default class Controller {
 
   /**
    * Scope shortcuts
-   * TODO: remove arguments. pass args 1to1
    */
   push() {
     this.scope.push.apply(this.scope, arguments);
@@ -47,17 +48,19 @@ export default class Controller {
   }
 
   /**
-   * Directive State Model
+   * Directive Pipe
    */
-  listen(stateModel, event, func) {
-    var unsubscribe = stateModel.listen(event, func);
+  listen(pipe, event, func) {
+    this.addUnsubscribe(pipe.listen(event, func));
+  }
 
-    var storage = this[unsubscribeKey];
-    storage.push(unsubscribe);
+  addUnsubscribe(func) {
+    var storage = this[unsubscribe];
+    storage.push(func);
   }
 
   onDestroy() {
-    var storage = this[unsubscribeKey];
+    var storage = this[unsubscribe];
 
     for (var unsubscribe of storage) {
       unsubscribe();
