@@ -24,7 +24,8 @@ var colors = [
 var config = {
   colors,
   scopeLogs: false,
-  moduleName: 'ngx.default'
+  moduleName: 'ngx.default',
+  routeProviderName: '$routeProvider'
 };
 
 class ConfigManager {
@@ -48,8 +49,12 @@ class ConfigManager {
     return !!config.scopeLogs;
   }
 
-  setRouteProvider(provider) {
-    //...
+  setRouteProviderName(provider) {
+    config.routeProviderName = provider;
+  }
+
+  getRouteProviderName() {
+    return config.routeProviderName;
   }
 
   setModuleName(name) {
