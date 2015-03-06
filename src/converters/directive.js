@@ -50,14 +50,16 @@ function Convert(DirectiveModel) {
         ControllerInstance.onDestroy();
       }
 
-      var pipe = scope.getPipe();
+      if (DirectiveModel.hasPipe()) {
+        var pipe = scope.getPipe();
 
-      if (pipe.listeners != 0) {
-        var Controller = $scope.controller;
-        var scopeWrapper = Controller.getScope();
-        var logger = scopeWrapper.getLogger();
+        if (pipe.listeners != 0) {
+          var Controller = $scope.controller;
+          var scopeWrapper = Controller.getScope();
+          var logger = scopeWrapper.getLogger();
 
-        logger.warn(`directive destroyed. There are ${pipe.listeners} unsubscribed listeners`);
+          logger.warn(`directive destroyed. There are ${pipe.listeners} unsubscribed listeners`);
+        }
       }
     });
 
