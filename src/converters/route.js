@@ -23,8 +23,14 @@ function Convert(RouteModel) {
 
   UrlManager.addRoute(RouteModel.controller, RouteModel.urlBuilder);
 
+  var baseUrl = RouteModel.base;
+
+  if (!baseUrl) {
+    baseUrl = Config.getBaseUrl();
+  }
+
   return {
-    url: RouteModel.base + RouteModel.url,
+    url: baseUrl + RouteModel.url,
     config: config
   };
 }

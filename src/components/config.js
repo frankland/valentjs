@@ -25,12 +25,21 @@ var config = {
   colors,
   scopeLogs: false,
   moduleName: 'ngx.default',
-  routeProviderName: '$routeProvider'
+  routeProviderName: '$routeProvider',
+  baseUrl: ''
 };
 
 class ConfigManager {
   constructor() {
 
+  }
+
+  setBaseUrl(baseUrl) {
+    config.baseUrl = baseUrl;
+  }
+
+  getBaseUrl() {
+    return config.baseUrl;
   }
 
   getColors() {
