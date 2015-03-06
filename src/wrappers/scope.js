@@ -23,6 +23,10 @@ export default class Scope {
     this.pushCounter = 0;
   }
 
+  getOriginalScope() {
+    return this[scopeKey];
+  }
+
   getLogger() {
     return this.logger;
   }
