@@ -117,7 +117,7 @@ export default class DirectiveFlow  {
     } else if (this.model.template) {
       console.log(`template: ${this.model.template.slice(0, 50).replace(/\n|\r|\r\n/mg, '')}`);
     } else {
-      console.log(`template is wrong`);
+      console.log(`empty template`);
     }
 
     console.groupEnd(group);

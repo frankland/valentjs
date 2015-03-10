@@ -110,8 +110,6 @@ function Convert(DirectiveModel) {
     DirectiveConfig.template = DirectiveModel.template;
   } else if (DirectiveModel.templateUrl) {
     DirectiveConfig.templateUrl = DirectiveModel.templateUrl;
-  } else {
-    throw new Error('@template or @templateUrl should be described');
   }
 
   return function() {
