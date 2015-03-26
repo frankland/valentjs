@@ -24,7 +24,7 @@ var colors = [
 var config = {
   colors,
   scopeLogs: false,
-  moduleName: 'ngx.default',
+  moduleName: 'frankland.valent',
   routeProviderName: '$routeProvider',
   baseUrl: '',
   html5: true
