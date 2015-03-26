@@ -8,7 +8,7 @@ export default class Pipe extends EventManager {
     this.state = {};
 
     //this.attached = new WeakMap();
-    this.attached = [];
+    //this.attached = [];
   }
 
   setState(state) {
@@ -24,33 +24,33 @@ export default class Pipe extends EventManager {
     this.trigger('sync', state);
   }
 
-  attach(pipe, proxy){
-    //this.attached.set(Instance, proxy || {});
-    this.attached.push({
-      pipe,
-      proxy
-    });
-  }
+  //attach(pipe, proxy){
+  //  //this.attached.set(Instance, proxy || {});
+  //  this.attached.push({
+  //    pipe,
+  //    proxy
+  //  });
+  //}
 
-  detach(Instance) {
+  //detach(Instance) {
     //if (this.attached.has(Instance)) {
     //  this.attached.delete(Instance);
     //}
-  }
+  //}
 
-  trigger(event) {
-
-    for (var { pipe, proxy } of this.attached) {
-      var proxyName = event;
-
-      if (proxy.hasOwnProperty(event)) {
-        proxyName = proxy[event];
-      }
-
-      pipe.trigger(proxyName);
-    }
-
-    var args = Array.prototype.slice.call(arguments);
-    super(...args);
-  }
+  //trigger(event) {
+  //
+  //  for (var { pipe, proxy } of this.attached) {
+  //    var proxyName = event;
+  //
+  //    if (proxy.hasOwnProperty(event)) {
+  //      proxyName = proxy[event];
+  //    }
+  //
+  //    pipe.trigger(proxyName);
+  //  }
+  //
+  //  var args = Array.prototype.slice.call(arguments);
+  //  super.trigger(...args);
+  //}
 }
