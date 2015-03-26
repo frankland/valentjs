@@ -63,7 +63,8 @@ export default function(routes) {
 
   if (Config.useHtml5()) {
     var moduleName = Config.getModuleName();
-    angular.module(moduleName).config(() => $locationProvider.html5Mode(true));
+    angular.module(moduleName).config(['$locationProvider',
+      ($locationProvider) => $locationProvider.html5Mode(true)]);
   }
 
   for (var name of Object.keys(sorted)) {
