@@ -1,3 +1,5 @@
+
+
 function Convert(FactoryModel) {
   var FactoryConstructor = FactoryModel.src;
 
@@ -5,10 +7,8 @@ function Convert(FactoryModel) {
     throw new Error('Wrong factory source definition. Expect function (constructor)');
   }
 
-  var FactoryFunction = function($injector, ...dependencies) {
-    var injector = new Injector($injector);
-
-    return new FactoryConstructor(...[injector].concat(dependencies));
+  var FactoryFunction = function(...dependencies) {
+    return new FactoryConstructor(dependencies);
   };
 
   var deps = FactoryModel.dependencies;
