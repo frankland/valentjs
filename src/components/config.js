@@ -26,12 +26,21 @@ var config = {
   scopeLogs: false,
   moduleName: 'ngx.default',
   routeProviderName: '$routeProvider',
-  baseUrl: ''
+  baseUrl: '',
+  html5: true
 };
 
 class ConfigManager {
   constructor() {
 
+  }
+
+  useHtml5() {
+    if (arguments.length == 1) {
+      config.html5 = !!arguments[0];
+    } else {
+      return config.html5;
+    }
   }
 
   setBaseUrl(baseUrl) {

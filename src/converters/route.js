@@ -58,14 +58,17 @@ function byModule(routes) {
 }
 
 export default function(routes) {
-
   var sorted = byModule(routes);
   var routeProvider = Config.getRouteProviderName();
 
-  for (var name of Object.keys(sorted)) {
+  if (Config.useHtml5()) {
+    var moduleName = Config.getModuleName();
+    angular.module(moduleName).config(() => $locationProvider.html5Mode(true));
+  }
 
+  for (var name of Object.keys(sorted)) {
     angular.module(name)
-        .config([routeProvider, function($routeProvider) {
+        .config([routeProvider, ($routeProvider) => {
           for (var RouteModel of sorted[name]) {
             var {url, config } = Convert(RouteModel);
 
