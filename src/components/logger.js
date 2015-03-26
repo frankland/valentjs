@@ -75,7 +75,7 @@ export default class Logger {
       console.log(`%c ${completeMessage}`, `background: ${this.background}; color: ${this.color}`);
 
       if (this.isDetailed && arguments.length == 2) {
-        this.log(value);
+        console.log(value);
       }
     }
   }
@@ -87,7 +87,7 @@ export default class Logger {
       console.warn(`%c ${completeMessage}`, `background: ${this.background}; color: ${this.color}`);
 
       if (this.isDetailed && arguments.length == 2) {
-        this.warn(value);
+        console.warn(value);
       }
     }
   }
