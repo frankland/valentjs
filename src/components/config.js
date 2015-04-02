@@ -23,11 +23,8 @@ var colors = [
 
 var config = {
   colors,
-  scopeLogs: false,
-  moduleName: 'frankland.valent',
-  routeProviderName: '$routeProvider',
-  baseUrl: '',
-  html5: true
+  debug: false,
+  app: 'frankland.valent'
 };
 
 class ConfigManager {
@@ -35,52 +32,24 @@ class ConfigManager {
 
   }
 
-  useHtml5() {
-    if (arguments.length == 1) {
-      config.html5 = !!arguments[0];
-    } else {
-      return config.html5;
-    }
-  }
-
-  setBaseUrl(baseUrl) {
-    config.baseUrl = baseUrl;
-  }
-
-  getBaseUrl() {
-    return config.baseUrl;
-  }
-
   getColors() {
     return config.colors;
   }
 
-  enableScopeLogs(){
-    config.scopeLogs = true;
+  debug(debug){
+    config.debug = !debug;
   }
 
-  disableScopeLogs(){
-    config.scopeLogs = false;
+  isDebug() {
+    return colors.debug;
   }
 
-  isScopeLogsEnabled() {
-    return !!config.scopeLogs;
+  getApplicationName() {
+    return config.app;
   }
 
-  setRouteProviderName(provider) {
-    config.routeProviderName = provider;
-  }
-
-  getRouteProviderName() {
-    return config.routeProviderName;
-  }
-
-  setModuleName(name) {
-    config.moduleName = name;
-  }
-
-  getModuleName() {
-    return config.moduleName;
+  setApplicationName(name) {
+    config.app = name;
   }
 }
 

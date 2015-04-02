@@ -1,5 +1,3 @@
-
-
 function Convert(FactoryModel) {
   var FactoryConstructor = FactoryModel.src;
 

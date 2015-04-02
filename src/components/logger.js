@@ -22,7 +22,7 @@ export default class Logger {
     this.background = background || '#ffff';
     this.color = color || '#000';
 
-    this.isEnabled = Config.isScopeLogsEnabled();
+    this.debug = Config.debug();
     this.isDetailed = false;
   }
 
@@ -50,12 +50,12 @@ export default class Logger {
       this.isDetailed = true;
     }
 
-    this.isEnabled = true;
+    this.debug = true;
   }
 
   disable() {
     this.isDetailed = false;
-    this.isEnabled = false;
+    this.debug = false;
   }
 
 
@@ -69,7 +69,7 @@ export default class Logger {
   }
 
   log(message, value) {
-    if (this.isEnabled) {
+    if (this.debug) {
       var completeMessage = this.getCompleteMessage(message);
 
       console.log(`%c ${completeMessage}`, `background: ${this.background}; color: ${this.color}`);
@@ -81,7 +81,7 @@ export default class Logger {
   }
 
   warn(message, value) {
-    if (this.isEnabled) {
+    if (this.debug) {
       var completeMessage = this.getCompleteMessage(message);
 
       console.warn(`%c ${completeMessage}`, `background: ${this.background}; color: ${this.color}`);
