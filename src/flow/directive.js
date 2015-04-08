@@ -14,9 +14,9 @@ class DirectiveModel {
     }
 
     this.dependencies = [];
-
     this.replace = true;
     this.scope = {};
+    this.pipes = {};
 
     this.controller = new Controller( `<${name}>`);
   }
@@ -43,8 +43,8 @@ class DirectiveModel {
     return !!this.ngModel;
   }
 
-  hasPipe() {
-    return this.hasOwnProperty('pipe');
+  hasPipes() {
+    return this.hasOwnProperty('pipes');
   }
 
   getControllerModel() {
@@ -89,8 +89,8 @@ export default class DirectiveFlow  {
     return this;
   }
 
-  pipe(pipe){
-    this.model.pipe = pipe;
+  pipes(pipes){
+    this.model.pipes = pipes;
     return this;
   }
 

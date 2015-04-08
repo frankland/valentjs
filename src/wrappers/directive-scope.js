@@ -1,8 +1,5 @@
 import Scope from './scope';
 
-var pipe = Symbol('pipe');
-
-
 function abstract() {
   throw new Error('Method is not implemented');
 }
@@ -16,12 +13,13 @@ export default class DirectiveScope extends Scope {
     abstract();
   }
 
-  setPipe(Pipe) {
-    this[pipe] = Pipe;
-  }
+  setPipes(pipes) {
+    if (this.pipes) {
+      this.error('Pipes already set');
+    }
 
-  getPipe() {
-    return this[pipe];
+    this.pipes = pipes;
+    Object.freeze(this.pipes);
   }
 }
 

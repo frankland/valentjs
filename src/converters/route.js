@@ -75,7 +75,7 @@ export default function(routes) {
         $routeProvider.otherwise(otherwise);
       }
     }]);
-
+  
   for (var name of Object.keys(sorted)) {
     angular.module(name)
         .config([RouterModel.provider, ($routeProvider) => {
@@ -84,7 +84,7 @@ export default function(routes) {
             var base = RouterModel.base;
 
             for (var url of urls) {
-              $routeProvider.when(base + url, config);
+              $routeProvider.when(base + url, angular.copy(config));
             }
           }
         }]);

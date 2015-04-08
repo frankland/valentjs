@@ -17,26 +17,39 @@ function Convert(DirectiveModel) {
     var scope = new DirectiveScope(ControllerModel.name, $scope);
 
     /**
-     * Apply directive state model
+     * Apply directive pipes
      */
-    if (DirectiveModel.hasPipe()) {
-      var pipe = DirectiveModel.pipe;
+    if (DirectiveModel.hasPipes()) {
+      var registeredPipes = DirectiveModel.pipes;
+      var givenPipes = {};
+      var pipes = {};
 
-      var pipeInstance = null;
       if ($attrs.hasOwnProperty('pipe')) {
-        pipeInstance = $scope.pipe();
+        givenPipes = $scope.pipe();
+      }
+      for (var registeredPipe of Object.keys(registeredPipes)) {
 
-        if (!(pipeInstance instanceof pipe)) {
-          throw new Error('Wrong instance of pipe');
+        var registeredPipeClass = registeredPipes[registeredPipe];
+        var pipeInstance = null;
+
+        if (givenPipes.hasOwnProperty(registeredPipe)) {
+          pipeInstance = givenPipes[registeredPipe];
+
+          if (!(pipeInstance instanceof registeredPipeClass)) {
+            throw new Error('Wrong instance of pipe "`${registeredPipe}`"');
+          }
+        } else {
+          pipeInstance = new registeredPipeClass();
         }
-      } else {
-        pipeInstance = new pipe();
+
+
+
+        pipes[registeredPipe] = pipeInstance;
       }
 
-      scope.setPipe(pipeInstance);
-
+      scope.setPipes(pipes);
     } else if ($attrs.hasOwnProperty('pipe')) {
-      throw new Error('State model is not defined but pipe attribute is exists');
+      throw new Error('Pipes is not registered but pipe attribute is exists for directive "`${DirectiveModel.name}`"');
     }
 
     /**
