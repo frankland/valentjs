@@ -17,6 +17,8 @@ class ControllerModel {
 
 class RouteError extends Error {
   constructor(method) {
+    super();
+    
     this.message = `Route is not defined or is not allowed.
     Before using @${method} method - add route url with @route method`;
   }
