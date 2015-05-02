@@ -13,7 +13,7 @@ function Convert(RouteModel) {
   };
 
   if (RouteModel.template && RouteModel.templateUrl) {
-    throw new Error(`For route "${RouteModel.url}" @template and @templateUrl is described`);
+    throw new Error(`both @template and @templateUrl is described for "${RouteModel.controller}" route`);
   }
 
   if (RouteModel.template) {
@@ -21,7 +21,7 @@ function Convert(RouteModel) {
   } else if (RouteModel.templateUrl) {
     config.templateUrl = RouteModel.templateUrl;
   } else {
-    throw new Error('@template or @templateUrl should be described');
+    throw new Error(`@template or @templateUrl should be described for "${RouteModel.controller}" route`);
   }
 
   if (RouteModel.hasGenerator()) {
@@ -43,7 +43,7 @@ function byModule(routes) {
     var moduleName = RouteModel.module;
 
     if (!moduleName) {
-      throw new Error(`Module is not defined for route "${RouteModel.url}"`);
+      throw new Error(`Module is not defined for "${RouteModel.controller}" route`);
     }
 
     if (!sorted.hasOwnProperty(moduleName)) {

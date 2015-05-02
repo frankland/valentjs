@@ -77,12 +77,6 @@ export default class RouteFlow {
     return this;
   }
 
-  //controller(controller) {
-  //  this.model.controller = controller;
-  //
-  //  return this;
-  //}
-
   template(template) {
     this.model.template = template;
 
