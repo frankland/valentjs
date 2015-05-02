@@ -1,4 +1,5 @@
 import NgxModel from '../wrappers/ng-model';
+import Scope from '../components/scope';
 
 
 function Convert(DirectiveModel) {
@@ -47,6 +48,8 @@ function Convert(DirectiveModel) {
      * Create controller Instance
      */
     var ControllerInstance = new ControllerConstructor(...[pipes].concat(dependencies));
+    Scope.attach(ControllerInstance, $scope);
+
     $scope.controller = ControllerInstance;
 
     $scope.$on('$destroy', function() {

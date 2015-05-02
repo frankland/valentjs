@@ -1,5 +1,7 @@
 import Config from '../components/config';
 import Router from '../components/router';
+import Scope from '../components/scope';
+
 
 var RouterModel = Router.model;
 
@@ -13,6 +15,8 @@ function Convert(ControllerModel) {
     }
 
     var ControllerInstance = new ControllerConstructor(dependencies);
+    Scope.attach(ControllerInstance, $scope);
+
     $scope.controller = ControllerInstance;
 
     $scope.$on('$destroy', function() {
