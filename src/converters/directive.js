@@ -1,6 +1,7 @@
 import DirectiveScope from '../wrappers/directive-scope';
 import NgxModel from '../wrappers/ng-model';
 
+
 function Convert(DirectiveModel) {
   var ControllerModel = DirectiveModel.getControllerModel();
 
@@ -8,7 +9,7 @@ function Convert(DirectiveModel) {
     var ControllerConstructor = ControllerModel.src;
 
     if (typeof ControllerConstructor != 'function') {
-      throw new Error('Wrong controller source definition. Expect function (constructor)');
+      throw new Error(`Wrong controller source definition for "${ControllerModel.name}". Expect function (constructor)`);
     }
 
     /**
@@ -19,13 +20,13 @@ function Convert(DirectiveModel) {
     /**
      * Apply directive pipes
      */
+    var pipes = {};
     if (DirectiveModel.hasPipes()) {
       var registeredPipes = DirectiveModel.pipes;
       var givenPipes = {};
-      var pipes = {};
 
-      if ($attrs.hasOwnProperty('pipe')) {
-        givenPipes = $scope.pipe();
+      if ($attrs.hasOwnProperty('pipes')) {
+        givenPipes = $scope.pipes();
       }
       for (var registeredPipe of Object.keys(registeredPipes)) {
 
@@ -36,43 +37,32 @@ function Convert(DirectiveModel) {
           pipeInstance = givenPipes[registeredPipe];
 
           if (!(pipeInstance instanceof registeredPipeClass)) {
-            throw new Error('Wrong instance of pipe "`${registeredPipe}`"');
+            throw new Error(`Wrong instance of pipe "${registeredPipe}"`);
           }
         } else {
           pipeInstance = new registeredPipeClass();
         }
 
-
-
         pipes[registeredPipe] = pipeInstance;
+        //deps.push(pipeInstance);
       }
 
-      scope.setPipes(pipes);
-    } else if ($attrs.hasOwnProperty('pipe')) {
-      throw new Error('Pipes is not registered but pipe attribute is exists for directive "`${DirectiveModel.name}`"');
+
+      //scope.setPipes(pipes);
+    } else if ($attrs.hasOwnProperty('pipes')) {
+      throw new Error(`Pipes is not registered but pipe attribute is exists for directive "${DirectiveModel.name}"`);
     }
 
     /**
      * Create controller Instance
      */
-    var ControllerInstance = new ControllerConstructor(...[scope].concat(dependencies));
-
+    var ControllerInstance = new ControllerConstructor(...[scope, pipes].concat(dependencies));
     $scope.controller = ControllerInstance;
+
     $scope.$on('$destroy', function() {
+
       if (angular.isFunction(ControllerInstance.onDestroy)) {
         ControllerInstance.onDestroy();
-      }
-
-      if (DirectiveModel.hasPipe()) {
-        var pipe = scope.getPipe();
-
-        if (pipe.listeners != 0) {
-          var Controller = $scope.controller;
-          var scopeWrapper = Controller.getScope();
-          var logger = scopeWrapper.getLogger();
-
-          logger.warn(`directive destroyed. There are ${pipe.listeners} unsubscribed listeners`);
-        }
       }
     });
 
@@ -104,7 +94,7 @@ function Convert(DirectiveModel) {
   };
 
   var scopeConfig = DirectiveModel.scope;
-  scopeConfig.pipe = '&pipe';
+  scopeConfig.pipes = '&pipes';
 
   var restrict = DirectiveModel.getRestrict();
 
