@@ -2,7 +2,6 @@
   "name": "ngx",
   "version": "0.0.8",
   "description": "Helpfull ES6 runtime for angualr",
-
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -17,5 +16,9 @@
     "directive",
     "magic"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "deep-diff": "^0.3.2",
+    "lodash": "^3.8.0"
+  }
 }
