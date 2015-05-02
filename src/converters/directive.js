@@ -1,5 +1,6 @@
 import NgxModel from '../wrappers/ng-model';
 import Scope from '../components/scope';
+import DirectiveParams from '../components/directive-params';
 
 
 function Convert(DirectiveModel) {
@@ -49,6 +50,7 @@ function Convert(DirectiveModel) {
      */
     var ControllerInstance = new ControllerConstructor(...[pipes].concat(dependencies));
     Scope.attach(ControllerInstance, $scope);
+    DirectiveParams.attach($scope, DirectiveModel.scope);
 
     $scope.controller = ControllerInstance;
 
