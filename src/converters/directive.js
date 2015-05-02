@@ -1,5 +1,8 @@
 import Scope from '../components/scope';
+import Config from '../components/config';
 import DirectiveParams from '../components/directive-params';
+import ObjectDifference from '../utils/object-difference';
+import clone from 'lodash/lang/cloneDeep';
 
 function Convert(DirectiveModel) {
   var ControllerModel = DirectiveModel.getControllerModel();
@@ -52,6 +55,17 @@ function Convert(DirectiveModel) {
 
     $scope.controller = ControllerInstance;
 
+    // here
+    if (Config.isDebug() || $scope.debug) {
+      var previous = clone(ControllerInstance);
+      $scope.$watch(() => {
+        var current = clone(ControllerInstance);
+        ObjectDifference.print(previous, current);
+
+        previous = current;
+      });
+    }
+
     $scope.$on('$destroy', function() {
       if (angular.isFunction(ControllerInstance.onDestroy)) {
         ControllerInstance.onDestroy();
@@ -78,6 +92,7 @@ function Convert(DirectiveModel) {
 
   var scopeConfig = DirectiveModel.scope;
   scopeConfig.pipes = '&pipes';
+  scopeConfig.debug = '=';
 
   var restrict = DirectiveModel.getRestrict();
 
