@@ -1,7 +1,5 @@
-import NgxModel from '../wrappers/ng-model';
 import Scope from '../components/scope';
 import DirectiveParams from '../components/directive-params';
-
 
 function Convert(DirectiveModel) {
   var ControllerModel = DirectiveModel.getControllerModel();
@@ -55,7 +53,6 @@ function Convert(DirectiveModel) {
     $scope.controller = ControllerInstance;
 
     $scope.$on('$destroy', function() {
-
       if (angular.isFunction(ControllerInstance.onDestroy)) {
         ControllerInstance.onDestroy();
       }
@@ -71,16 +68,7 @@ function Convert(DirectiveModel) {
 
     var Controller = $scope.controller;
     if (DirectiveModel.hasModel()) {
-      var scopeWrapper = Controller.getScope();
-      var logger = scopeWrapper.getLogger();
-
-      var Model = new NgxModel(ngModel, logger);
-
-      Controller.applyModel(Model);
-
-      if (!Model.isListening()) {
-        throw new Error('NgModel should be attached to local scope. Use Modal.listen((value) => { ... })');
-      }
+      Controller.applyModel(ngModel);
     }
 
     if (angular.isFunction(Controller.link)) {
