@@ -1,4 +1,3 @@
-import DirectiveScope from '../wrappers/directive-scope';
 import NgxModel from '../wrappers/ng-model';
 
 
@@ -11,11 +10,6 @@ function Convert(DirectiveModel) {
     if (typeof ControllerConstructor != 'function') {
       throw new Error(`Wrong controller source definition for "${ControllerModel.name}". Expect function (constructor)`);
     }
-
-    /**
-     * Create controller Instance
-     */
-    var scope = new DirectiveScope(ControllerModel.name, $scope);
 
     /**
      * Apply directive pipes
@@ -44,11 +38,7 @@ function Convert(DirectiveModel) {
         }
 
         pipes[registeredPipe] = pipeInstance;
-        //deps.push(pipeInstance);
       }
-
-
-      //scope.setPipes(pipes);
     } else if ($attrs.hasOwnProperty('pipes')) {
       throw new Error(`Pipes is not registered but pipe attribute is exists for directive "${DirectiveModel.name}"`);
     }
@@ -56,7 +46,7 @@ function Convert(DirectiveModel) {
     /**
      * Create controller Instance
      */
-    var ControllerInstance = new ControllerConstructor(...[scope, pipes].concat(dependencies));
+    var ControllerInstance = new ControllerConstructor(...[pipes].concat(dependencies));
     $scope.controller = ControllerInstance;
 
     $scope.$on('$destroy', function() {

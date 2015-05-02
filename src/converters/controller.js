@@ -1,4 +1,3 @@
-import Scope from '../wrappers/scope';
 import Config from '../components/config';
 import Router from '../components/router';
 
@@ -13,12 +12,7 @@ function Convert(ControllerModel) {
       throw new Error('Wrong controller source definition. Expect function (constructor)');
     }
 
-    /**
-     * Create scope logger
-     */
-    var scope = new Scope(ControllerModel.name, $scope);
-
-    var ControllerInstance = new ControllerConstructor(...[scope].concat(dependencies));
+    var ControllerInstance = new ControllerConstructor(dependencies);
     $scope.controller = ControllerInstance;
 
     $scope.$on('$destroy', function() {
