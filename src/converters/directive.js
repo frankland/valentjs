@@ -1,5 +1,6 @@
 import Scope from '../components/scope';
 import Config from '../components/config';
+import Logger from '../components/logger';
 import DirectiveParams from '../components/directive-params';
 import ObjectDifference from '../utils/object-difference';
 import clone from 'lodash/lang/cloneDeep';
@@ -51,6 +52,8 @@ function Convert(DirectiveModel) {
      */
     var ControllerInstance = new ControllerConstructor(...[pipes].concat(dependencies));
     Scope.attach(ControllerInstance, $scope);
+    var LoggerInstance = Logger.attach(ControllerInstance, ControllerModel.name);
+
     DirectiveParams.attach($scope, DirectiveModel.scope);
 
     $scope.controller = ControllerInstance;
@@ -60,7 +63,7 @@ function Convert(DirectiveModel) {
       var previous = clone(ControllerInstance);
       $scope.$watch(() => {
         var current = clone(ControllerInstance);
-        ObjectDifference.print(previous, current);
+        ObjectDifference.print(previous, current, LoggerInstance.log.bind(LoggerInstance));
 
         previous = current;
       });

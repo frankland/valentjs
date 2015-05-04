@@ -1,3 +1,4 @@
+import log from 'log-with-style';
 import Config from './config';
 
 var colors = Config.getColors();
@@ -14,16 +15,15 @@ function getColor() {
 
 
 var id = Symbol('id');
+var loggers = new WeakMap();
 
 export default class Logger {
-  constructor(name, background, color){
-    this[id] = name;
 
-    this.background = background || '#ffff';
-    this.color = color || '#000';
+  static attach(scope, name) {
+    var logger = Logger.create(name);
+    loggers.set(scope, logger);
 
-    this.debug = Config.debug();
-    this.isDetailed = false;
+    return logger;
   }
 
   static getNextColor() {
@@ -37,58 +37,35 @@ export default class Logger {
     return new Logger(name, background, color);
   }
 
-  setBackgroundColor(background) {
-    this.background = background;
+  constructor(name, background, color){
+    this[id] = name;
+
+    this.background = background || '#fff';
+    this.color = color || '#000';
+
+    this.isEnabled = true;
   }
 
-  setColor(color) {
-    this.color = color;
-  }
-
-  enable(isDetailed) {
-    if (isDetailed) {
-      this.isDetailed = true;
-    }
-
-    this.debug = true;
+  enable() {
+    this.isEnabled = true;
   }
 
   disable() {
-    this.isDetailed = false;
-    this.debug = false;
+    this.isEnabled = false;
   }
-
 
   getCompleteMessage(message) {
-    return `${this[id]}: ${message}`;
+    return `[c="color: ${this.color}; background: ${this.background}"]${this[id]}[c] ${message}`;
   }
 
-  error (message){
-    var completeMessage = this.getCompleteMessage(message);
-    console.error(completeMessage);
+  error() {
+    // TODO
   }
 
-  log(message, value) {
-    if (this.debug) {
+  log(message, ...rest) {
+    if (this.isEnabled) {
       var completeMessage = this.getCompleteMessage(message);
-
-      console.log(`%c ${completeMessage}`, `background: ${this.background}; color: ${this.color}`);
-
-      if (this.isDetailed && arguments.length == 2) {
-        console.log(value);
-      }
-    }
-  }
-
-  warn(message, value) {
-    if (this.debug) {
-      var completeMessage = this.getCompleteMessage(message);
-
-      console.warn(`%c ${completeMessage}`, `background: ${this.background}; color: ${this.color}`);
-
-      if (this.isDetailed && arguments.length == 2) {
-        console.warn(value);
-      }
+      log.apply(null, [completeMessage].concat(rest));
     }
   }
 }

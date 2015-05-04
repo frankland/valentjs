@@ -19,6 +19,7 @@
   "license": "MIT",
   "dependencies": {
     "deep-diff": "^0.3.2",
-    "lodash": "^3.8.0"
+    "lodash": "^3.8.0",
+    "log-with-style": "^0.1.5"
   }
 }
