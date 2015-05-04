@@ -5,11 +5,12 @@ var params = new WeakMap();
 
 var scope = Symbol('$scope');
 var watcher = Symbol('$watcher');
+var config = Symbol('$config');
 
 export default class DirectiveParams {
   static create(context) {
     return Scope.get(context).then(($scope) => {
-      return new DirectiveParams($scope);
+      return new DirectiveParams($scope, params.get($scope));
     });
   }
 
@@ -17,15 +18,18 @@ export default class DirectiveParams {
     params.set($scope, config);
   }
 
-  constructor($scope) {
+  static delete($scope) {
+    params.delete($scope);
+  }
+
+  constructor($scope, definitions) {
     this[scope] = $scope;
+    this[config] = definitions;
     this[watcher] = new Watcher($scope);
   }
 
   isAvailable(key) {
-    var config = params.get(this[scope]);
-
-    return Object.keys(config).indexOf(key) != -1
+    return Object.keys(this[config]).indexOf(key) != -1
       && key != 'pipes';
   }
 
@@ -39,7 +43,7 @@ export default class DirectiveParams {
 
   watch(key, cb) {
     if (!this.isAvailable(key)) {
-      throw new Error(`Can not initialize watcher for "${key}" becase this params is not defined at directive config`);
+      throw new Error(`Can not initialize watcher for "${key}" because this params is not defined at directive config`);
     }
 
     return this[watcher].watch(key, cb);

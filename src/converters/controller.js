@@ -23,6 +23,9 @@ function Convert(ControllerModel) {
       if (angular.isFunction(ControllerInstance.onDestroy)) {
         ControllerInstance.onDestroy();
       }
+
+      // WeakMap workaround
+      Scope.delete(ControllerInstance);
     });
   };
 

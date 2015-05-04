@@ -52,9 +52,11 @@ function Convert(DirectiveModel) {
      */
     var ControllerInstance = new ControllerConstructor(...[pipes].concat(dependencies));
     Scope.attach(ControllerInstance, $scope);
+    DirectiveParams.attach($scope, DirectiveModel.scope);
+
     var LoggerInstance = Logger.attach(ControllerInstance, ControllerModel.name);
 
-    DirectiveParams.attach($scope, DirectiveModel.scope);
+
 
     $scope.controller = ControllerInstance;
 
@@ -73,6 +75,10 @@ function Convert(DirectiveModel) {
       if (angular.isFunction(ControllerInstance.onDestroy)) {
         ControllerInstance.onDestroy();
       }
+
+      // WeakMap workaround
+      Scope.delete(ControllerInstance);
+      DirectiveParams.delete($scope);
     });
 
     return $scope.controller;
