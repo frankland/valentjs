@@ -1,7 +1,7 @@
 {
   "name": "valent
   "version": "0.0.8",
-  "description": "Helpfull ES6 runtime for angualr",
+  "description": "Helpfull ES6 runtime for angular",
 
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
