@@ -1,7 +1,5 @@
-/**
- * TODO: remove Injector deps form here and use lodash same methods
- */
-import Injector from '../components/injector';
+import getter from 'lodash/objects/get';
+import setter from 'lodash/objects/set';
 
 export default class ObjectTransition {
   constructor(source) {
@@ -11,7 +9,6 @@ export default class ObjectTransition {
     this.transition = new Map();
     this.source = source;
 
-    this.parse = Injector.get('$parse');
     this.pushCounter = 0;
   }
 
@@ -22,34 +19,23 @@ export default class ObjectTransition {
   /**
    * Scope methods
    */
-  getter(key) {
-    var parse = this.parse;
-    return parse(key);
-  }
-
-  setter(key) {
-    return this.getter(key).assign;
+  set(key, value) {
+    var source = this.source;
+    return setter(source, key, value);
   }
 
   get(key) {
-    var getter = this.getter(key);
     var source = this.source;
-    return getter(source);
+    return getter(source, key);
   }
-
-  assign(key) {
-    var source = this.source;
-    return this.getter(key).bind(null, source);
-  }
-
 
   clearTransition() {
     this.transition.clear();
   }
 
   commit(key, value) {
-    var scopeState = this.getTransition();
-    scopeState.set(key, value);
+    var transition = this.getTransition();
+    transition.set(key, value);
   }
 
   push() {
@@ -67,10 +53,8 @@ export default class ObjectTransition {
     var keys = [];
     transition.forEach((value, key) => keys.push(key));
 
-    var source = this.source;
     transition.forEach((value, key) => {
-      var setter = this.setter(key);
-      setter(source, value);
+      this.set(key, value);
     });
 
     this.clearTransition();
