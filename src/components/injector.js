@@ -14,7 +14,7 @@ class Injector {
     }
 
     if (!$injector.has(dependency)) {
-      throw new Error('Dependency "' + dependency + '" does not exist');
+      throw new Error(`Dependency "${dependency}" does not exist`);
     }
 
 

@@ -36,12 +36,12 @@ class ConfigManager {
     return config.colors;
   }
 
-  debug(debug){
+  debug(debug) {
     config.debug = !debug;
   }
 
   isDebug() {
-    return colors.debug;
+    return config.debug;
   }
 
   getApplicationName() {
