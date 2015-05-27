@@ -36,7 +36,7 @@ class ConfigManager {
     return config.colors;
   }
 
-  debug(debug){
+  debug(debug) {
     config.debug = !debug;
   }
 

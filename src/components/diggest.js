@@ -7,8 +7,8 @@ function safe(scope, fn) {
   }
 
   var phase = scope.$root.$$phase;
-  if(phase == '$apply' || phase == '$digest') {
-    if(angular.isFunction(fn)) {
+  if (phase == '$apply' || phase == '$digest') {
+    if (angular.isFunction(fn)) {
       fn();
     }
   } else {
@@ -17,7 +17,7 @@ function safe(scope, fn) {
 }
 
 export default class Diggest {
-  static run(context, fn = () => {}) {
+  static run(context, fn) {
     if (context) {
       if (Scope.has(context)) {
         Scope.get(context).then((scope) => {

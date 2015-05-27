@@ -33,11 +33,4 @@ export default class Scope {
   static delete(context) {
     scopes.delete(context);
   }
-
-  static debug() {
-    scopes;
-    queue;
-
-    debugger
-  }
 }

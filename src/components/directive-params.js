@@ -1,35 +1,22 @@
-import Scope from './scope';
+import isObject from 'lodash/lang/isPlainObject';
+
 import Watcher from './watcher';
 
-var params = new WeakMap();
-
 var scope = Symbol('$scope');
+var definitions = Symbol('definitions');
+
 var watcher = Symbol('$watcher');
-var config = Symbol('$config');
 
 export default class DirectiveParams {
-  static create(context) {
-    return Scope.get(context).then(($scope) => {
-      return new DirectiveParams($scope, params.get($scope));
-    });
-  }
-
-  static attach($scope, config) {
-    params.set($scope, config);
-  }
-
-  static delete($scope) {
-    params.delete($scope);
-  }
-
-  constructor($scope, definitions) {
+  constructor($scope, attrs) {
     this[scope] = $scope;
-    this[config] = definitions;
+    this[definitions] = attrs;
+
     this[watcher] = new Watcher($scope);
   }
 
   isAvailable(key) {
-    return Object.keys(this[config]).indexOf(key) != -1
+    return this[definitions].indexOf(key) != -1
       && key != 'pipes';
   }
 

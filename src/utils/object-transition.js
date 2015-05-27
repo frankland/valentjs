@@ -1,41 +1,35 @@
-import getter from 'lodash/objects/get';
-import setter from 'lodash/objects/set';
+import getter from 'lodash/object/get';
+import setter from 'lodash/object/set';
+import clone from 'lodash/lang/cloneDeep';
+
+var transition = Symbol('transition');
 
 export default class ObjectTransition {
+
   constructor(source) {
-    /**
-     * public attributes
-     */
-    this.transition = new Map();
+    this[transition] = new Map();
     this.source = source;
 
     this.pushCounter = 0;
   }
 
-  getTransition() {
-    return this.transition;
-  }
-
   /**
    * Scope methods
    */
-  set(key, value) {
-    var source = this.source;
-    return setter(source, key, value);
+  has(key) {
+    return this[transition].has(key);
   }
 
   get(key) {
-    var source = this.source;
-    return getter(source, key);
+    return this[transition].get(key);
   }
 
-  clearTransition() {
-    this.transition.clear();
+  clear() {
+    this[transition].clear();
   }
 
   commit(key, value) {
-    var transition = this.getTransition();
-    transition.set(key, value);
+    this[transition].set(key, value);
   }
 
   push() {
@@ -47,17 +41,12 @@ export default class ObjectTransition {
       throw new Error('Wrong arguments for ObjectTransition.push');
     }
 
-    var transition = this.getTransition();
-
-    // Workaround
-    var keys = [];
-    transition.forEach((value, key) => keys.push(key));
-
-    transition.forEach((value, key) => {
-      this.set(key, value);
+    var source = this.source;
+    this[transition].forEach((value, key) => {
+      setter(source, key, value);
     });
 
-    this.clearTransition();
+    this.clear();
   }
 }
 
