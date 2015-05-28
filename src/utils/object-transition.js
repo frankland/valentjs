@@ -3,14 +3,15 @@ import setter from 'lodash/object/set';
 import clone from 'lodash/lang/cloneDeep';
 
 var transition = Symbol('transition');
+var source = Symbol('source');
+var counter= Symbol('counter');
 
 export default class ObjectTransition {
 
-  constructor(source) {
+  constructor(obj) {
     this[transition] = new Map();
-    this.source = source;
-
-    this.pushCounter = 0;
+    this[source] = obj;
+    this[counter] = 0;
   }
 
   /**
@@ -33,7 +34,6 @@ export default class ObjectTransition {
   }
 
   push() {
-    this.pushCounter++;
 
     if (arguments.length == 2) {
       this.commit.apply(this, arguments);
@@ -41,10 +41,11 @@ export default class ObjectTransition {
       throw new Error('Wrong arguments for ObjectTransition.push');
     }
 
-    var source = this.source;
     this[transition].forEach((value, key) => {
-      setter(source, key, value);
+      setter(this[source], key, value);
     });
+
+    this[counter]++;
 
     this.clear();
   }
