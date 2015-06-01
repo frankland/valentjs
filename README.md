@@ -1,5 +1,7 @@
 # Valent
 
+[![Build Status](https://travis-ci.org/frankland/valent.svg)](https://travis-ci.org/frankland/valent)
+
 Valent is the wrapper on the angular. Provide easier way to register angular components and
 add unique directive features.
 
