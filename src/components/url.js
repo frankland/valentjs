@@ -4,9 +4,14 @@ import isObject from 'lodash/lang/isPlainObject';
 
 import RouteConfig from '../route/route-config';
 
-class UrlManager {
+class Url {
   constructor() {
     this.routes = new Map();
+  }
+
+  static onChange(context, fn) {
+    return Scope.get(this[context])
+      .then(($scope) => $scope.$on('$routeChangeStart', fn));
   }
 
   /**
@@ -45,7 +50,7 @@ class UrlManager {
 
   static at(url) {
     return (params) => {
-      return UrlManager.build(url, params);
+      return Url.build(url, params);
     }
   }
 
@@ -68,7 +73,7 @@ class UrlManager {
     if (isFunction(expr)) {
       builder = expr;
     } else if (isString(expr)) {
-      builder = UrlManager.at(expr);
+      builder = Url.at(expr);
     }
 
     var base = RouteConfig.getBase() || '';
@@ -79,18 +84,18 @@ class UrlManager {
 
       if (isObject(result)) {
         var query = result.query;
-        url = UrlManager.build(result.url, query);
+        url = Url.build(result.url, query);
       } else if (isString(result)) {
         url = result;
       } else {
         throw new Error('Url builder output type should be an object {url, query} or string');
       }
 
-      return base + url
+      return base + url;
     };
   }
 }
 
 
-export default new UrlManager();
-export { UrlManager };
+export default new Url();
+export { Url };

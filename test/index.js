@@ -1,7 +1,7 @@
 import './utils/object-description';
 import './utils/object-transition';
 
-import './components/url-manager';
+import './components/url';
 
 import './manager';
 
