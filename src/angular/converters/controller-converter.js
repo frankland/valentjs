@@ -6,7 +6,6 @@ import Logger from '../../components/logger';
 import Scope from '../../components/scope';
 
 import ControllerModel from '../../controller/controller-model';
-import ControllerException from '../../controller/controller-exception';
 import ObjectDifference from '../../utils/object-difference';
 
 import RouteConverter from './route-converter';
@@ -16,7 +15,7 @@ export default class ControllerConverter {
     for (let controller of controllers) {
 
       if (!(controller instanceof ControllerModel)) {
-        throw ControllerException.wrongControllerModelInstance();
+        throw new Error('Wrong controller model instance');
       }
 
       var wrapped = ControllerConverter.wrap(controller);

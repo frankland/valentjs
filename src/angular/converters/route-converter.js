@@ -3,7 +3,6 @@ import clone from 'lodash/lang/cloneDeep';
 import isObject from 'lodash/lang/isPlainObject';
 import isString from 'lodash/lang/isString';
 
-import RouteException from '../../route/route-exception';
 import RouteModel from '../../route/route-model';
 import RouteConfig from '../../route/route-config';
 
@@ -29,7 +28,7 @@ export default class RouteConverter {
 
           for (var route of sorted[application]) {
             if (!(route instanceof RouteModel)) {
-              throw RouteException.wrongRouteModelInstance();
+              throw new Error('Wrong route model instance');
             }
 
             var controllerName = route.getControllerName();
@@ -65,7 +64,7 @@ export default class RouteConverter {
     } else if (templateUrl) {
       config.templateUrl = templateUrl;
     } else {
-      throw RouteException.noTemplateOrTemplateUrl();
+      throw model.exception.noTemplateOrTemplateUrl();
     }
 
     return clone(config);
@@ -85,7 +84,7 @@ export default class RouteConverter {
         redirectTo: otherwise
       };
     } else {
-      throw new RouteException.wrongOtherwise();
+      throw new Error('Wrong otherwise config. Should be an object or a string. String will be converted to @redirectTo url');
     }
 
     return converted;

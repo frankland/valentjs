@@ -11,14 +11,13 @@ import Config from '../../components/config';
 import DirectiveParams from '../../components/directive-params';
 import ObjectDifference from '../../utils/object-difference';
 import DirectiveModel from '../../directive/directive-model';
-import DirectiveException from '../../directive/directive-exception';
 
 export default class DirectiveConverter {
   static register(directives) {
 
     for (var directive of directives) {
       if (!(directive instanceof DirectiveModel)) {
-        throw DirectiveException.wrongDirectiveModelInstance();
+        throw new Error('Wrong directive model instance');
       }
 
       var name = directive.getName();
@@ -71,7 +70,7 @@ export default class DirectiveConverter {
     } else if (templateUrl) {
       config.templateUrl = templateUrl;
     } else if (restrict == 'E') {
-      throw DirectiveException.noTemplateOrTemplateUrl();
+      throw model.exception.noTemplateOrTemplateUrl();
     }
 
     return config;
@@ -115,7 +114,7 @@ export default class DirectiveConverter {
         if (isFunction(controller.require)) {
           controller.require(...requireControllers);
         } else {
-          throw DirectiveException.requireConfiguredButNotAssigned();
+          throw model.exception.requireConfiguredButNotAssigned();
         }
       }
 
@@ -137,6 +136,10 @@ export default class DirectiveConverter {
       } else {
         restrict = 'A';
       }
+    }
+
+    if (restrict.indexOf('C') != -1) {
+      console.warn('using "C" for directive restrict is not a good practice');
     }
 
     return restrict;
@@ -210,7 +213,7 @@ export default class DirectiveConverter {
         assigned = $scope.pipes();
 
         if (!isObject(assigned)) {
-          throw DirectiveException.wrongAssignedPipesFormat();
+          throw model.exception.wrongAssignedPipesFormat();
         }
       }
 
@@ -223,7 +226,7 @@ export default class DirectiveConverter {
           pipe = assigned[name];
 
           if (!(pipe instanceof Pipe)) {
-            throw DirectiveException.wrongDirectivePipeInstance();
+            throw model.exception.wrongDirectivePipeInstance();
           }
         } else {
           pipe = new Pipe();
@@ -232,7 +235,7 @@ export default class DirectiveConverter {
         pipes[name] = pipe;
       }
     } else if (isFunction($scope.pipes)) {
-      throw DirectiveException.pipesAssignedButNotRegistered();
+      throw model.exception.pipesAssignedButNotRegistered();
     }
 
     return pipes;

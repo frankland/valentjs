@@ -1,10 +1,7 @@
-//import Route from '../route';
-import ControllerException from './controller-exception';
 import ControllerModel from './controller-model';
 import isArray from 'lodash/lang/isArray';
 
 export default class ControllerFlow {
-
   constructor(name) {
     this.model = new ControllerModel(name);
   }

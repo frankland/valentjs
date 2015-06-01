@@ -2,8 +2,6 @@ import isObject from 'lodash/lang/isPlainObject';
 import isArray from 'lodash/lang/isArray';
 import isString from 'lodash/lang/isString';
 
-
-import DirectiveException from './directive-exception';
 import camelCase from 'lodash/string/camelCase';
 
 
@@ -21,14 +19,16 @@ var config = Symbol('config');
 export default class DirectiveModel {
   constructor(name) {
     if (!name) {
-      throw DirectiveException.noDirectiveName();
+      throw new Error('Directive name should be described');
     }
 
     this[config] = {};
     this[config].name = camelCase(name);
-    this[config].controllerNmae = `<${name}>`;
+    this[config].controllerName = `<${name}>`;
 
     setDefaults(this[config]);
+
+    this.exception = new DirectiveException(this[config].controllerName);
   }
 
   getName() {
@@ -36,7 +36,7 @@ export default class DirectiveModel {
   }
 
   getControllerName() {
-    return this[config].controllerNmae;
+    return this[config].controllerName;
   }
 
   /**
@@ -77,7 +77,7 @@ export default class DirectiveModel {
    */
   addDependencies(dependencies) {
     if (!isArray(dependencies)) {
-      throw new DirectiveException.dependenciesAreNotArray();
+      throw this.exception.dependenciesAreNotArray();
     }
 
     for (var dependency of dependencies) {
@@ -87,7 +87,7 @@ export default class DirectiveModel {
 
   addDependency(dependency) {
     if (!isString(dependency)) {
-      throw new DirectiveException.dependencyIsNotString();
+      throw this.exception.dependencyIsNotString();
     }
 
     this[config].dependencies.push(dependency);
@@ -124,7 +124,7 @@ export default class DirectiveModel {
    */
   setScope(scope) {
     if (!isObject(scope)) {
-      throw DirectiveException.wrongScopeFormat();
+      throw this.exception.wrongScopeFormat();
     }
 
     this[config].scope = scope;
@@ -140,13 +140,13 @@ export default class DirectiveModel {
    */
   setRestrict(restrict) {
     if (!isString(restrict)) {
-      throw DirectiveException.wrongRestrictOption()
+      throw this.exception.wrongRestrictOption()
     }
 
-    var splited = restrict.split('');
-    for (var char of splited) {
+    var splitted = restrict.split('');
+    for (var char of splitted) {
       if (availableRestricts.indexOf(char) == -1) {
-        throw DirectiveException.wrongRestrictOption()
+        throw this.exception.wrongRestrictOption()
       }
     }
 
@@ -175,7 +175,7 @@ export default class DirectiveModel {
    */
   setPipes(pipes) {
     if (!isObject(pipes)) {
-      throw DirectiveException.wrongPipesFormat();
+      throw this.exception.wrongPipesFormat();
     }
 
     this[config].pipes = pipes;
@@ -195,7 +195,7 @@ export default class DirectiveModel {
    */
   setTemplate(template) {
     if (this[config].templateUrl) {
-      throw DirectiveException.templateUrlAlreadyExists();
+      throw this.exception.templateUrlAlreadyExists();
     }
 
     this[config].template = template;
@@ -211,7 +211,7 @@ export default class DirectiveModel {
    */
   setTemplateUrl(templateUrl) {
     if (this[config].template) {
-      throw DirectiveException.templateAlreadyExists();
+      throw this.exception.templateAlreadyExists();
     }
 
     this[config].templateUrl = templateUrl;

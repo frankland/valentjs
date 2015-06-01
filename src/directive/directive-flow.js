@@ -1,4 +1,3 @@
-import DirectiveException from './directive-exception';
 import DirectiveModel from './directive-model';
 
 export default class DirectiveFlow {

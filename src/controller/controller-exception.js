@@ -1,37 +1,41 @@
 export default class ControllerException {
-  static routeIsNotDefined(method) {
-    var message = `Route is not defined or is not allowed. Before using @${method} method - add route url with @addUrl model method
-      or @url flow method`;
+  constructor(name) {
+    this.name = name;
+  }
+
+  getMessage(message) {
+    return `route "${this.name}": ${message}`;
+  }
+
+  routeIsNotDefined(method) {
+    var message = this.getMessage(`Route is not defined or is not allowed.
+     Before using @${method} method - add route url with @addUrl model method or @url flow method`);
+
     return new Error(message);
   }
 
-  static noControllerName() {
-    var message = 'Controller name should be described';
+  wrongControllerSource() {
+    var message = this.getMessage('Controller source should be executable (class or function)');
     return new Error(message);
   }
 
-  static wrongControllerModelInstance() {
-    var message = 'Wrong controller model instance';
+  dependenciesAreNotArray() {
+    var message = this.getMessage('Dependencies should be an array');
     return new Error(message);
   }
 
-  static wrongControllerSource() {
-    var message = 'Controller source should be executable (class or function)';
+  dependencyIsNotString() {
+    var message = this.getMessage('Dependency should be a string');
     return new Error(message);
   }
 
-  static dependenciesAreNotArray() {
-    var message = 'Dependencies should be an array';
+  wrongRouteInstance() {
+    var message = this.getMessage('Wrong route instance');
     return new Error(message);
   }
 
-  static dependencyIsNotString() {
-    var message = 'Dependency should be a string';
-    return new Error(message);
-  }
-
-  static wrongRouteInstance() {
-    var message = 'Wrong route instance';
+  wrongResolveArguments() {
+    var message = this.getMessage('Wrong resolve arguments. Should be a two (key, value) arguments or one object');
     return new Error(message);
   }
 }

@@ -3,7 +3,6 @@ import isArray from 'lodash/lang/isArray';
 import isString from 'lodash/lang/isString';
 
 import ControllerException from './controller-exception';
-import RouteException from '../route/route-exception';
 import RouteModel from '../route/route-model';
 
 
@@ -19,13 +18,15 @@ export default class ControllerModel {
    */
   constructor(name) {
     if (!name) {
-      throw ControllerException.noControllerName();
+      throw new Error('Controller name should be passed to Route constructor');
     }
 
     this[config] = {};
     this[config].controller = name;
 
     setDefaults(this[config]);
+
+    this.exception = new ControllerException(name);
   }
 
   getName() {
@@ -38,7 +39,7 @@ export default class ControllerModel {
    */
   addDependencies(dependencies) {
     if (!isArray(dependencies)) {
-      throw new ControllerException.dependenciesAreNotArray();
+      throw this.exception.dependenciesAreNotArray();
     }
 
     for (var dependency of dependencies) {
@@ -48,7 +49,7 @@ export default class ControllerModel {
 
   addDependency(dependency) {
     if (!isString(dependency)) {
-      throw new ControllerException.dependencyIsNotString();
+      throw this.exception.dependencyIsNotString();
     }
 
     this[config].dependencies.push(dependency);
@@ -90,7 +91,7 @@ export default class ControllerModel {
    */
   setSource(src) {
     if (!isFunction(src)) {
-      throw ControllerException.wrongControllerSource();
+      throw this.exception.wrongControllerSource();
     }
 
     this[config].src = src;
@@ -121,7 +122,7 @@ export default class ControllerModel {
 
   setRoute(route) {
     if (!(route instanceof RouteModel)) {
-      throw ControllerException.wrongRouteInstance();
+      throw this.exception.wrongRouteInstance();
     }
 
     if (this.hasRoute()) {
@@ -153,7 +154,7 @@ export default class ControllerModel {
    */
   addResolve() {
     if (!this.hasRoute()) {
-      throw new ControllerException.routeIsNotDefined('resolve');
+      throw this.exception.routeIsNotDefined('resolve');
     }
 
     var route = this.getRoute();
@@ -165,7 +166,7 @@ export default class ControllerModel {
     } else if (arguments.length == 2) {
       dependencies = [arguments[0]];
     } else {
-      throw RouteException.wrongResolveArguments();
+      throw this.exception.wrongResolveArguments();
     }
 
     this.addDependencies(dependencies);
@@ -176,7 +177,7 @@ export default class ControllerModel {
    */
   setTemplate(template) {
     if (!this.hasRoute()) {
-      throw new ControllerException.routeIsNotDefined('template');
+      throw this.exception.routeIsNotDefined('template');
     }
 
     var route = this.getRoute();
@@ -186,7 +187,7 @@ export default class ControllerModel {
 
   setTemplateUrl(templateUrl) {
     if (!this.hasRoute()) {
-      throw new ControllerException.routeIsNotDefined('templateUrl');
+      throw this.exception.routeIsNotDefined('templateUrl');
     }
 
     var route = this.getRoute();
@@ -196,7 +197,7 @@ export default class ControllerModel {
 
   urlBuilder(urlBuilder) {
     if (!this.hasRoute()) {
-      throw new ControllerException.routeIsNotDefined('urlBuilder');
+      throw this.exception.routeIsNotDefined('urlBuilder');
     }
 
     var route = this.getRoute();

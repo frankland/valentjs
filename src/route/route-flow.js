@@ -1,6 +1,4 @@
 import RouteModel from './route-model';
-import RouteException from './route-exception';
-
 
 export default class RouteFlow {
   constructor(controller) {

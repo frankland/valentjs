@@ -10,13 +10,15 @@ var config = Symbol('config');
 export default class RouteModel {
   constructor(name) {
     if (!name) {
-      throw RouteException.noControllerName();
+      throw new Error('Controller name should be passed to Route constructor');
     }
 
     this[config] = {};
     this[config].controller = name;
 
     setDefaults(this[config]);
+
+    this.exception = new RouteException(name);
   }
 
   getControllerName() {
@@ -57,7 +59,7 @@ export default class RouteModel {
    */
   setTemplate(template) {
     if (this[config].templateUrl) {
-      throw RouteException.templateUrlAlreadyExists();
+      throw this.exception.templateUrlAlreadyExists();
     }
 
     this[config].template = template;
@@ -73,7 +75,7 @@ export default class RouteModel {
    */
   setTemplateUrl(templateUrl) {
     if (this[config].template) {
-      throw RouteException.templateAlreadyExists();
+      throw this.exception.templateAlreadyExists();
     }
 
     this[config].templateUrl = templateUrl;
@@ -95,7 +97,7 @@ export default class RouteModel {
         [arguments[0]]: arguments[1]
       }
     } else {
-      throw RouteException.wrongResolveArguments();
+      throw this.exception.wrongResolveArguments();
     }
 
     for (var key of Object.keys(resolve)) {
