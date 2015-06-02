@@ -2,6 +2,7 @@ import './utils/object-description';
 import './utils/object-transition';
 
 import './components/url';
+import './components/url-struct';
 
 import './manager';
 

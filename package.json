@@ -1,7 +1,7 @@
 {
   "name": "valent",
   "version": "0.0.8",
-  "repository":  "https://github.com/frankland/valent",
+  "repository": "https://github.com/frankland/valent",
   "description": "Helpfull ES6 runtime for angular",
   "scripts": {
     "test": "mocha test/index.js --compilers js:babel/register"
@@ -22,7 +22,9 @@
     "angular": "^1.3.15",
     "angular-route": "^1.3.15",
     "deep-diff": "^0.3.2",
-    "lodash": "^3.8.0"
+    "lodash": "^3.8.0",
+    "moment": "^2.10.3",
+    "tcomb": "^2.0.0-beta"
   },
   "devDependencies": {
     "babel": "^5.4.2",
