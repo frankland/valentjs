@@ -104,8 +104,8 @@ export default class Logger {
     this.isEnabled = false;
   }
 
-  error() {
-    // TODO
+  error(message) {
+    throw new Error(`${this.name}: ${message}`);
   }
 
   log(message, ...rest) {
