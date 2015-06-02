@@ -60,7 +60,9 @@ export default class ControllerConverter {
 
       $scope.controller = controller;
       $scope.$on('$destroy', () => {
-
+        if (isFunction(controller.destructor)) {
+          controller.destructor();
+        }
       });
 
       if (Config.isDebug() || controller.debug) {

@@ -187,7 +187,9 @@ export default class DirectiveConverter {
       this.controller = controller;
 
       $scope.$on('$destroy', () => {
-
+        if (isFunction(controller.destructor)) {
+          controller.destructor();
+        }
       });
 
       if (Config.isDebug() || $scope.debug || controller.debug) {
