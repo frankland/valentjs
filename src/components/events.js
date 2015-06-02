@@ -10,7 +10,7 @@ export default class Events {
   on(event, fn) {
     Scope.get(this[context])
       .then(($scope) => {
-        $scope.$on(event, fn);
-      })
+        return $scope.$on(event, fn);
+      });
   }
 }
