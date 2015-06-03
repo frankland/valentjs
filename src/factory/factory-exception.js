@@ -1,19 +1,24 @@
 export default class FactoryException {
-  static noFactoryName() {
-    var message = `Factory name should be described`;
+  constructor(name) {
+    this.name = name;
+  }
 
+  getMessage(message) {
+    return `factory "${this.name}": ${message}`;
+  }
+
+  wrongFactorySource() {
+    var message = this.getMessage('Factory source should be executable (class or function)');
     return new Error(message);
   }
 
-  static wrongFactoryModelInstance() {
-    var message = `Wrong factory model instance`;
-
+  dependenciesAreNotArray() {
+    var message = this.getMessage('Dependencies should be an array');
     return new Error(message);
   }
 
-  static wrongFactorySource() {
-    var message = `Factory source should be executable (class or function)`;
-
-    return new Error(noFactoryName);
+  dependencyIsNotString() {
+    var message = this.getMessage('Dependency should be a string');
+    return new Error(message);
   }
 }

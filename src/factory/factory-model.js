@@ -12,7 +12,7 @@ var config = Symbol('config');
 export class FactoryModel {
   constructor(name) {
     if (!name) {
-      throw FactoryException.noFactoryName();
+      throw new Error('Factory name should be described');
     }
 
     this[config] = {};
@@ -20,6 +20,7 @@ export class FactoryModel {
 
     setDefaults(this[config]);
 
+    this.exception = new FactoryException(name);
   }
 
   getName() {
@@ -56,7 +57,7 @@ export class FactoryModel {
    */
   setSource(src) {
     if (!isFunction(src)) {
-      throw FactoryException.wrongFactorySource();
+      throw this.exception.wrongFactorySource();
     }
 
     this[config].src = src;

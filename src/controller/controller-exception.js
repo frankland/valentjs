@@ -4,7 +4,7 @@ export default class ControllerException {
   }
 
   getMessage(message) {
-    return `route "${this.name}": ${message}`;
+    return `controller "${this.name}": ${message}`;
   }
 
   routeIsNotDefined(method) {

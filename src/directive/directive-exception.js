@@ -4,7 +4,7 @@ export default class DirectiveException {
   }
 
   getMessage(message) {
-    return `route "${this.name}": ${message}`;
+    return `directive "${this.name}": ${message}`;
   }
 
   templateUrlAlreadyExists() {
