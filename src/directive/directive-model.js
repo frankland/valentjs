@@ -4,6 +4,7 @@ import isString from 'lodash/lang/isString';
 
 import camelCase from 'lodash/string/camelCase';
 
+import DirectiveException from './directive-exception'
 
 function setDefaults(config) {
   config.dependencies = [];
