@@ -9,7 +9,7 @@ export default class RouteException {
 
   noUrlBuilder() {
     var message = this.getMessage(`Url builder is not available. Url build could be set using @urlBuilder method
-      or could be auto generated if there is at least one url is attached to route`);
+    or could be auto generated if there is at least one url is attached to route`);
 
     return new Error(message);
   }
@@ -35,7 +35,8 @@ export default class RouteException {
   }
 
   wrongResolveArguments() {
-    var message = this.getMessage('Wrong resolve arguments. Should be a two (key, value) arguments or one object');
+    var message = this.getMessage(`Wrong resolve arguments. Should be a two (key, value) arguments or one object. Resolver - only function.
+    To get angular dependencies use valent/components/injector`);
     return new Error(message);
   }
 

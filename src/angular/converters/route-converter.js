@@ -53,7 +53,7 @@ export default class RouteConverter {
     var config = {
       controller: controllerName,
       reloadOnSearch: false,
-      resolve: model.getResolve()
+      resolve: RouteConverter.getResolve(model)
     };
 
     var template = model.getTemplate();
@@ -70,6 +70,18 @@ export default class RouteConverter {
     return clone(config);
   }
 
+  static getResolve(model) {
+    var resolve = Object.assign({}, RouteConfig.getResolve(), model.getResolve());
+
+    var normalizedResolvers = {};
+    for (var resolver of Object.keys(resolve)) {
+      var func = resolve[resolver];
+      normalizedResolvers[resolver] = func.bind(null, model);
+    }
+
+    return normalizedResolvers;
+  }
+
   static getUrls(model) {
     var base = RouteConfig.getBase() || '';
     return model.getUrls().map((url) => base + url);
@@ -77,12 +89,13 @@ export default class RouteConverter {
 
   static convertOtherwise(otherwise) {
     var converted = null;
-    if (isObject(otherwise)) {
-      converted = otherwise;
-    } else if (isString(otherwise)) {
+
+    if (isString(otherwise)) {
       converted = {
         redirectTo: otherwise
       };
+    } else if (otherwise instanceof RouteModel) {
+      converted = RouteConverter.getConfig(otherwise);
     } else {
       throw new Error('Wrong otherwise config. Should be an object or a string. String will be converted to @redirectTo url');
     }

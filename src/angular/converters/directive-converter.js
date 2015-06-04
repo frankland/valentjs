@@ -49,7 +49,7 @@ export default class DirectiveConverter {
 
     var restrict = DirectiveConverter.getRestrict(model);
 
-    var config =  {
+    var config = {
       transclude: model.getTransclude(),
       replace: model.getReplace(),
       scope: attributes,
@@ -79,18 +79,20 @@ export default class DirectiveConverter {
   static getScope(model) {
     var scope = model.getScope();
 
-    if (isObject(scope)) {
-      scope.debug = '=';
+    if (!isObject(scope)) {
+      scope = {};
+    }
 
-      if (model.hasPipes()) {
-        scope.pipes = '&pipes';
-      }
+    scope.debug = '=';
+
+    if (model.hasPipes()) {
+      scope.pipes = '&pipes';
     }
 
     /**
      * TODO: wtf do with scope {}, null, true ?
      */
-    return scope ? assign({}, scope) : {};
+    return assign({}, scope);
   }
 
   static getLink(model) {

@@ -1,7 +1,11 @@
+import isFunction from 'lodash/lang/isFunction';
+
 import RouteException from './route-exception';
 
 function setDefaults(config) {
   config.urls = [];
+  config.caseInsensitiveMatch = true;
+  config.reloadOnSearch = false;
   config.resolve = {};
 }
 
@@ -101,6 +105,10 @@ export default class RouteModel {
     }
 
     for (var key of Object.keys(resolve)) {
+      if (!isFunction(resolve[key])) {
+        throw this.exception.wrongResolveArguments();
+      }
+
       this[config].resolve[key] = resolve[key];
     }
   }
@@ -131,5 +139,13 @@ export default class RouteModel {
    */
   getUrlBuilder() {
     return this[config].urlBuilder ? this[config].urlBuilder : this[config].urls[0];
+  }
+
+  addOptions(key, value) {
+    this[config][key] = value;
+  }
+
+  getOption(key) {
+    return this[config][key];
   }
 }
