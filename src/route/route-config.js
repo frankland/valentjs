@@ -1,76 +1,81 @@
 import isFunction from 'lodash/lang/isFunction';
 
 
-var config = {};
-
 /**
  * Defaults
  */
-
-config.resolve = {};
-config.base = null;
-config.otherwise = null;
-config.html5Mode = true;
-config.events = {
-
+var local = {
+  config: Symbol('config')
 };
+
+function setDefaults(config) {
+  config.resolve = {};
+  config.base = null;
+  config.otherwise = null;
+  config.html5Mode = true;
+  config.events = {
+
+  };
+}
 
 class RouteConfig {
 
   constructor() {
+    this[local.config] = {};
 
+    setDefaults(this[local.config]);
   }
 
   /**
    * Global resolve methods
    */
   addResolve(key, expr) {
-    config.resolve[key] = expr;
+    this[local.config].resolve[key] = expr;
   }
 
   getResolve() {
-    return config.resolve;
+    return this[local.config].resolve;
   }
 
   /**
    * otherwise
    */
   setOtherwise(otherwise) {
-    config.otherwise = otherwise;
+    this[local.config].otherwise = otherwise;
   }
 
   getOtherwise() {
-    return config.otherwise;
+    return this[local.config].otherwise;
   }
 
   /**
    * Base url methods
    */
   setBase(base) {
-    config.base = base;
+    this[local.config].base = base;
   }
 
   hasBase() {
-    return !!config.base;
+    return !!this[local.config].base;
   }
 
   getBase() {
-    return config.base;
+    return this[local.config].base;
   }
 
   /**
    * Html5Mode methods
    */
   enableHtml5Mode() {
-    config.html5Mode = true;
+    this[local.config].html5Mode = true;
   }
 
   disableHtml5Mode() {
-    config.html5Mode = false;
+    this[local.config].html5Mode = false;
   }
 
   isHtml5Mode() {
-    return !!config.html5Mode;
+    return !!this[local.config].html5Mode;
   }
 
   onRouteChangeError(fn) {
@@ -78,11 +83,11 @@ class RouteConfig {
       throw RouteException.routeChangeErrorIsNotFunction();
     }
 
-    config.events.onRouteChnageError = fn;
+    this[local.config].events.onRouteChnageError = fn;
   }
 
   getOnRouteChangeError() {
-    return config.events.onRouteChnageError;
+    return this[local.config].events.onRouteChnageError;
   }
 
 
@@ -91,11 +96,11 @@ class RouteConfig {
       throw RouteException.routeChangeErrorIsNotFunction();
     }
 
-    config.events.onRouteChnageStart = fn;
+    this[local.config].events.onRouteChnageStart = fn;
   }
 
   getOnRouteChangeStart() {
-    return config.events.onRouteChnageStart;
+    return this[local.config].events.onRouteChnageStart;
   }
 
 }
