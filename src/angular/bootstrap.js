@@ -6,9 +6,6 @@ import Config from '../components/config';
 import Logger from '../components/logger';
 import RouteConfig from '../route/route-config';
 
-import angular from 'angular';
-import angularRoute from 'angular-route';
-
 function setupApplication(mainModule) {
 
   mainModule.run(['$injector', '$rootScope', '$location', function($injector, $rootScope, $location) {
