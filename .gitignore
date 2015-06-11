@@ -2,5 +2,6 @@
 /.git
 /.idea
 /node_modules
+/src-native
 /temp
 .npmignore
