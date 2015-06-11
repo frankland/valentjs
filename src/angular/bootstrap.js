@@ -81,5 +81,7 @@ export default class AngularBootstrap {
 
     RouteConverter.setup();
     RouteConverter.register(routes, application);
+
+    Manager.clear();
   }
 }
