@@ -1,7 +1,5 @@
 import isFunction from 'lodash/lang/isFunction';
 
-import Config from '../../components/config';
-
 import FactoryModel from '../../factory/factory-model';
 import FactoryException from '../../factory/factory-exception';
 

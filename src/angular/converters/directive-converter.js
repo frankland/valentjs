@@ -7,7 +7,6 @@ import isArray from 'lodash/lang/isArray';
 import Logger from '../../components/logger';
 import Scope from '../../components/scope';
 import Watcher from '../../components/watcher';
-import Config from '../../components/config';
 import DirectiveParams from '../../components/directive-params';
 import ObjectDifference from '../../utils/object-difference';
 import DirectiveModel from '../../directive/directive-model';
@@ -187,7 +186,7 @@ export default class DirectiveConverter {
         }
       });
 
-      if (Config.isDebug() || $scope.debug || controller.debug) {
+      if ($scope.debug || controller.debug) {
         var previous = clone(controller);
         var objectDifference = new ObjectDifference(logger);
         $scope.$watch(() => {

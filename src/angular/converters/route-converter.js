@@ -7,7 +7,6 @@ import RouteModel from '../../route/route-model';
 import RouteConfig from '../../route/route-config';
 
 import Url from '../../components/url';
-import Config from '../../components/config';
 
 export default class RouteConverter {
 
@@ -103,13 +102,12 @@ export default class RouteConverter {
     return converted;
   }
 
-  static setup() {
+  static setup(application) {
     var config = {
       otherwise: RouteConfig.getOtherwise(),
       isHtml5Mode: RouteConfig.isHtml5Mode()
     };
 
-    var application = Config.getApplicationName();
 
     angular.module(application)
       .config(['$locationProvider', '$routeProvider',

@@ -1,7 +1,6 @@
 import isFunction from 'lodash/lang/isFunction';
 import clone from 'lodash/lang/cloneDeep';
 
-import Config from '../../components/config';
 import Logger from '../../components/logger';
 import Scope from '../../components/scope';
 
@@ -59,7 +58,7 @@ export default class ControllerConverter {
         }
       });
 
-      if (Config.isDebug() || controller.debug) {
+      if (controller.debug) {
         var previous = clone(controller);
         var objectDifference = new ObjectDifference(logger);
         $scope.$watch(() => {

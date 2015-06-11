@@ -79,7 +79,7 @@ export default class AngularBootstrap {
     FactoryConverter.register(factories, application);
     DirectiveConverter.register(directives, application);
 
-    RouteConverter.setup();
+    RouteConverter.setup(application);
     RouteConverter.register(routes, application);
 
     Manager.clear();
