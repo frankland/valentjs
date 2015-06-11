@@ -66,6 +66,10 @@ export default class RouteModel {
       throw this.exception.templateUrlAlreadyExists();
     }
 
+    if (!isString(template) || !isFucntion(template)) {
+      throw this.exception.wrongTemplate();
+    }
+
     this[config].template = template;
   }
 
@@ -80,6 +84,10 @@ export default class RouteModel {
   setTemplateUrl(templateUrl) {
     if (this[config].template) {
       throw this.exception.templateAlreadyExists();
+    }
+
+    if (!isString(templateUrl)) {
+      throw this.exception.wrongTemplateUrl();
     }
 
     this[config].templateUrl = templateUrl;

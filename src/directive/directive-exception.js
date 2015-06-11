@@ -17,6 +17,16 @@ export default class DirectiveException {
     return new Error(message);
   }
 
+  wrongTemplate() {
+    var message = this.getMessage('@template should be a String or Function');
+    return new Error(message);
+  }
+
+  wrongTemplateUrl() {
+    var message = this.getMessage('@templateUrl should be a String');
+    return new Error(message);
+  }
+
   wrongScopeFormat() {
     var message = this.getMessage('Scope config should an object');
     return new Error(message);

@@ -1,6 +1,7 @@
 import isObject from 'lodash/lang/isPlainObject';
 import isArray from 'lodash/lang/isArray';
 import isString from 'lodash/lang/isString';
+import isFunction from 'lodash/lang/isFunction';
 
 import camelCase from 'lodash/string/camelCase';
 
@@ -199,6 +200,10 @@ export default class DirectiveModel {
       throw this.exception.templateUrlAlreadyExists();
     }
 
+    if (!isString(template) || !isFucntion(template)) {
+      throw this.exception.wrongTemplate();
+    }
+
     this[config].template = template;
   }
 
@@ -213,6 +218,10 @@ export default class DirectiveModel {
   setTemplateUrl(templateUrl) {
     if (this[config].template) {
       throw this.exception.templateAlreadyExists();
+    }
+
+    if (!isString(templateUrl)) {
+      throw this.exception.wrongTemplateUrl();
     }
 
     this[config].templateUrl = templateUrl;
