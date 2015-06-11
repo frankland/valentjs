@@ -56,4 +56,6 @@ import Route from 'valent/route';
 
 #### TODO:
 
-- [ ]  Remove factory component. Remove DI from components. That need because I want components to be independent of js framework
+- [ ] Remove factory component. Remove DI from components. That need because I want components to be independent of js framework
+- [ ] Redev Manager. It should not be a singleton
+- [ ] Redev Angular converters. Remove static methods?
