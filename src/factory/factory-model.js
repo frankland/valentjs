@@ -7,7 +7,9 @@ function setDefaults(config) {
   config.dependencies = [];
 }
 
-var config = Symbol('config');
+var local = {
+  config: Symbol('config')
+};
 
 export class FactoryModel {
   constructor(name) {
@@ -15,16 +17,16 @@ export class FactoryModel {
       throw new Error('Factory name should be described');
     }
 
-    this[config] = {};
-    this[config].name = name;
+    this[local.config] = {};
+    this[local.config].name = name;
 
-    setDefaults(this[config]);
+    setDefaults(this[local.config]);
 
     this.exception = new FactoryException(name);
   }
 
   getName() {
-    return this[config].name;
+    return this[local.config].name;
   }
 
   /**
@@ -32,11 +34,11 @@ export class FactoryModel {
    * @param name
    */
   setApplicationName(name) {
-    this[config].module = name;
+    this[local.config].module = name;
   }
 
   getApplicationName() {
-    return this[config].name;
+    return this[local.config].name;
   }
 
   /**
@@ -44,11 +46,11 @@ export class FactoryModel {
    * @param dependencies
    */
   addDependencies(dependencies) {
-    this[config].dependencies = this[config].dependencies.concat(dependencies);
+    this[local.config].dependencies = this[local.config].dependencies.concat(dependencies);
   }
 
   getDependencies() {
-    return this[config].dependencies;
+    return this[local.config].dependencies;
   }
 
   /**
@@ -60,10 +62,10 @@ export class FactoryModel {
       throw this.exception.wrongFactorySource();
     }
 
-    this[config].src = src;
+    this[local.config].src = src;
   }
 
   getSource() {
-    return this[config].src;
+    return this[local.config].src;
   }
 }

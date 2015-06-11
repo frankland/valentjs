@@ -1,4 +1,5 @@
 import isFunction from 'lodash/lang/isFunction';
+import isString from 'lodash/lang/isString';
 
 import RouteException from './route-exception';
 
@@ -9,7 +10,9 @@ function setDefaults(config) {
   config.resolve = {};
 }
 
-var config = Symbol('config');
+var local = {
+  config: Symbol('config')
+};
 
 export default class RouteModel {
   constructor(name) {
@@ -17,16 +20,16 @@ export default class RouteModel {
       throw new Error('Controller name should be passed to Route constructor');
     }
 
-    this[config] = {};
-    this[config].controller = name;
+    this[local.config] = {};
+    this[local.config].controller = name;
 
-    setDefaults(this[config]);
+    setDefaults(this[local.config]);
 
     this.exception = new RouteException(name);
   }
 
   getControllerName() {
-    return this[config].controller;
+    return this[local.config].controller;
   }
 
   /**
@@ -34,15 +37,15 @@ export default class RouteModel {
    * @param name
    */
   setApplicationName(name) {
-    this[config].application = name;
+    this[local.config].application = name;
   }
 
   hasApplication() {
-    return this[config].application;
+    return this[local.config].application;
   }
 
   getApplicationName() {
-    return this[config].application;
+    return this[local.config].application;
   }
 
   /**
@@ -50,11 +53,11 @@ export default class RouteModel {
    * @param url
    */
   addUrl(url) {
-    this[config].urls.push(url);
+    this[local.config].urls.push(url);
   }
 
   getUrls() {
-    return this[config].urls;
+    return this[local.config].urls;
   }
 
   /**
@@ -62,19 +65,19 @@ export default class RouteModel {
    * @param template
    */
   setTemplate(template) {
-    if (this[config].templateUrl) {
+    if (this[local.config].templateUrl) {
       throw this.exception.templateUrlAlreadyExists();
     }
 
-    if (!isString(template) || !isFucntion(template)) {
+    if (!isString(template) && !isFunction(template)) {
       throw this.exception.wrongTemplate();
     }
 
-    this[config].template = template;
+    this[local.config].template = template;
   }
 
   getTemplate() {
-    return this[config].template;
+    return this[local.config].template;
   }
 
   /**
@@ -82,7 +85,7 @@ export default class RouteModel {
    * @param templateUrl
    */
   setTemplateUrl(templateUrl) {
-    if (this[config].template) {
+    if (this[local.config].template) {
       throw this.exception.templateAlreadyExists();
     }
 
@@ -90,11 +93,11 @@ export default class RouteModel {
       throw this.exception.wrongTemplateUrl();
     }
 
-    this[config].templateUrl = templateUrl;
+    this[local.config].templateUrl = templateUrl;
   }
 
   getTemplateUrl() {
-    return this[config].templateUrl;
+    return this[local.config].templateUrl;
   }
 
   /**
@@ -117,12 +120,12 @@ export default class RouteModel {
         throw this.exception.wrongResolveArguments();
       }
 
-      this[config].resolve[key] = resolve[key];
+      this[local.config].resolve[key] = resolve[key];
     }
   }
 
   getResolve() {
-    return this[config].resolve;
+    return this[local.config].resolve;
   }
 
   /**
@@ -134,11 +137,11 @@ export default class RouteModel {
   }
 
   setUrlBuilder(urlBuilder) {
-    this[config].urlBuilder = urlBuilder;
+    this[local.config].urlBuilder = urlBuilder;
   }
 
   hasUrlBuilder() {
-    return !!this[config].urlBuilder || this[config].urls.length == 1;
+    return !!this[local.config].urlBuilder || this[local.config].urls.length == 1;
   }
 
   /**
@@ -146,14 +149,14 @@ export default class RouteModel {
    * @returns {function}
    */
   getUrlBuilder() {
-    return this[config].urlBuilder ? this[config].urlBuilder : this[config].urls[0];
+    return this[local.config].urlBuilder ? this[local.config].urlBuilder : this[local.config].urls[0];
   }
 
   addOptions(key, value) {
-    this[config][key] = value;
+    this[local.config][key] = value;
   }
 
   getOption(key) {
-    return this[config][key];
+    return this[local.config][key];
   }
 }

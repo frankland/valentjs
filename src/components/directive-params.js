@@ -2,22 +2,24 @@ import isObject from 'lodash/lang/isPlainObject';
 
 import Watcher from './watcher';
 
-var scope = Symbol('$scope');
-var definitions = Symbol('definitions');
 
-var watcher = Symbol('$watcher');
+var local = {
+  scope: Symbol('$scope'),
+  definitions: Symbol('definitions'),
+  watcher: Symbol('$watcher')
+};
+
 
 export default class DirectiveParams {
   constructor($scope, attrs) {
-    this[scope] = $scope;
-    this[definitions] = attrs;
+    this[local.scope] = $scope;
+    this[local.definitions] = attrs;
 
-    this[watcher] = new Watcher($scope);
+    this[local.watcher] = new Watcher($scope);
   }
 
   isAvailable(key) {
-    return this[definitions].indexOf(key) != -1
-      && key != 'pipes';
+    return this[local.definitions].indexOf(key) != -1 && key != 'pipes';
   }
 
   get(key) {
@@ -25,7 +27,7 @@ export default class DirectiveParams {
       throw new Error(`Directive param "${key}" is not defined at directive config`);
     }
 
-    return this[scope][key];
+    return this[local.scope][key];
   }
 
   watch(key, cb) {
@@ -33,6 +35,6 @@ export default class DirectiveParams {
       throw new Error(`Can not initialize watcher for "${key}" because this params is not defined at directive config`);
     }
 
-    return this[watcher].watch(key, cb);
+    return this[local.watcher].watch(key, cb);
   }
 }

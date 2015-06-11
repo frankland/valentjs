@@ -10,7 +10,10 @@ function setDefaults(config) {
   config.dependencies = [];
 }
 
-var config = Symbol('config');
+var local = {
+  config: Symbol('config')
+};
+
 
 export default class ControllerModel {
   /**
@@ -21,16 +24,16 @@ export default class ControllerModel {
       throw new Error('Controller name should be passed to Route constructor');
     }
 
-    this[config] = {};
-    this[config].controller = name;
+    this[local.config] = {};
+    this[local.config].controller = name;
 
-    setDefaults(this[config]);
+    setDefaults(this[local.config]);
 
     this.exception = new ControllerException(name);
   }
 
   getName() {
-    return this[config].controller;
+    return this[local.config].controller;
   }
 
   /**
@@ -52,11 +55,11 @@ export default class ControllerModel {
       throw this.exception.dependencyIsNotString();
     }
 
-    this[config].dependencies.push(dependency);
+    this[local.config].dependencies.push(dependency);
   }
 
   getDependencies() {
-    return this[config].dependencies;
+    return this[local.config].dependencies;
   }
 
   /**
@@ -74,15 +77,15 @@ export default class ControllerModel {
       }
     }
 
-    this[config].application = name;
+    this[local.config].application = name;
   }
 
   hasApplication() {
-    return this[config].application;
+    return this[local.config].application;
   }
 
   getApplicationName() {
-    return this[config].application;
+    return this[local.config].application;
   }
 
   /**
@@ -94,11 +97,11 @@ export default class ControllerModel {
       throw this.exception.wrongControllerSource();
     }
 
-    this[config].src = src;
+    this[local.config].src = src;
   }
 
   getSource() {
-    return this[config].src;
+    return this[local.config].src;
   }
 
   /**
@@ -117,7 +120,7 @@ export default class ControllerModel {
       this.setRoute(routeModel);
     }
 
-    this[config].route.addUrl(url);
+    this[local.config].route.addUrl(url);
   }
 
   setRoute(route) {
@@ -135,15 +138,15 @@ export default class ControllerModel {
       route.setApplicationName(application);
     }
 
-    this[config].route = route;
+    this[local.config].route = route;
   }
 
   getRoute() {
-    return this[config].route;
+    return this[local.config].route;
   }
 
   hasRoute() {
-    return this[config].hasOwnProperty('route');
+    return this[local.config].hasOwnProperty('route');
   }
 
   /**
