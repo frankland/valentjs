@@ -11,7 +11,7 @@ import ObjectDifference from '../../utils/object-difference';
 import RouteConverter from './route-converter';
 
 export default class ControllerConverter {
-  static register(controllers) {
+  static register(controllers, defaultApplication) {
     for (let controller of controllers) {
 
       if (!(controller instanceof ControllerModel)) {
@@ -23,14 +23,8 @@ export default class ControllerConverter {
       dependencies.push(wrapped);
 
       var name = controller.getName();
-      var application = controller.getApplicationName();
+      var application = controller.getApplicationName() || defaultApplication;
 
-      /**
-       * Use default application name if not set at controller model
-       */
-      if (!application) {
-        application = Config.getApplicationName();
-      }
 
       angular.module(application)
         .controller(name, dependencies);

@@ -13,7 +13,7 @@ import ObjectDifference from '../../utils/object-difference';
 import DirectiveModel from '../../directive/directive-model';
 
 export default class DirectiveConverter {
-  static register(directives) {
+  static register(directives, defaultApplication) {
 
     for (var directive of directives) {
       if (!(directive instanceof DirectiveModel)) {
@@ -21,14 +21,7 @@ export default class DirectiveConverter {
       }
 
       var name = directive.getName();
-      var application = directive.getApplicationName();
-
-      /**
-       * Use default application name if not set at controller model
-       */
-      if (!application) {
-        application = Config.getApplicationName();
-      }
+      var application = directive.getApplicationName() || defaultApplication;
 
       angular.module(application)
         .directive(name, DirectiveConverter.wrap(directive));

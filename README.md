@@ -52,3 +52,8 @@ import Route from 'valent/route';
 #### Route using model
 
 # test
+
+
+#### TODO:
+
+- [ ]  Remove factory component. Remove DI from components. That need because I want components to be independent of js framework

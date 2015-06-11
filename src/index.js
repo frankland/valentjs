@@ -1,27 +1,15 @@
-import ControllerConverter from './angular/converters/controller-converter';
-import FactoryConverter from './angular/converters/factory-converter';
-import DirectiveConverter from './angular/converters/directive-converter';
-import RouteConverter from './angular/converters/route-converter';
-
-
 import ControllerModel from './controller/controller-model';
 import RouteModel from './route/route-model';
 import DirectiveModel from './directive/directive-model';
 import FactoryModel from './factory/factory-model';
 
-var storage = Symbol('storage');
+var local = {
+  storage: Symbol('storage')
+};
 
 class Manager {
   constructor() {
-    this[storage] = {};
-
-    /**
-     * Better to se WeakSet storage but polyfill for WeakSet is not iterable
-     */
-    this[storage].controllers = new Set();
-    this[storage].factories = new Set();
-    this[storage].directives = new Set();
-    this[storage].routes = new Set();
+    this.clear();
   }
 
   addController(contoller) {
@@ -29,15 +17,15 @@ class Manager {
       throw new Error('Wrong controller model instance');
     }
 
-    this[storage].controllers.add(contoller);
+    this[local.storage].controllers.add(contoller);
   }
 
   removeController(controller) {
-    this[storage].controllers.remove(controller);
+    this[local.storage].controllers.remove(controller);
   }
 
   clearControllers() {
-    this[storage].controllers.clear();
+    this[local.storage].controllers.clear();
   }
 
   // --------------------
@@ -47,15 +35,15 @@ class Manager {
       throw new Error('Wrong factory model instance');
     }
 
-    this[storage].fatories.add(factory);
+    this[local.storage].factories.add(factory);
   }
 
   removeFactory(factory) {
-    this[storage].factories.remove(factory);
+    this[local.storage].factories.remove(factory);
   }
 
   clearFactories() {
-    this[storage].factories.clear();
+    this[local.storage].factories.clear();
   }
 
   // --------------------
@@ -65,15 +53,15 @@ class Manager {
       throw new Error('Wrong directive model instance');
     }
 
-    this[storage].directives.add(directive);
+    this[local.storage].directives.add(directive);
   }
 
   removeDirective(directive) {
-    this[storage].directives.remove(directive);
+    this[local.storage].directives.remove(directive);
   }
 
   clearDirectives() {
-    this[storage].directives.clear();
+    this[local.storage].directives.clear();
   }
 
   // --------------------
@@ -83,29 +71,31 @@ class Manager {
       throw new Error('Wrong route model instance');
     }
 
-    this[storage].routes.add(route);
+    this[local.storage].routes.add(route);
   }
 
   removeRoute(route) {
-    this[storage].routes.remove(route);
+    this[local.storage].routes.remove(route);
   }
 
   clearRoutes() {
-    this[storage].routes.clear();
+    this[local.storage].routes.clear();
   }
 
-  register() {
-    var controllers = this[storage].controllers;
-    var factories = this[storage].factories;
-    var directives = this[storage].directives;
-    var routes = this[storage].routes;
+  getModels() {
+    return this[local.storage];
+  }
 
-    ControllerConverter.register(controllers);
-    FactoryConverter.register(factories);
-    DirectiveConverter.register(directives);
+  clear() {
+    this[local.storage] = {};
 
-    RouteConverter.setup();
-    RouteConverter.register(routes);
+    /**
+     * Better to se WeakSet storage but polyfill for WeakSet is not iterable
+     */
+    this[local.storage].controllers = new Set();
+    this[local.storage].factories = new Set();
+    this[local.storage].directives = new Set();
+    this[local.storage].routes = new Set();
   }
 }
 

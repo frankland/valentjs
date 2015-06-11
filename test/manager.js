@@ -20,8 +20,6 @@ describe('Manager', () => {
     expect(manager.addDirective).to.be.a('function');
     expect(manager.addFactory).to.be.a('function');
     expect(manager.addRoute).to.be.a('function');
-
-    expect(manager.register).to.be.a('function');
   });
 
   it('should check component instances', () => {

@@ -11,14 +11,14 @@ import Config from '../../components/config';
 
 export default class RouteConverter {
 
-  static register(routes) {
+  static register(routes, defaultApplication) {
     var sorted = groupBy(routes, (route) => {
       var application = route.getApplicationName();
 
       /**
        * Return default application name if not set at route
        */
-      return application ? application : Config.getApplicationName();
+      return application ? application : defaultApplication;
     });
 
 
