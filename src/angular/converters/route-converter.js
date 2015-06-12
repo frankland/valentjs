@@ -52,7 +52,7 @@ export default class RouteConverter {
     var controllerName = model.getControllerName();
     var config = {
       controller: controllerName,
-      reloadOnSearch: RouteConverter.getOption('reloadOnSearch'),
+      reloadOnSearch: model.getOption('reloadOnSearch'),
       resolve: RouteConverter.getResolve(model)
     };
 
