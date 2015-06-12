@@ -141,7 +141,7 @@ export default class RouteModel {
     return this[config].urlBuilder ? this[config].urlBuilder : this[config].urls[0];
   }
 
-  addOptions(key, value) {
+  setOption(key, value) {
     this[config][key] = value;
   }
 
