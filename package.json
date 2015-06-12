@@ -5,7 +5,7 @@
   "description": "Helpfull ES6 runtime for angular",
   "scripts": {
     "test": "mocha test/index.js --compilers js:babel/register",
-    "prepublish": "./node_modules/.bin/rimraf ./src-native && ./node_modules/.bin/babel -d ./src-native ./src"
+    "prepublish": "./node_modules/.bin/babel -d ./ ./src"
   },
   "directories": {
     "lib": "./src"

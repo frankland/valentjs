@@ -5,3 +5,16 @@
 /src-native
 /temp
 .npmignore
+
+/angular
+/components
+/controller
+/directive
+/factory
+/route
+/utils
+/controller.js
+/directive.js
+/factory.js
+/route.js
+/index.js
