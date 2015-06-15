@@ -7,13 +7,12 @@ import isArray from 'lodash/lang/isArray';
 import Logger from '../../components/logger';
 import Scope from '../../components/scope';
 import Watcher from '../../components/watcher';
-import Config from '../../components/config';
 import DirectiveParams from '../../components/directive-params';
 import ObjectDifference from '../../utils/object-difference';
 import DirectiveModel from '../../directive/directive-model';
 
 export default class DirectiveConverter {
-  static register(directives) {
+  static register(directives, defaultApplication) {
 
     for (var directive of directives) {
       if (!(directive instanceof DirectiveModel)) {
@@ -21,14 +20,7 @@ export default class DirectiveConverter {
       }
 
       var name = directive.getName();
-      var application = directive.getApplicationName();
-
-      /**
-       * Use default application name if not set at controller model
-       */
-      if (!application) {
-        application = Config.getApplicationName();
-      }
+      var application = directive.getApplicationName() || defaultApplication;
 
       angular.module(application)
         .directive(name, DirectiveConverter.wrap(directive));
@@ -194,7 +186,7 @@ export default class DirectiveConverter {
         }
       });
 
-      if (Config.isDebug() || $scope.debug || controller.debug) {
+      if ($scope.debug || controller.debug) {
         var previous = clone(controller);
         var objectDifference = new ObjectDifference(logger);
         $scope.$watch(() => {

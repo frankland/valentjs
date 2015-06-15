@@ -52,3 +52,12 @@ import Route from 'valent/route';
 #### Route using model
 
 # test
+
+
+#### TODO:
+
+- [ ] Remove factory component. Remove DI from components. That need because I want components to be independent of js framework
+- [ ] Redev Manager. It should not be a singleton
+- [ ] Redev Angular converters. Remove static methods?
+- [ ] Update components/serializer
+- [ ] Add components/url-serializer and components/url-struct to UrlManager

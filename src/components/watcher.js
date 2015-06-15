@@ -1,8 +1,10 @@
 import Scope from './scope';
 import Injector from './injector';
 
-var scope = Symbol('$scope');
-var queue = Symbol('queue');
+var local = {
+  scope: Symbol('$scope'),
+  queue: Symbol('queue')
+};
 
 
 /**
@@ -20,7 +22,7 @@ function isValidScope(angularScope) {
  */
 export default class Watcher {
   constructor($scope) {
-    this[queue] = new Set();
+    this[local.queue] = new Set();
 
     if ($scope instanceof Promise) {
       $scope.then((angularScope) => {
@@ -29,9 +31,9 @@ export default class Watcher {
           throw new Error('$scope for watcher is not valid');
         }
 
-        this[scope] = angularScope;
+        this[local.scope] = angularScope;
 
-        for (var task of this[queue]) {
+        for (var task of this[local.queue]) {
           task.off = this[task.method].apply(this, task.arguments);
         }
       });
@@ -40,7 +42,7 @@ export default class Watcher {
         throw new Error('$scope for watcher is not valid');
       }
 
-      this[scope] = $scope;
+      this[local.scope] = $scope;
     }
   }
 
@@ -59,8 +61,8 @@ export default class Watcher {
   watch() {
     var off = null;
 
-    if (this[scope]) {
-      var $scope = this[scope];
+    if (this[local.scope]) {
+      var $scope = this[local.scope];
       off = $scope.$watch.apply($scope, arguments);
     } else {
       var task = {
@@ -68,13 +70,13 @@ export default class Watcher {
         arguments: Array.prototype.slice.call(arguments)
       };
 
-      this[queue].add(task);
+      this[local.queue].add(task);
 
       off = function() {
-        if (this[scope]) {
+        if (this[local.scope]) {
           task.off();
         } else {
-          this[queue].delete(task);
+          this[local.queue].delete(task);
         }
       }
     }
@@ -83,12 +85,12 @@ export default class Watcher {
   }
 
   watchGroup() {
-    var $scope = this[scope];
+    var $scope = this[local.scope];
     return $scope.$watchGroup.apply($scope, arguments);
   }
 
   watchCollection() {
-    var $scope = this[scope];
+    var $scope = this[local.scope];
     return $scope.$watchCollection.apply($scope, arguments);
   }
 }

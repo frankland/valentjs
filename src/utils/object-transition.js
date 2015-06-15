@@ -2,35 +2,38 @@ import getter from 'lodash/object/get';
 import setter from 'lodash/object/set';
 import clone from 'lodash/lang/cloneDeep';
 
-var transition = Symbol('transition');
-var source = Symbol('source');
-var counter= Symbol('counter');
+var local = {
+  transition: Symbol('transition'),
+  source: Symbol('source'),
+  counter: Symbol('counter')
+};
+
 
 export default class ObjectTransition {
 
   constructor(obj) {
-    this[transition] = new Map();
-    this[source] = obj;
-    this[counter] = 0;
+    this[local.transition] = new Map();
+    this[local.source] = obj;
+    this[local.counter] = 0;
   }
 
   /**
    * Scope methods
    */
   has(key) {
-    return this[transition].has(key);
+    return this[local.transition].has(key);
   }
 
   get(key) {
-    return this[transition].get(key);
+    return this[local.transition].get(key);
   }
 
   clear() {
-    this[transition].clear();
+    this[local.transition].clear();
   }
 
   commit(key, value) {
-    this[transition].set(key, value);
+    this[local.transition].set(key, value);
   }
 
   push() {
@@ -41,11 +44,11 @@ export default class ObjectTransition {
       throw new Error('Wrong arguments for ObjectTransition.push');
     }
 
-    this[transition].forEach((value, key) => {
-      setter(this[source], key, value);
+    this[local.transition].forEach((value, key) => {
+      setter(this[local.source], key, value);
     });
 
-    this[counter]++;
+    this[local.counter]++;
 
     this.clear();
   }

@@ -14,6 +14,16 @@ export default class RouteException {
     return new Error(message);
   }
 
+  wrongTemplate() {
+    var message = this.getMessage('@template should be a String or Function');
+    return new Error(message);
+  }
+
+  wrongTemplateUrl() {
+    var message = this.getMessage('@templateUrl should be a String');
+    return new Error(message);
+  }
+
   wrongUrlParams() {
     var message = this.getMessage('Params for default url builder should be an object');
     return new Error(message);

@@ -13,9 +13,7 @@ function setDefaults(config) {
   config.base = null;
   config.otherwise = null;
   config.html5Mode = true;
-  config.events = {
-
-  };
+  config.events = {};
 }
 
 class RouteConfig {

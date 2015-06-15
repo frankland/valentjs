@@ -7,18 +7,15 @@ import RouteModel from '../../route/route-model';
 import RouteConfig from '../../route/route-config';
 
 import Url from '../../components/url';
-import Config from '../../components/config';
 
 export default class RouteConverter {
 
-  static register(routes) {
+  static register(routes, defaultApplication) {
     var sorted = groupBy(routes, (route) => {
-      var application = route.getApplicationName();
-
       /**
        * Return default application name if not set at route
        */
-      return application ? application : Config.getApplicationName();
+      return route.getApplicationName() || defaultApplication;
     });
 
 
@@ -103,13 +100,12 @@ export default class RouteConverter {
     return converted;
   }
 
-  static setup() {
+  static setup(application) {
     var config = {
       otherwise: RouteConfig.getOtherwise(),
       isHtml5Mode: RouteConfig.isHtml5Mode()
     };
 
-    var application = Config.getApplicationName();
 
     angular.module(application)
       .config(['$locationProvider', '$routeProvider',

@@ -1,6 +1,7 @@
 import isObject from 'lodash/lang/isPlainObject';
 import isArray from 'lodash/lang/isArray';
 import isString from 'lodash/lang/isString';
+import isFunction from 'lodash/lang/isFunction';
 
 import camelCase from 'lodash/string/camelCase';
 
@@ -15,7 +16,10 @@ function setDefaults(config) {
 }
 
 var availableRestricts = ['A', 'E', 'C'];
-var config = Symbol('config');
+
+var local = {
+  config: Symbol('config')
+};
 
 export default class DirectiveModel {
   constructor(name) {
@@ -23,21 +27,21 @@ export default class DirectiveModel {
       throw new Error('Directive name should be described');
     }
 
-    this[config] = {};
-    this[config].name = camelCase(name);
-    this[config].controllerName = `<${name}>`;
+    this[local.config] = {};
+    this[local.config].name = camelCase(name);
+    this[local.config].controllerName = `<${name}>`;
 
-    setDefaults(this[config]);
+    setDefaults(this[local.config]);
 
-    this.exception = new DirectiveException(this[config].controllerName);
+    this.exception = new DirectiveException(this[local.config].controllerName);
   }
 
   getName() {
-    return this[config].name;
+    return this[local.config].name;
   }
 
   getControllerName() {
-    return this[config].controllerName;
+    return this[local.config].controllerName;
   }
 
   /**
@@ -45,11 +49,11 @@ export default class DirectiveModel {
    * @param name
    */
   setApplicationName(name) {
-    this[config].application = name;
+    this[local.config].application = name;
   }
 
   getApplicationName() {
-    return this[config].application;
+    return this[local.config].application;
   }
 
   /**
@@ -58,18 +62,18 @@ export default class DirectiveModel {
    */
   require(require) {
     if (!isArray(require)) {
-      this[config].require = [require];
+      this[local.config].require = [require];
     } else {
-      this[config].require = require;
+      this[local.config].require = require;
     }
   }
 
   hasRequire() {
-    return !!this[config].require;
+    return !!this[local.config].require;
   }
 
   getRequire() {
-    return this[config].require;
+    return this[local.config].require;
   }
 
   /**
@@ -91,11 +95,11 @@ export default class DirectiveModel {
       throw this.exception.dependencyIsNotString();
     }
 
-    this[config].dependencies.push(dependency);
+    this[local.config].dependencies.push(dependency);
   }
 
   getDependencies() {
-    return this[config].dependencies;
+    return this[local.config].dependencies;
   }
 
   /**
@@ -103,11 +107,11 @@ export default class DirectiveModel {
    * @param transclude
    */
   setTransclude(transclude) {
-    this[config].transclude = !!transclude;
+    this[local.config].transclude = !!transclude;
   }
 
   getTransclude() {
-    return this[config].transclude;
+    return this[local.config].transclude;
   }
 
   /**
@@ -116,7 +120,7 @@ export default class DirectiveModel {
    * @returns {*}
    */
   getReplace() {
-    return this[config].replace;
+    return this[local.config].replace;
   }
 
   /**
@@ -128,11 +132,11 @@ export default class DirectiveModel {
       throw this.exception.wrongScopeFormat();
     }
 
-    this[config].scope = scope;
+    this[local.config].scope = scope;
   }
 
   getScope() {
-    return this[config].scope;
+    return this[local.config].scope;
   }
 
   /**
@@ -151,11 +155,11 @@ export default class DirectiveModel {
       }
     }
 
-    this[config].restrict = restrict;
+    this[local.config].restrict = restrict;
   }
 
   getRestrict() {
-    return this[config].restrict;
+    return this[local.config].restrict;
   }
 
   /**
@@ -163,11 +167,11 @@ export default class DirectiveModel {
    * @param controller
    */
   setController(controller) {
-    this[config].controller = controller;
+    this[local.config].controller = controller;
   }
 
   getController() {
-    return this[config].controller;
+    return this[local.config].controller;
   }
 
   /**
@@ -179,15 +183,15 @@ export default class DirectiveModel {
       throw this.exception.wrongPipesFormat();
     }
 
-    this[config].pipes = pipes;
+    this[local.config].pipes = pipes;
   }
 
   getPipes() {
-    return this[config].pipes;
+    return this[local.config].pipes;
   }
 
   hasPipes() {
-    return !!this[config].pipes;
+    return !!this[local.config].pipes;
   }
 
   /**
@@ -195,15 +199,19 @@ export default class DirectiveModel {
    * @param template
    */
   setTemplate(template) {
-    if (this[config].templateUrl) {
+    if (this[local.config].templateUrl) {
       throw this.exception.templateUrlAlreadyExists();
     }
 
-    this[config].template = template;
+    if (!isString(template) && !isFunction(template)) {
+      throw this.exception.wrongTemplate();
+    }
+
+    this[local.config].template = template;
   }
 
   getTemplate() {
-    return this[config].template;
+    return this[local.config].template;
   }
 
   /**
@@ -211,14 +219,18 @@ export default class DirectiveModel {
    * @param templateUrl
    */
   setTemplateUrl(templateUrl) {
-    if (this[config].template) {
+    if (this[local.config].template) {
       throw this.exception.templateAlreadyExists();
     }
 
-    this[config].templateUrl = templateUrl;
+    if (!isString(templateUrl)) {
+      throw this.exception.wrongTemplateUrl();
+    }
+
+    this[local.config].templateUrl = templateUrl;
   }
 
   getTemplateUrl() {
-    return this[config].templateUrl;
+    return this[local.config].templateUrl;
   }
 }
