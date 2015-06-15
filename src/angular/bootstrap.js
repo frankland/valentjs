@@ -4,7 +4,6 @@ import isString from 'lodash/lang/isString';
 
 import Manager from '../index';
 import Injector from '../components/injector';
-import Config from '../components/config';
 import Logger from '../components/logger';
 import RouteConfig from '../route/route-config';
 
