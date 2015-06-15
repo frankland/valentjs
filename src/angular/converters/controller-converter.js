@@ -30,7 +30,7 @@ export default class ControllerConverter {
 
       if (controller.hasRoute()) {
         var route = controller.getRoute();
-        RouteConverter.register([route]);
+        RouteConverter.register([route], defaultApplication);
       }
     }
   }
