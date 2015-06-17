@@ -8,6 +8,7 @@ function setDefaults(config) {
   config.caseInsensitiveMatch = true;
   config.reloadOnSearch = false;
   config.resolve = {};
+  config.options = {};
 }
 
 var local = {
@@ -103,11 +104,21 @@ export default class RouteModel {
   /**
    *
    */
-  addResolve() {
+  addResolve(key, value) {
+    if (!isFunction(value)) {
+      throw this.exception.wrongResolveArguments();
+    }
+
+    this[local.config].resolve[key] = value;
+  }
+
+  setResolve() {
+    this[local.config].resolve = {};
+
     var resolve = null;
-    if (arguments.length == 1) {
+    if (arguments.length == 1 && isObject(arguments[0])) {
       resolve = arguments[0];
-    } else if (arguments.length == 2) {
+    } else if (arguments.length == 2 && !isObject(arguments[0])) {
       resolve = {
         [arguments[0]]: arguments[1]
       }
@@ -116,11 +127,7 @@ export default class RouteModel {
     }
 
     for (var key of Object.keys(resolve)) {
-      if (!isFunction(resolve[key])) {
-        throw this.exception.wrongResolveArguments();
-      }
-
-      this[local.config].resolve[key] = resolve[key];
+      this.addResolve(key, resolve[key]);
     }
   }
 
@@ -152,11 +159,38 @@ export default class RouteModel {
     return this[local.config].urlBuilder ? this[local.config].urlBuilder : this[local.config].urls[0];
   }
 
-  addOptions(key, value) {
-    this[local.config][key] = value;
+  addOption(key, value) {
+    this[local.config].options[key] = value;
+  }
+
+  setOptions() {
+    this[local.config].options[key] = {};
+
+    var options = null;
+    if (arguments.length == 1 && isObject(arguments[0])) {
+      options = arguments[0];
+    } else if (arguments.length == 2 && !isObject(arguments[0])) {
+      options = {
+        [arguments[0]]: arguments[1]
+      }
+    } else {
+      throw this.exception.wrongOptionsArguments();
+    }
+
+    for (var option of Object.keys(options)) {
+      this.addOption(option, options[option]);
+    }
   }
 
   getOption(key) {
-    return this[local.config][key];
+    return this[local.config].options[key];
+  }
+
+  setReloadOnSearch(reloadOnSearch) {
+    this[local.config].reloadOnSearch = !!reloadOnSearch;
+  }
+
+  getReloadOnSearch() {
+    return this[local.config].reloadOnSearch;
   }
 }

@@ -49,7 +49,7 @@ export default class RouteConverter {
     var controllerName = model.getControllerName();
     var config = {
       controller: controllerName,
-      reloadOnSearch: model.getOption('reloadOnSearch'),
+      reloadOnSearch: model.getReloadOnSearch(),
       resolve: RouteConverter.getResolve(model)
     };
 

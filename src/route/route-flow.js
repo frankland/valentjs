@@ -43,7 +43,7 @@ export default class RouteFlow {
    * @returns {RouteFlow}
    */
   resolve(key, expr) {
-    this.model.addResolve(key, expr);
+    this.model.setResolve(key, expr);
     return this;
   }
 
@@ -64,6 +64,16 @@ export default class RouteFlow {
    */
   templateUrl(templateUrl) {
     this.model.setTemplateUrl(templateUrl);
+    return this;
+  }
+
+  /**
+   * Add route options
+   * @param key
+   * @param value
+   */
+  option(key, value) {
+    this.model.addOption(key, value);
     return this;
   }
 }

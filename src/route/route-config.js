@@ -28,6 +28,10 @@ class RouteConfig {
    * Global resolve methods
    */
   addResolve(key, expr) {
+    if (!isFunction(expr)) {
+      throw new Error(`Wrong resolve arguments. Should be a two (key, value) arguments or one object. Resolver - only function`);
+    }
+
     this[local.config].resolve[key] = expr;
   }
 

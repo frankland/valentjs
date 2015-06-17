@@ -85,5 +85,10 @@ export default class ControllerFlow {
     this.model.setSource(src);
     return this;
   }
+
+  routeOption(key, value) {
+    this.model.addRouteOption(key, value);
+    return this;
+  }
 }
 

@@ -45,8 +45,12 @@ export default class RouteException {
   }
 
   wrongResolveArguments() {
-    var message = this.getMessage(`Wrong resolve arguments. Should be a two (key, value) arguments or one object. Resolver - only function.
-    To get angular dependencies use valent/components/injector`);
+    var message = this.getMessage(`Wrong resolve arguments. Should be a two (key, value) arguments or one object. Resolver - only function`);
+    return new Error(message);
+  }
+
+  wrongOptionsArguments() {
+    var message = this.getMessage('Wrong options arguments. Should be a two (key, value) arguments or one object');
     return new Error(message);
   }
 

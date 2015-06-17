@@ -18,8 +18,8 @@ function setupApplication(module) {
 
     var onRouteChangeError = RouteConfig.getOnRouteChangeError();
     if (onRouteChangeError) {
-      $rootScope.$on('$routeChangeError', () => {
-        var url = onRouteChangeError();
+      $rootScope.$on('$routeChangeError', (event, current, previous, rejection) => {
+        var url = onRouteChangeError(event, current, previous, rejection);
 
         if (isString(url)) {
           $location.url(url);

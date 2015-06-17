@@ -2,6 +2,7 @@ import clone from 'lodash/lang/cloneDeep';
 import assign  from 'lodash/object/assign';
 import isFunction from 'lodash/lang/isFunction';
 import isObject from 'lodash/lang/isPlainObject';
+import isEmpty from 'lodash/lang/isEmpty';
 import isArray from 'lodash/lang/isArray';
 
 import Logger from '../../components/logger';
@@ -205,7 +206,7 @@ export default class DirectiveConverter {
       var registered = model.getPipes();
       var assigned = {};
 
-      if ($attrs.hasOwnProperty('pipes')) {
+      if (!isEmpty($attrs.pipes)) {
         assigned = $scope.pipes();
 
         if (!isObject(assigned)) {

@@ -123,15 +123,33 @@ export default class ControllerModel {
     this[local.config].route.addUrl(url);
   }
 
+  setRouteOptions() {
+    if (!this.hasRoute()) {
+      throw this.exception.routeIsNotDefined('setRouteOptions');
+    }
+
+    var route = this.getRoute();
+    route.setOptions.apply(route, arguments);
+  }
+
+  addRouteOption() {
+    if (!this.hasRoute()) {
+      throw this.exception.routeIsNotDefined('addRouteOption');
+    }
+
+    var route = this.getRoute();
+    route.addOption.apply(route, arguments);
+  }
+
   setRoute(route) {
     if (!(route instanceof RouteModel)) {
       throw this.exception.wrongRouteInstance();
     }
 
-    if (this.hasRoute()) {
-      var existingRoute = this.getRoute();
-      Manager.removeRoute(existingRoute);
-    }
+    //if (this.hasRoute()) {
+      //var existingRoute = this.getRoute();
+      //Manager.removeRoute(existingRoute);
+    //}
 
     if (!route.hasApplication()) {
       var application = this.getApplicationName();
@@ -155,13 +173,13 @@ export default class ControllerModel {
    * 1. name, resolve
    * 2. object
    */
-  addResolve() {
+  setResolve() {
     if (!this.hasRoute()) {
-      throw this.exception.routeIsNotDefined('resolve');
+      throw this.exception.routeIsNotDefined('setResolve');
     }
 
     var route = this.getRoute();
-    route.addResolve.apply(route, arguments);
+    route.setResolve.apply(route, arguments);
 
     var dependencies = [];
     if (arguments.length == 1) {
@@ -180,7 +198,7 @@ export default class ControllerModel {
    */
   setTemplate(template) {
     if (!this.hasRoute()) {
-      throw this.exception.routeIsNotDefined('template');
+      throw this.exception.routeIsNotDefined('setTemplate');
     }
 
     var route = this.getRoute();
@@ -190,7 +208,7 @@ export default class ControllerModel {
 
   setTemplateUrl(templateUrl) {
     if (!this.hasRoute()) {
-      throw this.exception.routeIsNotDefined('templateUrl');
+      throw this.exception.routeIsNotDefined('setTemplateUrl');
     }
 
     var route = this.getRoute();
