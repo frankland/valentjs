@@ -1,5 +1,6 @@
 import isFunction from 'lodash/lang/isFunction';
 import isString from 'lodash/lang/isString';
+import isObject from 'lodash/lang/isObject';
 
 import RouteException from './route-exception';
 
