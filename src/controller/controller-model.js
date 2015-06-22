@@ -123,22 +123,22 @@ export default class ControllerModel {
     this[local.config].route.addUrl(url);
   }
 
-  addRouteOption(...arguments) {
+  addRouteOption(...arguargsments) {
     if (!this.hasRoute()) {
       throw this.exception.routeIsNotDefined('addRouteOption');
     }
 
     var route = this.getRoute();
-    route.setOptions(...arguments);
+    route.setOptions(...args);
   }
 
-  setRouteOptions(...arguments) {
+  setRouteOptions(...args) {
     if (!this.hasRoute()) {
       throw this.exception.routeIsNotDefined('setRouteOptions');
     }
 
     var route = this.getRoute();
-    route.setOptions(...arguments);
+    route.setOptions(...args);
   }
 
   setRoute(route) {
