@@ -61,3 +61,4 @@ import Route from 'valent/route';
 - [ ] Redev Angular converters. Remove static methods?
 - [ ] Update components/serializer
 - [ ] Add components/url-serializer and components/url-struct to UrlManager
+- [ ] Add base class for components
