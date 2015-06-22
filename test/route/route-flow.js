@@ -35,16 +35,16 @@ describe('Route flow and model getters', () => {
       .at(applicationName)
       .url('/home')
       .url('/home/:state')
-      .resolve('access.guest', () => 'granted')
-      .resolve('access.admin', () => 'rejected')
+      .resolver('access.guest', () => 'granted')
+      .resolver('access.admin', () => 'rejected')
       .template(template);
 
     var model = routeFlow.model;
 
     expect(model.getUrls()).to.an('array');
     expect(model.getUrls()).to.eql(['/home', '/home/:state']);
-    expect(model.getResolve()).to.be.an('object');
-    expect(model.getResolve()).have.all.keys(['access.guest', 'access.admin']);
+    expect(model.getResolvers()).to.be.an('object');
+    expect(model.getResolvers()).have.all.keys(['access.guest', 'access.admin']);
     expect(model.getTemplate()).to.equal(template);
   });
 

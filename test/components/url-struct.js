@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import UrlStruct from '../../src/components/url-struct';
 import UrlSerializer from '../../src/components/url-serializer';
 
-import primitives from '../../src/utils/struct-primitives';
+import * as primitives from '../../src/utils/struct-primitives';
 import t from 'tcomb';
 
 var UserStruct = t.struct({

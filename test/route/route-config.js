@@ -23,16 +23,16 @@ describe('Route Config', () => {
     routeConfig.setBase('/test');
     routeConfig.disableHtml5Mode();
 
-    routeConfig.addResolve('access.guest', () => {
+    routeConfig.addResolver('access.guest', () => {
     });
-    routeConfig.addResolve('access.admin', () => {
+    routeConfig.addResolver('access.admin', () => {
     });
 
     expect(routeConfig.getBase()).to.equal('/test');
     expect(routeConfig.isHtml5Mode()).to.equal(false);
 
-    expect(routeConfig.getResolve()).to.be.an('object');
-    expect(routeConfig.getResolve()).have.all.keys(['access.guest', 'access.admin']);
+    expect(routeConfig.getResolvers()).to.be.an('object');
+    expect(routeConfig.getResolvers()).have.all.keys(['access.guest', 'access.admin']);
   });
 
   it('otherwise as string', () => {

@@ -13,7 +13,7 @@ describe('Route Convert', () => {
 
     routeFlow
       .url('/home')
-      .resolve('access.guest', () => 'granted')
+      .resolver('access.guest', () => 'granted')
       .template(template);
 
     var model = routeFlow.model;
@@ -28,12 +28,12 @@ describe('Route Convert', () => {
     expect(config.template).to.equal(template);
   });
 
-  it('convert route config with template', () => {
+  it('convert route config with templateUrl', () => {
     var routeFlow = new RouteFlow(controllerName);
 
     routeFlow
       .url('/home')
-      .resolve('access.guest', () => 'granted')
+      .resolver('access.guest', () => 'granted')
       .templateUrl('/template/url.html');
 
     var model = routeFlow.model;
