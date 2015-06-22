@@ -4,7 +4,7 @@ import find from 'lodash/collection/find';
 import moment from 'moment';
 
 import Serializer from './serializer';
-import primitives from '../utils/struct-primitives';
+import * as primitives from '../utils/struct-primitives';
 
 var DATE_FORMAT = 'YYYYMMDD';
 var DELIMITER = '~';
