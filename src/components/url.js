@@ -78,8 +78,8 @@ class Url {
 
     var base = RouteConfig.getBase() || '';
 
-    return function() {
-      var result = builder.apply(null, arguments);
+    return function(...arguments) {
+      var result = builder(...arguments);
       var url = null;
 
       if (isObject(result)) {

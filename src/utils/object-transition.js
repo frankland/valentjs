@@ -36,10 +36,10 @@ export default class ObjectTransition {
     this[local.transition].set(key, value);
   }
 
-  push() {
-
+  push(...arguments) {
     if (arguments.length == 2) {
-      this.commit.apply(this, arguments);
+      this.commit(...arguments);
+
     } else if (!!arguments.length) {
       throw new Error('Wrong arguments for ObjectTransition.push');
     }

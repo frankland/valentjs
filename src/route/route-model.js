@@ -102,39 +102,7 @@ export default class RouteModel {
     return this[local.config].templateUrl;
   }
 
-  /**
-   *
-   */
-  addResolve(key, value) {
-    if (!isFunction(value)) {
-      throw this.exception.wrongResolveArguments();
-    }
-
-    this[local.config].resolve[key] = value;
-  }
-
-  setResolve() {
-    this[local.config].resolve = {};
-
-    var resolve = null;
-    if (arguments.length == 1 && isObject(arguments[0])) {
-      resolve = arguments[0];
-    } else if (arguments.length == 2 && !isObject(arguments[0])) {
-      resolve = {
-        [arguments[0]]: arguments[1]
-      }
-    } else {
-      throw this.exception.wrongResolveArguments();
-    }
-
-    for (var key of Object.keys(resolve)) {
-      this.addResolve(key, resolve[key]);
-    }
-  }
-
-  getResolve() {
-    return this[local.config].resolve;
-  }
+  // ---------------------------------------------------------
 
   /**
    * Check if at least of one url was attached
@@ -160,32 +128,59 @@ export default class RouteModel {
     return this[local.config].urlBuilder ? this[local.config].urlBuilder : this[local.config].urls[0];
   }
 
+  // ---------------------------------------------------------
+
   addOption(key, value) {
+    if (!isString(key)) {
+      throw this.exception.wrongAddOptionArguments();
+    }
+
     this[local.config].options[key] = value;
   }
 
-  setOptions() {
-    this[local.config].options[key] = {};
+  setOptions(options) {
+    this[local.config].options = {};
 
-    var options = null;
-    if (arguments.length == 1 && isObject(arguments[0])) {
-      options = arguments[0];
-    } else if (arguments.length == 2 && !isObject(arguments[0])) {
-      options = {
-        [arguments[0]]: arguments[1]
-      }
-    } else {
-      throw this.exception.wrongOptionsArguments();
+    if (!isObject(options)) {
+      throw this.exception.wrongSetOptionsArguments();
     }
 
-    for (var option of Object.keys(options)) {
-      this.addOption(option, options[option]);
+    for (var key of Object.keys(options)) {
+      this.addOption(key, options[key]);
     }
   }
 
   getOption(key) {
     return this[local.config].options[key];
   }
+
+  // ---------------------------------------------------------
+
+  addResolver(key, value) {
+    if (!isFunction(value) && !isString(key)) {
+      throw this.exception.wrongAddResolverArguments();
+    }
+
+    this[local.config].resolve[key] = value;
+  }
+
+  setResolvers(resolvers) {
+    this[local.config].resolvers = {};
+
+    if (!isObject(resolvers)) {
+      throw this.exception.wrongSetResolversArguments();
+    }
+
+    for (var key of Object.keys(resolvers)) {
+      this.addResolver(key, resolvers[key]);
+    }
+  }
+
+  getResolvers() {
+    return this[local.config].resolve;
+  }
+
+  // ---------------------------------------------------------
 
   setReloadOnSearch(reloadOnSearch) {
     this[local.config].reloadOnSearch = !!reloadOnSearch;

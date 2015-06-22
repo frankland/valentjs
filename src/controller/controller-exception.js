@@ -34,8 +34,8 @@ export default class ControllerException {
     return new Error(message);
   }
 
-  wrongResolveArguments() {
-    var message = this.getMessage('Wrong resolve arguments. Should be a two (key, value) arguments or one object');
-    return new Error(message);
-  }
+  //wrongResolveArguments() {
+  //  var message = this.getMessage('Wrong resolve arguments. Should be a two (key, value) arguments or one object');
+  //  return new Error(message);
+  //}
 }

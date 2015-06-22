@@ -1,5 +1,5 @@
 import isFunction from 'lodash/lang/isFunction';
-
+import RouteException from './route-exception';
 
 /**
  * Defaults
@@ -22,20 +22,33 @@ class RouteConfig {
     this[local.config] = {};
 
     setDefaults(this[local.config]);
+    this.exception = new RouteException('global.route.config');
   }
 
   /**
    * Global resolve methods
    */
-  addResolve(key, expr) {
-    if (!isFunction(expr)) {
-      throw new Error(`Wrong resolve arguments. Should be a two (key, value) arguments or one object. Resolver - only function`);
+  addResolver(key, value) {
+    if (!isFunction(value) && !isString(key)) {
+      throw this.exception.wrongAddResolverArguments();
     }
 
-    this[local.config].resolve[key] = expr;
+    this[local.config].resolve[key] = value;
   }
 
-  getResolve() {
+  setResolvers(resolvers) {
+    this[local.config].resolvers = {};
+
+    if (!isObject(resolvers)) {
+      throw this.exception.wrongSetResolversArguments();
+    }
+
+    for (var key of Object.keys(resolvers)) {
+      this.addResolver(key, resolvers[key]);
+    }
+  }
+
+  getResolvers() {
     return this[local.config].resolve;
   }
 
@@ -104,7 +117,6 @@ class RouteConfig {
   getOnRouteChangeStart() {
     return this[local.config].events.onRouteChnageStart;
   }
-
 }
 
 

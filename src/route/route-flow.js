@@ -42,10 +42,17 @@ export default class RouteFlow {
    * @param expr
    * @returns {RouteFlow}
    */
-  resolve(key, expr) {
-    this.model.setResolve(key, expr);
+  resolver(key, expr) {
+    this.model.addResolver(key, expr);
     return this;
   }
+
+  resolvers(resolvers) {
+    this.model.setResolvers(resolvers);
+    return this;
+  }
+
+
 
   /**
    * Set template
@@ -74,6 +81,11 @@ export default class RouteFlow {
    */
   option(key, value) {
     this.model.addOption(key, value);
+    return this;
+  }
+
+  options(options) {
+    this.model.setOptions(options);
     return this;
   }
 }

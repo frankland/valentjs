@@ -50,7 +50,7 @@ export default class RouteConverter {
     var config = {
       controller: controllerName,
       reloadOnSearch: model.getReloadOnSearch(),
-      resolve: RouteConverter.getResolve(model)
+      resolve: RouteConverter.getResolvers(model)
     };
 
     var template = model.getTemplate();
@@ -67,8 +67,8 @@ export default class RouteConverter {
     return clone(config);
   }
 
-  static getResolve(model) {
-    var resolve = Object.assign({}, RouteConfig.getResolve(), model.getResolve());
+  static getResolvers(model) {
+    var resolve = Object.assign({}, RouteConfig.getResolvers(), model.getResolvers());
 
     var normalizedResolvers = {};
     for (var resolver of Object.keys(resolve)) {

@@ -123,22 +123,22 @@ export default class ControllerModel {
     this[local.config].route.addUrl(url);
   }
 
-  setRouteOptions() {
-    if (!this.hasRoute()) {
-      throw this.exception.routeIsNotDefined('setRouteOptions');
-    }
-
-    var route = this.getRoute();
-    route.setOptions.apply(route, arguments);
-  }
-
-  addRouteOption() {
+  addRouteOption(...arguments) {
     if (!this.hasRoute()) {
       throw this.exception.routeIsNotDefined('addRouteOption');
     }
 
     var route = this.getRoute();
-    route.addOption.apply(route, arguments);
+    route.setOptions(...arguments);
+  }
+
+  setRouteOptions(...arguments) {
+    if (!this.hasRoute()) {
+      throw this.exception.routeIsNotDefined('setRouteOptions');
+    }
+
+    var route = this.getRoute();
+    route.setOptions(...arguments);
   }
 
   setRoute(route) {
@@ -167,30 +167,14 @@ export default class ControllerModel {
     return this[local.config].hasOwnProperty('route');
   }
 
-  /**
-   * Resolve method
-   * arguments
-   * 1. name, resolve
-   * 2. object
-   */
-  setResolve() {
-    if (!this.hasRoute()) {
-      throw this.exception.routeIsNotDefined('setResolve');
-    }
-
+  addResolver(key, value) {
     var route = this.getRoute();
-    route.setResolve.apply(route, arguments);
+    route.addResolver(key, value);
+  }
 
-    var dependencies = [];
-    if (arguments.length == 1) {
-      dependencies = Object.keys(arguments[0]);
-    } else if (arguments.length == 2) {
-      dependencies = [arguments[0]];
-    } else {
-      throw this.exception.wrongResolveArguments();
-    }
-
-    this.addDependencies(dependencies);
+  setResolvers(resovlers) {
+    var route = this.getRoute();
+    route.setResolvers(resovlers);
   }
 
   /**
@@ -202,7 +186,6 @@ export default class ControllerModel {
     }
 
     var route = this.getRoute();
-
     route.setTemplate(template);
   }
 
@@ -212,7 +195,6 @@ export default class ControllerModel {
     }
 
     var route = this.getRoute();
-
     route.setTemplateUrl(templateUrl);
   }
 
@@ -222,7 +204,6 @@ export default class ControllerModel {
     }
 
     var route = this.getRoute();
-
     route.setUrlBuilder(urlBuilder);
   }
 }

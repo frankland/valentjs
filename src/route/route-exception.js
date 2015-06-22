@@ -44,15 +44,31 @@ export default class RouteException {
     return new Error(message);
   }
 
-  wrongResolveArguments() {
+  // -----------------------------------------
+
+  wrongAddResolverArguments() {
     var message = this.getMessage(`Wrong resolve arguments. Should be a two (key, value) arguments or one object. Resolver - only function`);
     return new Error(message);
   }
 
-  wrongOptionsArguments() {
-    var message = this.getMessage('Wrong options arguments. Should be a two (key, value) arguments or one object');
+  wrongSetResolversArguments() {
+    var message = this.getMessage(`Wrong resolve arguments. Should be a two (key, value) arguments or one object. Resolver - only function`);
     return new Error(message);
   }
+
+  // ------------------------------------------
+
+  wrongAddOptionArguments() {
+    var message = this.getMessage('Wrong options arguments. Should be a two (String key, Any value) arguments');
+    return new Error(message);
+  }
+
+  wrongSetOptionsArguments() {
+    var message = this.getMessage('Wrong options arguments.Should be on argument type object');
+    return new Error(message);
+  }
+
+  // ------------------------------------------
 
   routeChangeErrorIsNotFunction() {
     var message = this.getMessage('Callback for route change error should be a function');

@@ -17,8 +17,19 @@ export default class ControllerConverter {
         throw new Error('Wrong controller model instance');
       }
 
-      var wrapped = ControllerConverter.wrap(controller);
+      var resolversKeys = [];
+      if (controller.hasRoute()) {
+        var route = controller.getRoute();
+        RouteConverter.register([route], defaultApplication);
+
+        var resolvers = route.getResolvers();
+        resolversKeys = Object.keys(resolvers);
+      }
+
       var dependencies = ControllerConverter.getDependencies(controller);
+      dependencies = dependencies.concat(resolversKeys);
+
+      var wrapped = ControllerConverter.wrap(controller);
       dependencies.push(wrapped);
 
       var name = controller.getName();
@@ -27,11 +38,6 @@ export default class ControllerConverter {
 
       angular.module(application)
         .controller(name, dependencies);
-
-      if (controller.hasRoute()) {
-        var route = controller.getRoute();
-        RouteConverter.register([route], defaultApplication);
-      }
     }
   }
 

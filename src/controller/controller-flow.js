@@ -40,8 +40,13 @@ export default class ControllerFlow {
    * Add resolve config to route
    * @returns {ControllerFlow}
    */
-  resolve(key, resolve) {
-    this.model.addResolve(key, resolve);
+  resolver(key, resolve) {
+    this.model.addResolver(key, resolve);
+    return this;
+  }
+
+  resolvers(resolvers) {
+    this.model.setResolvers(resolvers);
     return this;
   }
 
@@ -86,8 +91,18 @@ export default class ControllerFlow {
     return this;
   }
 
-  routeOption(key, value) {
+  /**
+   * Add route options
+   * @param key
+   * @param value
+   */
+  option(key, value) {
     this.model.addRouteOption(key, value);
+    return this;
+  }
+
+  options(options) {
+    this.model.setRouteOptions(options);
     return this;
   }
 }
