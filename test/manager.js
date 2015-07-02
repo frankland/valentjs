@@ -6,16 +6,18 @@ import { Manager } from '../src/index';
 import ControllerModel from '../src/controller/controller-model';
 
 
-class CustomControllerModel extends ControllerModel {
-}
+class CustomControllerModel extends ControllerModel {}
 
 describe('Manager', () => {
-  it('should be cool', () => {
+  it('should be an object if import default', () => {
     expect(Manager).to.be.a('function');
-    expect(manager).to.be.a('object');
   });
 
-  it('should be static manager\'s methods', () => {
+  it('should be a function ect if import { Manager }', () => {
+    expect(Manager).to.be.a('function');
+  });
+
+  it('should have methods to add components', () => {
     expect(manager.addController).to.be.a('function');
     expect(manager.addDirective).to.be.a('function');
     expect(manager.addFactory).to.be.a('function');

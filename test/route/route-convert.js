@@ -7,8 +7,8 @@ import { RouteConfig } from '../../src/route/route-config';
 var controllerName = 'valent.controller';
 var template = '<div>Hello World</div>';
 
-describe('Route Convert', () => {
-  it('convert route config with template', () => {
+describe('Route converter', () => {
+  it('should convert route config with template', () => {
     var routeFlow = new RouteFlow(controllerName);
 
     routeFlow
@@ -28,7 +28,7 @@ describe('Route Convert', () => {
     expect(config.template).to.equal(template);
   });
 
-  it('convert route config with templateUrl', () => {
+  it('should convert route config with templateUrl', () => {
     var routeFlow = new RouteFlow(controllerName);
 
     routeFlow
@@ -44,7 +44,7 @@ describe('Route Convert', () => {
     expect(config.templateUrl).to.equal('/template/url.html');
   });
 
-  it('convert should throw error if no template or templateUrl', () => {
+  it('should throw error if there are no template or templateUrl', () => {
     var routeFlow = new RouteFlow(controllerName);
 
     routeFlow
@@ -55,13 +55,14 @@ describe('Route Convert', () => {
     expect(() => RouteConvert.getConfig(model)).to.throw(Error);
   });
 
-  it('otherwise as string', () => {
+  it('should convert otherwise as string', () => {
     expect(RouteConvert.convertOtherwise('/404.html')).to.eql({
       redirectTo: '/404.html'
     });
   });
 
-  it('otherwise as not object or string', () => {
+  it('should throw exception if otherwise is in wrong format', () => {
     expect(() => RouteConvert.convertOtherwise([1, 2, 3])).to.throw(Error);
+    expect(() => RouteConvert.convertOtherwise({a: 1})).to.throw(Error);
   });
 });

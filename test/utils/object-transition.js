@@ -4,7 +4,7 @@ import ObjectTransition from '../../src/utils/object-transition';
 
 
 describe('Object transition', () => {
-  it('commit without push', () => {
+  it('should not change source object without .push()', () => {
     var o1 = {};
     var objectTransition = new ObjectTransition(o1);
 
@@ -14,7 +14,7 @@ describe('Object transition', () => {
     expect(o1).to.eql({});
   });
 
-  it('push', () => {
+  it('should change source object after .push()', () => {
     var o1 = {};
     var objectTransition = new ObjectTransition(o1);
 
@@ -31,7 +31,7 @@ describe('Object transition', () => {
     });
   });
 
-  it('push and commit', () => {
+  it('should change source object after .push() with arguments', () => {
     var o1 = {};
     var objectTransition = new ObjectTransition(o1);
 
@@ -44,7 +44,7 @@ describe('Object transition', () => {
     });
   });
 
-  it('clear', () => {
+  it('should clear all commits before push if .clear() was called', () => {
     var o1 = {};
     var objectTransition = new ObjectTransition(o1);
 
@@ -58,7 +58,7 @@ describe('Object transition', () => {
     expect(o1).to.eql({});
   });
 
-  it('state has', () => {
+  it('should check if commits contains key and return boolean', () => {
     var o1 = {};
     var objectTransition = new ObjectTransition(o1);
 
@@ -70,7 +70,7 @@ describe('Object transition', () => {
     expect(objectTransition.has('foo2')).to.equal(false);
   });
 
-  it('state has', () => {
+  it('should return value by key in commits', () => {
     var o1 = {};
     var objectTransition = new ObjectTransition(o1);
 

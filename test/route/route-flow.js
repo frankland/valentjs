@@ -6,21 +6,21 @@ var controllerName = 'valent.controller';
 var applicationName = 'valent';
 var template = '<div>Hello World</div>';
 
-describe('Route flow and model getters', () => {
-  it('flow should be a function', () => {
+describe('Route flow', () => {
+  it('should be a function', () => {
     expect(RouteFlow).to.be.a('function');
   });
 
-  it('model from flow should be an object', () => {
+  it('should contain RouteModel', () => {
     var routeFlow = new RouteFlow(controllerName);
     expect(routeFlow.model).to.be.an('object');
   });
 
-  it('flow without controller name should throw Error', () => {
+  it('should throw Error is controller name is not described', () => {
     expect(() => new RouteFlow()).to.throw(Error);
   });
 
-  it('flow should throw exception if template and templateUrl exists', () => {
+  it('should throw exception if both template and templateUrl are defined', () => {
     var routeFlow = new RouteFlow(controllerName);
 
     expect(() => routeFlow
@@ -28,7 +28,7 @@ describe('Route flow and model getters', () => {
       .templateUrl('/template/url.html')).to.throw(Error);
   });
 
-  it('flow and model', () => {
+  it('should contain RouteModel with correct values', () => {
     var routeFlow = new RouteFlow(controllerName);
 
     routeFlow
@@ -48,7 +48,7 @@ describe('Route flow and model getters', () => {
     expect(model.getTemplate()).to.equal(template);
   });
 
-  it('url builder', () => {
+  it('should correctly setup custom urlBuilder', () => {
     var routeFlow = new RouteFlow(controllerName);
 
     routeFlow

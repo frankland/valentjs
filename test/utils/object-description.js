@@ -4,7 +4,7 @@ import ObjectDescription from '../../src/utils/object-description';
 
 
 describe('Object description', () => {
-  it('should work :)', () => {
+  it('should create objects correctly', () => {
 
     var t1 = {
       'foo.bar': 1,

@@ -9,7 +9,7 @@ describe('Route Config', () => {
     expect(routeConfig).to.be.an('object');
   });
 
-  it('defaults', () => {
+  it('should have default values', () => {
     var routeConfig = new RouteConfig();
 
     expect(routeConfig.getBase()).to.equal(null);
@@ -17,16 +17,14 @@ describe('Route Config', () => {
     expect(routeConfig.getOtherwise()).to.equal(null);
   });
 
-  it('getters and setters', () => {
+  it('should return correct custom setting values', () => {
     var routeConfig = new RouteConfig();
 
     routeConfig.setBase('/test');
     routeConfig.disableHtml5Mode();
 
-    routeConfig.addResolver('access.guest', () => {
-    });
-    routeConfig.addResolver('access.admin', () => {
-    });
+    routeConfig.addResolver('access.guest', () => {});
+    routeConfig.addResolver('access.admin', () => {});
 
     expect(routeConfig.getBase()).to.equal('/test');
     expect(routeConfig.isHtml5Mode()).to.equal(false);
@@ -35,7 +33,7 @@ describe('Route Config', () => {
     expect(routeConfig.getResolvers()).have.all.keys(['access.guest', 'access.admin']);
   });
 
-  it('otherwise as string', () => {
+  it('should accept otherwise as string', () => {
     var routeConfig = new RouteConfig();
 
     routeConfig.setOtherwise('/404.html');
@@ -43,17 +41,20 @@ describe('Route Config', () => {
     expect(routeConfig.getOtherwise()).to.eql('/404.html');
   });
 
-  it('otherwise as object', () => {
+  it('should accept otherwise as RouteModel instance', () => {
     var routeConfig = new RouteConfig();
 
-    routeConfig.setOtherwise({
-      template: '404.html',
-      controller: 'application.not-found.controller'
-    });
+    routeConfig.setOtherwise('/404.html');
 
-    expect(routeConfig.getOtherwise()).to.eql({
+    expect(routeConfig.getOtherwise()).to.eql('/404.html');
+  });
+
+  it('should not accept otherwise as object', () => {
+    var routeConfig = new RouteConfig();
+
+    expect(() => routeConfig.setOtherwise({
       template: '404.html',
       controller: 'application.not-found.controller'
-    });
+    })).to.throw(Error);
   });
 });
