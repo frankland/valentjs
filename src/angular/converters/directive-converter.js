@@ -6,9 +6,11 @@ import isEmpty from 'lodash/lang/isEmpty';
 import isArray from 'lodash/lang/isArray';
 
 import Logger from '../../components/logger';
-import Scope from '../../components/scope';
-import Watcher from '../../components/watcher';
-import DirectiveParams from '../../components/directive-params';
+
+import Scope from '../components/scope';
+import Watcher from '../components/watcher';
+import DirectiveParams from '../components/directive-params';
+
 import ObjectDifference from '../../utils/object-difference';
 import DirectiveModel from '../../directive/directive-model';
 

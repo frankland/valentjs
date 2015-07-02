@@ -3,7 +3,7 @@ import isArray from 'lodash/lang/isArray';
 import isString from 'lodash/lang/isString';
 
 import Manager from '../index';
-import Injector from '../components/injector';
+import Injector from './components/injector';
 import Logger from '../components/logger';
 import RouteConfig from '../route/route-config';
 
