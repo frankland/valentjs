@@ -1,8 +1,8 @@
 import isFunction from 'lodash/lang/isFunction';
 import clone from 'lodash/lang/cloneDeep';
 
-import Logger from '../components/logger';
-import Scope from './components/scope';
+import Logger from '../../components/logger';
+import Scope from '../components/scope';
 
 import ControllerModel from '../../controller/controller-model';
 import ObjectDifference from '../../utils/object-difference';
@@ -60,7 +60,6 @@ export default class ControllerConverter {
       $scope.$valentModel = model;
       var namespace = model.getControllerNamespace();
       $scope[namespace]= controller;
-      console.log(model.getName(), namespace, $scope);
 
       $scope.$on('$destroy', () => {
         if (isFunction(controller.destructor)) {
