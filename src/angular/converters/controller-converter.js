@@ -57,7 +57,11 @@ export default class ControllerConverter {
 
       Scope.attach(controller, $scope);
 
-      $scope.controller = controller;
+      $scope.$valentModel = model;
+      var namespace = model.getControllerNamespace();
+      $scope[namespace]= controller;
+      console.log(model.getName(), namespace, $scope);
+
       $scope.$on('$destroy', () => {
         if (isFunction(controller.destructor)) {
           controller.destructor();

@@ -89,8 +89,10 @@ export default class DirectiveConverter {
   }
 
   static getLink(model) {
+    var namespace = model.getControllerNamespace();
     return function($scope, element, attrs, require) {
-      var controller = $scope.controller;
+
+      var controller = $scope[namespace];
 
       /**
        * If directive configured using Valent flow or models
@@ -98,12 +100,20 @@ export default class DirectiveConverter {
        */
       if (require && isArray(require)) {
         var requireControllers = require.map((directive) => {
-          var requireController = null;
+          var requiredController = null;
+
           if (directive) {
-            requireController = directive.controller ? directive.controller : directive
+            var directiveModel = directive.$valentModel;
+
+            if (directiveModel) {
+              var directiveNamespace = directiveModel.getControllerNamespace();
+              requiredController = directive[directiveNamespace]
+            } else {
+              requiredController = directive;
+            }
           }
 
-          return requireController;
+          return requiredController;
         });
 
         if (isFunction(controller.require)) {
@@ -174,12 +184,15 @@ export default class DirectiveConverter {
 
       Scope.attach(controller, $scope);
 
-      $scope.controller = controller;
+      $scope.$valentModel = model;
+      var namespace = model.getControllerNamespace();
+      $scope[namespace] = controller;
       /**
        * Add controller to current context to be available using
        * @require directive option
        */
-      this.controller = controller;
+      this.$valentModel = model;
+      this[namespace] = controller;
 
       $scope.$on('$destroy', () => {
         if (isFunction(controller.destructor)) {

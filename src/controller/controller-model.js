@@ -8,6 +8,7 @@ import RouteModel from '../route/route-model';
 
 function setDefaults(config) {
   config.dependencies = [];
+  config.namespace = 'controller';
 }
 
 var local = {
@@ -123,13 +124,13 @@ export default class ControllerModel {
     this[local.config].route.addUrl(url);
   }
 
-  addRouteOption(...arguargsments) {
+  addRouteOption(...args) {
     if (!this.hasRoute()) {
       throw this.exception.routeIsNotDefined('addRouteOption');
     }
 
     var route = this.getRoute();
-    route.setOptions(...args);
+    route.addOption(...args);
   }
 
   setRouteOptions(...args) {
@@ -205,5 +206,13 @@ export default class ControllerModel {
 
     var route = this.getRoute();
     route.setUrlBuilder(urlBuilder);
+  }
+
+  setControllerNamespace(name) {
+    this[local.config].namespace = name;
+  }
+
+  getControllerNamespace() {
+    return this[local.config].namespace;
   }
 }

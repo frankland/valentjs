@@ -1,5 +1,7 @@
 import isFunction from 'lodash/lang/isFunction';
+import isString from 'lodash/lang/isString';
 import RouteException from './route-exception';
+import RouteModel from './route-model';
 
 /**
  * Defaults
@@ -22,7 +24,7 @@ class RouteConfig {
     this[local.config] = {};
 
     setDefaults(this[local.config]);
-    this.exception = new RouteException('global.route.config');
+    this.exception = new RouteException('route.config');
   }
 
   /**
@@ -56,6 +58,10 @@ class RouteConfig {
    * otherwise
    */
   setOtherwise(otherwise) {
+    if (!isString(otherwise) && !(otherwise instanceof RouteModel)) {
+      throw this.exception.wrongOtherwise();
+    }
+
     this[local.config].otherwise = otherwise;
   }
 

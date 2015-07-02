@@ -105,5 +105,10 @@ export default class ControllerFlow {
     this.model.setRouteOptions(options);
     return this;
   }
+
+  as(name) {
+    this.model.setControllerNamespace(name);
+    return this;
+  }
 }
 

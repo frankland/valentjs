@@ -94,7 +94,7 @@ export default class RouteConverter {
     } else if (otherwise instanceof RouteModel) {
       converted = RouteConverter.getConfig(otherwise);
     } else {
-      throw new Error('Wrong otherwise config. Should be an object or a string. String will be converted to @redirectTo url');
+      throw new Error('Wrong otherwise config. Should be an instance of RouteModel or String. String will be converted to @redirectTo url');
     }
 
     return converted;

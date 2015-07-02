@@ -113,4 +113,9 @@ export default class DirectiveFlow {
 
     return this;
   }
+
+  as(name) {
+    this.model.setControllerNamespace(name);
+    return this;
+  }
 }

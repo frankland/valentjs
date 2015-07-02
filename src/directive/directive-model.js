@@ -13,6 +13,7 @@ function setDefaults(config) {
   config.scope = null;
   config.replace = true;
   config.restrict = null;
+  config.namespace = 'controller';
 }
 
 var availableRestricts = ['A', 'E', 'C'];
@@ -232,5 +233,13 @@ export default class DirectiveModel {
 
   getTemplateUrl() {
     return this[local.config].templateUrl;
+  }
+
+  setControllerNamespace(name) {
+    this[local.config].namespace = name;
+  }
+
+  getControllerNamespace() {
+    return this[local.config].namespace;
   }
 }

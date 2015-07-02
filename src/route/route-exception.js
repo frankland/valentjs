@@ -74,4 +74,14 @@ export default class RouteException {
     var message = this.getMessage('Callback for route change error should be a function');
     return new Error(message);
   }
+
+  wrongUrlFormat(url) {
+    var message = this.getMessage(`Valent does not support url helpers like "?" and "*" at current version. Url: "${url}"`);
+    return new Error(message);
+  }
+
+  wrongOtherwise(url) {
+    var message = this.getMessage(`Wrong otherwise config`);
+    return new Error(message);
+  }
 }

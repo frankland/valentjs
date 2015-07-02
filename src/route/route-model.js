@@ -55,6 +55,10 @@ export default class RouteModel {
    * @param url
    */
   addUrl(url) {
+    if (url.indexOf('?') != -1 || url.indexOf('*') != -1) {
+      throw this.exception.wrongUrlFormat(url);
+    }
+
     this[local.config].urls.push(url);
   }
 
