@@ -34,8 +34,8 @@ export default class DirectiveFlow {
    * Set if directive with transclude
    * @returns {DirectiveFlow}
    */
-  transclude() {
-    this.model.setTransclude(true);
+  transclude(transclude) {
+    this.model.setTransclude(transclude);
     return this;
   }
 

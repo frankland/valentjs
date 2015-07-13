@@ -46,12 +46,21 @@ export default class DirectiveConverter {
 
     var config = {
       transclude: model.getTransclude(),
-      replace: model.getReplace(),
+      //replace: true,
       scope: attributes,
       controller: dependencies,
-      restrict: restrict,
-      link: DirectiveConverter.getLink(model)
+      restrict: restrict
     };
+
+    var link = DirectiveConverter.getLink(model);
+    if (link) {
+      config.link = link;
+    }
+
+    var compile = DirectiveConverter.getCompile(model);
+    if (compile) {
+      config.compile = compile;
+    }
 
     if (model.hasRequire()) {
       config.require = model.getRequire();
@@ -65,8 +74,11 @@ export default class DirectiveConverter {
     } else if (templateUrl) {
       config.templateUrl = templateUrl;
     } else if (restrict == 'E') {
-      throw model.exception.noTemplateOrTemplateUrl();
+      //console.warn('There are no template. Could be used compile function to generate template');
+      //throw model.exception.noTemplateOrTemplateUrl();
     }
+
+    //console.log(angular.copy(config));
 
     return config;
   }
@@ -90,9 +102,20 @@ export default class DirectiveConverter {
     return assign({}, scope);
   }
 
+  static getCompile(model) {
+    var controller =  model.getController();
+    var compile = null;
+
+    if (isFunction(controller.compile)) {
+      compile = controller.compile;
+    }
+
+    return compile;
+  }
+
   static getLink(model) {
     var namespace = model.getControllerNamespace();
-    return function($scope, element, attrs, require) {
+    return function($scope, element, attrs, require, transclude) {
 
       var controller = $scope[namespace];
 
@@ -126,7 +149,7 @@ export default class DirectiveConverter {
       }
 
       if (isFunction(controller.link)) {
-        controller.link(element, attrs);
+        controller.link(element, attrs, transclude, $scope);
       }
     }
   }

@@ -11,7 +11,8 @@ function setDefaults(config) {
   config.dependencies = [];
   config.pipes = {};
   config.scope = null;
-  config.replace = true;
+  //config.replace = true;
+  //config.replace = null;
   config.restrict = null;
   config.namespace = 'controller';
 }
@@ -108,7 +109,7 @@ export default class DirectiveModel {
    * @param transclude
    */
   setTransclude(transclude) {
-    this[local.config].transclude = !!transclude;
+    this[local.config].transclude = transclude;
   }
 
   getTransclude() {
