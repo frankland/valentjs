@@ -46,7 +46,7 @@ export default class DirectiveConverter {
 
     var config = {
       transclude: model.getTransclude(),
-      //replace: true,
+      replace: model.getReplace(),
       scope: attributes,
       controller: dependencies,
       restrict: restrict

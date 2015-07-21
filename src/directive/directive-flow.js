@@ -92,6 +92,12 @@ export default class DirectiveFlow {
     return this;
   }
 
+  replace() {
+    this.model.setReplace();
+
+    return this;
+  }
+
   /**
    * Set template
    * @param template
