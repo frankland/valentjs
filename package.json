@@ -20,7 +20,8 @@
     "deep-diff": "^0.3.2",
     "lodash": "^3.8.0",
     "moment": "^2.10.3",
-    "tcomb": "^2.0.0-beta"
+    "tcomb": "^2.0.0-beta",
+    "url-pattern": "^0.10.0"
   },
   "devDependencies": {
     "babel": "^5.4.2",

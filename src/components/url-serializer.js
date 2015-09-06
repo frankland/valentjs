@@ -67,105 +67,111 @@ var BoolEncode = (value) => {
   return !!value ? '1' : '0';
 };
 
+
+var addUrlRules = (urlSerializer) => {
+  /**
+   * Numbers
+   */
+  urlSerializer.addRule(primitives.Num, {
+    decode: NumDecode,
+    encode: NumEncode
+  });
+
+  urlSerializer.addRule(primitives.ListNum, {
+    decode: (raw) => {
+      if (!raw || !raw.length) {
+        return null;
+      }
+      return raw.split(DELIMITER).map(NumDecode);
+    },
+    encode: (value) => {
+      if (!isArray(value)) {
+        return null;
+      }
+      return value.map(NumEncode).join(DELIMITER);
+    }
+  });
+
+  /**
+   * Strings
+   */
+  urlSerializer.addRule(primitives.Str, {
+    decode: StrDecode,
+    encode: StrEncode
+  });
+
+  urlSerializer.addRule(primitives.ListStr, {
+    decode: (raw) => {
+      if (!raw || !raw.length) {
+        return null;
+      }
+      return raw.split(DELIMITER).map(StrDecode);
+    },
+    encode: (value) => {
+      if (!isArray(value)) {
+        return null;
+      }
+      return value.map(StrEncode).join(DELIMITER);
+    }
+  });
+
+  /**
+   * Dates
+   */
+  urlSerializer.addRule(primitives.Dat, {
+    decode: DateDecode,
+    encode: DateEncode
+  });
+
+  urlSerializer.addRule(primitives.ListDat, {
+    decode: (raw) => {
+      if (!raw || !raw.length) {
+        return null;
+      }
+      return raw.split(DELIMITER).map(DateDecode);
+    },
+    encode: (value) => {
+      if (!isArray(value)) {
+        return null;
+      }
+      return value.map(DateEncode).join(DELIMITER);
+    }
+  });
+
+  /**
+   * Bools
+   */
+  urlSerializer.addRule(primitives.Bool, {
+    decode: BoolDecode,
+    encode: BoolEncode
+  });
+
+  urlSerializer.addRule(primitives.ListBool, {
+    decode: (raw) => {
+      if (!raw || !raw.length) {
+        return null;
+      }
+      return raw.split(DELIMITER).map(BoolDecode);
+    },
+    encode: (value) => {
+      if (!isArray(value)) {
+        return null;
+      }
+      return value.map(BoolEncode).join(DELIMITER);
+    }
+  });
+}
+
 export default class UrlSerializer extends Serializer {
   constructor(params) {
     super(params);
 
-    /**
-     * Numbers
-     */
-    this.addRule(primitives.Num, {
-      decode: NumDecode,
-      encode: NumEncode
-    });
-
-    this.addRule(primitives.ListNum, {
-      decode: (raw) => {
-        if (!raw || !raw.length) {
-          return null;
-        }
-        return raw.split(DELIMITER).map(NumDecode);
-      },
-      encode: (value) => {
-        if (!isArray(value)) {
-          return null;
-        }
-        return value.map(NumEncode).join(DELIMITER);
-      }
-    });
-
-    /**
-     * Strings
-     */
-    this.addRule(primitives.Str, {
-      decode: StrDecode,
-      encode: StrEncode
-    });
-
-    this.addRule(primitives.ListStr, {
-      decode: (raw) => {
-        if (!raw || !raw.length) {
-          return null;
-        }
-        return raw.split(DELIMITER).map(StrDecode);
-      },
-      encode: (value) => {
-        if (!isArray(value)) {
-          return null;
-        }
-        return value.map(StrEncode).join(DELIMITER);
-      }
-    });
-
-    /**
-     * Dates
-     */
-    this.addRule(primitives.Dat, {
-      decode: DateDecode,
-      encode: DateEncode
-    });
-
-    this.addRule(primitives.ListDat, {
-      decode: (raw) => {
-        if (!raw || !raw.length) {
-          return null;
-        }
-        return raw.split(DELIMITER).map(DateDecode);
-      },
-      encode: (value) => {
-        if (!isArray(value)) {
-          return null;
-        }
-        return value.map(DateEncode).join(DELIMITER);
-      }
-    });
-
-    /**
-     * Bools
-     */
-    this.addRule(primitives.Bool, {
-      decode: BoolDecode,
-      encode: BoolEncode
-    });
-
-    this.addRule(primitives.ListBool, {
-      decode: (raw) => {
-        if (!raw || !raw.length) {
-          return null;
-        }
-        return raw.split(DELIMITER).map(BoolDecode);
-      },
-      encode: (value) => {
-        if (!isArray(value)) {
-          return null;
-        }
-        return value.map(BoolEncode).join(DELIMITER);
-      }
-    });
+    addUrlRules(this);
   }
 
   normalizeStruct(struct) {
     var normalized = {};
+
     for (var key of Object.keys(struct)) {
       var value = struct[key];
 
@@ -173,6 +179,7 @@ export default class UrlSerializer extends Serializer {
       var rename = null;
 
       if (isArray(value)) {
+
         // TODO: check types
         rename = value[0];
         keyStruct = value[1];
@@ -191,39 +198,6 @@ export default class UrlSerializer extends Serializer {
     return normalized;
   }
 
-  decode(params) {
-    var struct = this.getStruct();
-    var rules = this.getRules();
-
-    var decodedValues = {};
-    for (var key of Object.keys(params)) {
-      var value = params[key];
-
-      var structItem = find(struct, {
-        rename: key
-      });
-
-
-      if (!structItem) {
-        // TODO: correct error msg
-        throw new Error(`rename key "${key}" is not described at url serializer`);
-      }
-
-      var keyStruct = structItem.struct;
-      if (!rules.has(keyStruct)) {
-        throw new Error(`serialize rule for "${key}" is not described at url serializer`);
-      }
-
-      var rule = rules.get(keyStruct);
-      var decodedValue = rule.decode(value);
-
-      var name = structItem.name;
-      decodedValues[name] = decodedValue;
-    }
-
-    return decodedValues;
-  }
-
   encode(params) {
     var struct = this.getStruct();
     var rules = this.getRules();
@@ -231,6 +205,7 @@ export default class UrlSerializer extends Serializer {
     var encodedValues = {};
     for (var key of Object.keys(params)) {
       var value = params[key];
+
       if (!struct.hasOwnProperty(key)) {
         throw new Error(`key "${key}" is not described at url serializer`);
       }
@@ -248,5 +223,38 @@ export default class UrlSerializer extends Serializer {
     }
 
     return encodedValues;
+  }
+
+  decode(params) {
+    var struct = this.getStruct();
+    var rules = this.getRules();
+
+    var decodedValues = {};
+
+    for (var key of Object.keys(params)) {
+      var value = params[key];
+
+      var structItem = find(struct, {
+        rename: key
+      });
+
+      if (!structItem) {
+        // TODO: correct error msg
+        throw new Error(`Key "${key}" is not described at url serialization rules`);
+      }
+
+      var keyStruct = structItem.struct;
+      if (!rules.has(keyStruct)) {
+        throw new Error(`serialize rule for "${key}" is not described at url serializer`);
+      }
+
+      var rule = rules.get(keyStruct);
+      var decodedValue = rule.decode(value);
+
+      var name = structItem.name;
+      decodedValues[name] = decodedValue;
+    }
+
+    return decodedValues;
   }
 }

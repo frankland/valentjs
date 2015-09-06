@@ -36,12 +36,59 @@ export default class Serializer {
     this[local.rules].set(namespace, normalized);
   }
 
-  encode() {
-    throw new Error('@encode method should be implemented in child class');
+  encode(params) {
+    var struct = this.getStruct();
+    var rules = this.getRules();
+    var encodedObject = {};
+
+    var props = struct.meta.props;
+    for (var key of Object.keys(props)) {
+
+      if (params.hasOwnProperty(key)) {
+        var structItem = props[key];
+        if (!rules.has(structItem)) {
+          throw new Error(`rule for struct with id "${key}" does not exist`);
+        }
+
+        var value = params[key];
+        try {
+          var valueStruct = structItem(value);
+        } catch (e) {
+          throw new Error(`value with id "${key}" has worng struct. Expected "${structItem.displayName}", but value is "${value}"`);
+        }
+
+        var rule = rules.get(structItem);
+        var encoded = rule.encode(value);
+        encodedObject[key] = encoded;
+      }
+    }
+
+    return encodedObject;
   }
 
 
-  decode() {
-    throw new Error('@decode method should be implemented in child class');
+  decode(params) {
+    var struct = this.getStruct();
+    var rules = this.getRules();
+    var decodedObject = {};
+
+    var props = struct.meta.props;
+    for (var key of Object.keys(props)) {
+
+      if (params.hasOwnProperty(key)) {
+        var structItem = props[key];
+        if (!rules.has(structItem)) {
+          throw new Error(`rule for struct with id "${key}" does not exist`);
+        }
+
+        var value = params[key];
+
+        var rule = rules.get(structItem);
+        var decoded = rule.decode(value);
+        decodedObject[key] = decoded;
+      }
+    }
+
+    return decodedObject;
   }
 }

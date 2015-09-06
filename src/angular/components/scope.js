@@ -29,7 +29,6 @@ export default class Scope {
     });
   }
 
-
   static delete(context) {
     scopes.delete(context);
   }

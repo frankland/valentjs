@@ -24,8 +24,8 @@ class CustomSerializer extends UrlSerializer {
 }
 
 
-describe('url struct', () => {
-  it('cool encode', () => {
+describe('Url struct', () => {
+  it('should encode correctly', () => {
     var serializer = new UrlSerializer({
       apple: ['apl', primitives.Str],
       orange: primitives.Num,
@@ -54,7 +54,7 @@ describe('url struct', () => {
     });
   });
 
-  it('cool decode', () => {
+  it('should decode correctly', () => {
     var serializer = new UrlSerializer({
       apple: ['apl', primitives.Str],
       orange: primitives.Num,
