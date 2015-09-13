@@ -7,8 +7,12 @@ var local = {
   storage: Symbol('storage')
 };
 
+var version = '0.0.96';
+
 class Manager {
   constructor() {
+    this.version = version;
+
     this.clear();
   }
 
@@ -99,6 +103,19 @@ class Manager {
   }
 }
 
+var manager = null;
+var context = window ? window : global;
 
-export default new Manager();
+if (context.valent) {
+  manager = context.valent;
+  console.error('Seems there is multiple installations of Valent');
+
+} else {
+  manager = new Manager();
+  context.valent = manager;
+}
+
+
+
+export default manager;
 export { Manager };
