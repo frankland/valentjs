@@ -61,6 +61,18 @@ export default class AngularBootstrap {
     return this[local.module];
   }
 
+  handleExceptions(handler) {
+    this.getModule().config(['$provide', ($provide) => {
+
+      $provide.decorator('$exceptionHandler', ($delegate) => {
+        return (exception, cause) => {
+          
+          handler(exception, cause, $delegate);
+        }
+      });
+    }]);
+  }
+
   bootstrap() {
     this.register();
 
