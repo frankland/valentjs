@@ -28,11 +28,11 @@ function setupApplication(module) {
     }
 
     var onRouteChangeStart = RouteConfig.getOnRouteChangeStart();
-    $rootScope.$on('$routeChangeStart', () => {
+    $rootScope.$on('$routeChangeStart', (event, current, previous, rejection) => {
       Logger.resetColors();
 
       if (isFunction(onRouteChangeStart)) {
-        onRouteChangeStart();
+        onRouteChangeStart(event, current, previous, rejection);
       }
     });
   }]);
