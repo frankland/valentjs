@@ -199,13 +199,13 @@ export default class ControllerModel {
     route.setTemplateUrl(templateUrl);
   }
 
-  urlBuilder(urlBuilder) {
+  setUrlStruct(struct) {
     if (!this.hasRoute()) {
-      throw this.exception.routeIsNotDefined('urlBuilder');
+      throw this.exception.routeIsNotDefined('setUrlStruct');
     }
 
     var route = this.getRoute();
-    route.setUrlBuilder(urlBuilder);
+    route.setStruct(struct);
   }
 
   setControllerNamespace(name) {

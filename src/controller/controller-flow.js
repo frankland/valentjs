@@ -76,8 +76,8 @@ export default class ControllerFlow {
    * @param generator
    * @returns {ControllerFlow}
    */
-  urlBuilder(generator) {
-    this.model.urlBuilder(generator);
+  struct(struct) {
+    this.model.setUrlStruct(struct);
     return this;
   }
 
@@ -111,4 +111,3 @@ export default class ControllerFlow {
     return this;
   }
 }
-

@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import UrlStruct from '../../src/components/url-struct';
+// import UrlStruct from '../../src/components/url-struct';
 import UrlSerializer from '../../src/components/url-serializer';
 
 import * as primitives from '../../src/utils/struct-primitives';
@@ -80,18 +80,18 @@ describe('Url struct', () => {
       octarine: ['a', 'b', 'c'],
     });
   });
+  // 
+  // it('custom serializer', () => {
+  //   var urlSerializer = new CustomSerializer({
+  //     a: primitives.Str,
+  //     b: primitives.Num,
+  //     c: primitives.ListNum,
+  //     d: primitives.ListStr,
+  //     e: primitives.ListDat,
+  //     f: primitives.Dat
+  //   });
 
-  it('custom serializer', () => {
-    var urlSerializer = new CustomSerializer({
-      a: primitives.Str,
-      b: primitives.Num,
-      c: primitives.ListNum,
-      d: primitives.ListStr,
-      e: primitives.ListDat,
-      f: primitives.Dat
-    });
-
-    var urlStruct = new UrlStruct('/home/index');
-    urlStruct.setSerializer(urlSerializer);
-  });
+    // var urlStruct = new UrlStruct('/home/index');
+    // urlStruct.setSerializer(urlSerializer);
+  // });
 });

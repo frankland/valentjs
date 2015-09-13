@@ -6,12 +6,13 @@ import isString from 'lodash/lang/isString';
 import RouteModel from '../../route/route-model';
 import RouteConfig from '../../route/route-config';
 
-import Url from '../../components/url';
+import AngularUrl from '../components/url';
 
 export default class RouteConverter {
 
   static register(routes, defaultApplication) {
     var sorted = groupBy(routes, (route) => {
+
       /**
        * Return default application name if not set at route
        */
@@ -29,13 +30,27 @@ export default class RouteConverter {
             }
 
             var controllerName = route.getControllerName();
+            var urls = RouteConverter.getUrls(route);
 
-            if (route.hasUrlBuilder()) {
-              Url.add(controllerName, route.getUrlBuilder());
+            if (!urls.length) {
+              throw new Error(`There are no urls that is assigned to route "${controllerName}"`);
+            }
+
+            if (route.hasStruct()) {
+              var struct = route.getStruct();
+              var serializer = null;
+
+              if (struct instanceof AngularUrl) {
+                serializer = struct;
+              } else {
+                var pattern = urls[0];
+                serializer = new AngularUrl(pattern, struct);
+              }
+
+              AngularUrl.add(controllerName, serializer);
             }
 
             var config = RouteConverter.getConfig(route);
-            var urls = RouteConverter.getUrls(route);
 
             for (var url of urls) {
               $routeProvider.when(url, config);

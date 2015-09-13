@@ -215,6 +215,12 @@ export default class UrlSerializer extends Serializer {
         throw new Error(`serialize rule for "${key}" is not described at url serializer`);
       }
 
+      try {
+        var valueStruct = keyStruct(value);
+      } catch (e) {
+        throw new Error(`value with id "${key}" has wrong struct. Expected "${keyStruct.displayName}", but value is "${value}"`);
+      }
+
       var rule = rules.get(keyStruct);
       var encodedValue = rule.encode(value);
 

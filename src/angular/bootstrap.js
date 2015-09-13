@@ -74,12 +74,15 @@ export default class AngularBootstrap {
 
     var { controllers, factories, directives, routes } = Manager.getModels();
 
+    RouteConverter.setup(application);
+    RouteConverter.register(routes, application);
+
     ControllerConverter.register(controllers, application);
     FactoryConverter.register(factories, application);
     DirectiveConverter.register(directives, application);
 
-    RouteConverter.setup(application);
-    RouteConverter.register(routes, application);
+    //RouteConverter.setup(application);
+    //RouteConverter.register(routes, application);
 
     Manager.clear();
   }

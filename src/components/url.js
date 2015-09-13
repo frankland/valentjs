@@ -1,101 +1,190 @@
-import isFunction from 'lodash/lang/isFunction';
+import pluck from 'lodash/collection/pluck';
 import isString from 'lodash/lang/isString';
-import isObject from 'lodash/lang/isPlainObject';
 
-import RouteConfig from '../route/route-config';
+import UrlPattern from 'url-pattern';
 
-class Url {
-  constructor() {
-    this.routes = new Map();
+import UrlSerializer from './url-serializer';
+
+
+var local = {
+  pattern: Symbol('pattern'),
+  urlPattern: Symbol('url-pattern'),
+
+  urlParamsKeys: Symbol('url-params-key'),
+  searchParamsKeys: Symbol('search-params-key')
+};
+
+var routes = new Map();
+
+export default class Url extends UrlSerializer {
+
+  static add(namespace, url) {
+    if (!(url instanceof Url)) {
+      throw new Error(`url for "${namespace}" should be instance of Url`);
+    }
+
+    routes.set(namespace, url);
   }
 
-  static onChange(context, fn) {
-    return Scope.get(this[context])
-      .then(($scope) => $scope.$on('$routeChangeStart', fn));
+  static has(namespace) {
+    return routes.has(namespace);
   }
 
   /**
-   * Default Url Builder. Serialize params object to url query
-   * @param url
-   * @param params {object}
-   * @returns {string}
+   * TODO: add lazzy URL creating
+   * @param namespace
+   * @returns {*}
    */
-  static build(url, params) {
-    if (params && !isObject(params)) {
-      throw new Error('Wrong arguments for url builder. @params should be an object');
+  static get(namespace) {
+    if (!isString(namespace)) {
+      throw new Error(`Wrong arguments for Url.get`);
     }
+
+    if (!routes.has(namespace)) {
+      throw new Error('Url does not exists');
+    }
+
+    return routes.get(namespace);
+  }
+
+  static clear() {
+    routes = new Map();
+  }
+
+  constructor(pattern, struct) {
+    super(struct);
+
+    var urlPattern = new UrlPattern(pattern);
+
+    this[local.pattern] = pattern;
+    this[local.urlPattern] = urlPattern;
+
+    var urlParams = urlPattern.ast.filter(item => item.tag === 'named')
+      .map(item => item.value);
+
+    var searchParams = [];
+
+    for (var key of Object.keys(struct)) {
+      if (urlParams.indexOf(key) === -1) {
+        searchParams.push(key);
+      }
+    }
+
+    this[local.searchParamsKeys] = searchParams;
+    this[local.urlParamsKeys] = urlParams;
+  }
+
+  getPattern() {
+    return this[local.pattern];
+  }
+
+  getUrlPattern() {
+    return this[local.urlPattern];
+  }
+
+  getUrlParamKeys() {
+    return this[local.urlParamsKeys];
+  }
+
+  getSearchParamKeys() {
+    return this[local.searchParamsKeys];
+  }
+
+  encodeSearchString(params) {
+    var parts = [];
+
+    for (var param of Object.keys(params)) {
+      var value = params[param];
+      var part = `${param}=${encodeURIComponent(value)}`;
+
+      parts.push(part);
+    }
+
+    return parts.join('&');
+  }
+
+  go(params) {
+    var encoded = this.stringify(params);
 
     /**
-     * TODO: parse URL ? and * symbols
+     * TODO: check redirect method
      */
-    var parts = [];
-    if (params) {
-      for (var param of Object.keys(params)) {
-        var value = params[param];
-        var placeholder = `:${param}`;
-
-        if (url.indexOf(placeholder) == -1) {
-          var part = `${param}=${encodeURIComponent(value)}`;
-          parts.push(part);
-        } else {
-          url = url.replace(placeholder, value);
-        }
-      }
-    }
-
-    var query = parts.join('&');
-
-    return query.length == 0 ? url : [url, query].join('?');
+    window.location.replace(encoded);
   }
 
-  static at(url) {
-    return (params) => {
-      return Url.build(url, params);
-    }
-  }
+  // --------------------------------
 
-  add(namespace, expr) {
-    if (!isFunction(expr) && !isString(expr)) {
-      throw new Error(`Url builder for '${namespace}' should function or string`);
-    }
+  stringify(params) {
+    var encodedParams = this.encode(params);
 
-    this.routes.set(namespace, expr);
-  }
+    var urlPattern = this.getUrlPattern();
+    var urlParamKeys = this.getUrlParamKeys();
 
-  get(route) {
-    if (!this.routes.has(route)) {
-      throw new Error(`Url builder for controller "${route}" does not exist`);
-    }
+    var searchParams = {};
+    var urlParams = {};
 
-    var expr = this.routes.get(route);
-
-    var builder = null;
-    if (isFunction(expr)) {
-      builder = expr;
-    } else if (isString(expr)) {
-      builder = Url.at(expr);
-    }
-
-    var base = RouteConfig.getBase() || '';
-
-    return function(...args) {
-      var result = builder(...args);
-      var url = null;
-
-      if (isObject(result)) {
-        var query = result.query;
-        url = Url.build(result.url, query);
-      } else if (isString(result)) {
-        url = result;
+    for (var key of Object.keys(encodedParams)) {
+      if (urlParamKeys.indexOf(key) === -1) {
+        searchParams[key] = encodedParams[key];
       } else {
-        throw new Error('Url builder output type should be an object {url, query} or string');
+        urlParams[key] = encodedParams[key];
       }
+    }
 
-      return base + url;
-    };
+    var url = urlPattern.stringify(urlParams);
+    var query = this.encodeSearchString(searchParams);
+
+    return [url, query].join('?');
+  }
+
+  parse() {
+    var pathname = window.location.pathname;
+    var search = window.location.search;
+
+    var url = pathname;
+    if (search) {
+      url += `?${search}`;
+    }
+
+    return this.decode(url);
+  }
+
+  decodeSearchString(queryString) {
+    var queryParams = {};
+    var queryPairs = queryString.split('&');
+
+    for (var pair of queryPairs) {
+      var tuple = pair.split('=');
+      var key = tuple[0];
+      var value = tuple.slice(1).join('');
+
+      queryParams[key] = decodeURIComponent(value);
+    }
+
+    return queryParams;
+  }
+
+  decode(path) {
+    var splittedPath = path.split('?');
+    var searchString = splittedPath.slice(1).join('');
+
+    var url = splittedPath[0];
+
+    var urlPattern = this.getUrlPattern();
+    var urlParams = urlPattern.match(url);
+
+    if (!urlParams) {
+      var pattern = this.getPattern();
+      throw new Error(`Wrong url pattern. Expected "${pattern}", got "${path}"`);
+    }
+
+    var searchParams = {};
+
+    if (searchString) {
+      searchParams = this.decodeSearchString(searchString);
+    }
+
+    var params = Object.assign(urlParams, searchParams);
+    return super.decode(params);
   }
 }
-
-
-export default new Url();
-export { Url };

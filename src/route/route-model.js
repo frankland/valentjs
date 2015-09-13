@@ -3,6 +3,7 @@ import isString from 'lodash/lang/isString';
 import isObject from 'lodash/lang/isObject';
 
 import RouteException from './route-exception';
+import Url from '../components/url';
 
 function setDefaults(config) {
   config.urls = [];
@@ -116,20 +117,21 @@ export default class RouteModel {
     return !!this.urls.length;
   }
 
-  setUrlBuilder(urlBuilder) {
-    this[local.config].urlBuilder = urlBuilder;
+  setStruct(strcut) {
+    // TODO: check type UrlParams
+    this[local.config].strcut = strcut;
   }
 
-  hasUrlBuilder() {
-    return !!this[local.config].urlBuilder || this[local.config].urls.length == 1;
+  hasStruct() {
+    return !!this[local.config].strcut;
   }
 
-  /**
-   * Get url builder :D
-   * @returns {function}
-   */
-  getUrlBuilder() {
-    return this[local.config].urlBuilder ? this[local.config].urlBuilder : this[local.config].urls[0];
+  hasSerializer() {
+
+  }
+
+  getStruct() {
+    return this[local.config].strcut;
   }
 
   // ---------------------------------------------------------

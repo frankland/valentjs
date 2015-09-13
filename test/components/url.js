@@ -1,70 +1,45 @@
 import { expect } from 'chai';
 
-import url from '../../src/components/url';
-import { Url } from '../../src/components/url';
+import * as primitives from '../../src/utils/struct-primitives';
+import t from 'tcomb';
 
-var query = {
-  foo: 1,
-  bar: 2
-};
+import Url from '../../src/components/url';
 
+describe('Url params', () => {
+  var urlStruct = {
+    id: primitives.Num,
+    tags: primitives.ListNum,
+    q: primitives.Str
+  };
 
-describe('url', () => {
-  it('should be an object', () => {
-    expect(url).to.be.an('object');
-  });
+  var url = new Url('/api/user/:id', urlStruct);
 
-  it('add url builder', () => {
-    var url = new Url();
-    url.add('home.index', (state) => `/home/index/${state}`);
-
-    expect(url.get('home.index')).to.be.a('function');
-  });
-
-  it('url manager should throw exception if route is not defined', () => {
-    var url = new Url();
-
-    expect(() => url.get('home.index')).to.throw(Error);
-  });
-
-  it('url manager should throw exception if urlBuilder result is not object or string', () => {
-    var url = new Url();
-
-    url.add('home.index', () => []);
-
-    var builder = url.get('home.index');
-    expect(() => builder()).to.throw(Error);
-  });
-
-  it('url builder as function and return string', () => {
-    var url = new Url();
-
-    url.add('home.index', (state) => `/home/index/${state}`);
-
-    var builder = url.get('home.index');
-    expect(builder('active')).to.equal('/home/index/active');
-  });
-
-  it('url builder as function and return object', () => {
-    var url = new Url();
-
-    url.add('home.index', (state, query) => {
-      return {
-        url: `/home/index/${state}`,
-        query
-      }
+  it('should encode correctly', () => {
+    var encodedUrl = url.stringify({
+      id: 1,
+      tags: [1,2,3],
+      q: 'Yo'
     });
 
-    var builder = url.get('home.index');
-    expect(builder('active', query)).to.equal('/home/index/active?foo=1&bar=2');
+    expect(encodedUrl).to.be.equal('/api/user/1?tags=1~2~3&q=Yo');
   });
 
-  it('url builder as string', () => {
-    var url = new Url();
 
-    url.add('home.index', '/home/index');
+  it('should decode correctly', () => {
+    var decodedUrl = url.decode('/api/user/1?tags=1~2~3&q=Yo');
 
-    var builder = url.get('home.index');
-    expect(builder(query)).to.equal('/home/index?foo=1&bar=2');
+    expect(decodedUrl).to.eql({
+      id: 1,
+      tags: [1,2,3],
+      q: 'Yo'
+    });
+  });
+
+  it('should throw error if key does not exist at url strcut', () => {
+    expect(() => urlParams.decode('/api/user/1?UNEXISTING_AT_STRUCT=1~2~3&q=Yo')).to.throw(Error);
+  });
+
+  it('should throw error if url is not match pattern', () => {
+    expect(() => urlParams.decode('/test')).to.throw(Error);
   });
 });

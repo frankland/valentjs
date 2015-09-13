@@ -26,12 +26,11 @@ export default class RouteFlow {
   }
 
   /**
-   * set url builder for route
-   * @param builder
+   * @param struct
    * @returns {RouteFlow}
    */
-  urlBuilder(builder) {
-    this.model.setUrlBuilder(builder);
+  struct(struct) {
+    this.model.setStruct(struct);
     return this;
   }
 
@@ -51,7 +50,6 @@ export default class RouteFlow {
     this.model.setResolvers(resolvers);
     return this;
   }
-
 
 
   /**

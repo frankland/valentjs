@@ -48,19 +48,19 @@ describe('Route flow', () => {
     expect(model.getTemplate()).to.equal(template);
   });
 
-  it('should correctly setup custom urlBuilder', () => {
-    var routeFlow = new RouteFlow(controllerName);
-
-    routeFlow
-      .url('/home')
-      .urlBuilder((name) => {
-        return `/user/${name}`;
-      });
-
-    var model = routeFlow.model;
-
-    var urlBuilder = model.getUrlBuilder();
-
-    expect(urlBuilder('valent')).to.equal('/user/valent');
-  });
+  // it('should correctly setup custom urlBuilder', () => {
+  //   var routeFlow = new RouteFlow(controllerName);
+  //
+  //   routeFlow
+  //     .url('/home')
+  //     .urlBuilder((name) => {
+  //       return `/user/${name}`;
+  //     });
+  //
+  //   var model = routeFlow.model;
+  //
+  //   var urlBuilder = model.getUrlBuilder();
+  //
+  //   expect(urlBuilder('valent')).to.equal('/user/valent');
+  // });
 });

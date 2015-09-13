@@ -34,7 +34,7 @@ export default class ObjectDifference {
             } else if (chunk.item.kind == 'D') {
               this.logger.log(`Deleted element from array _${path}_ at _${chunk.index}_ index:`, chunk.item.lhs);
             }
-            
+
           } else if (chunk.kind == 'E') {
             var path = chunk.path.join('.');
 

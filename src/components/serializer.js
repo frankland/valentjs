@@ -54,7 +54,7 @@ export default class Serializer {
         try {
           var valueStruct = structItem(value);
         } catch (e) {
-          throw new Error(`value with id "${key}" has worng struct. Expected "${structItem.displayName}", but value is "${value}"`);
+          throw new Error(`value with id "${key}" has wrong struct. Expected "${structItem.displayName}", but value is "${value}"`);
         }
 
         var rule = rules.get(structItem);
