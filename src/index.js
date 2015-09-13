@@ -108,8 +108,7 @@ var context = window ? window : global;
 
 if (context.valent) {
   manager = context.valent;
-  console.error('Seems there is multiple installations of Valent');
-
+  console.info('Seems there is multiple installations of Valent');
 } else {
   manager = new Manager();
   context.valent = manager;
