@@ -104,7 +104,7 @@ class Manager {
 }
 
 var manager = null;
-var context = window ? window : global;
+var context = typeof window !== 'undefined' ? window : global;
 
 if (context.valent) {
   manager = context.valent;
