@@ -8,6 +8,7 @@ import UrlSerializer from './url-serializer';
 
 var local = {
   pattern: Symbol('pattern'),
+  mappings: Symbol('mappings'),
   urlPattern: Symbol('url-pattern'),
 
   urlParamsKeys: Symbol('url-params-key'),
@@ -72,6 +73,7 @@ export default class Url extends UrlSerializer {
 
     this[local.searchParamsKeys] = searchParams;
     this[local.urlParamsKeys] = urlParams;
+    this[local.mappings] = {};
   }
 
   getPattern() {
@@ -186,5 +188,23 @@ export default class Url extends UrlSerializer {
 
     var params = Object.assign(urlParams, searchParams);
     return super.decode(params);
+  }
+
+  setMapping(key, mapper) {
+    this[local.mappings][key] = mapper;
+  }
+
+  map() {
+    var params = this.parse();
+    var mappings = this[local.mappings];
+
+    for (var key of Object.keys(params)) {
+      if (mappings.hasOwnProperty(key)) {
+        var value = params[key];
+        var callback = mappings[key];
+
+        callback(value);
+      }
+    }
   }
 }

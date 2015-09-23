@@ -8,6 +8,7 @@ import * as primitives from '../utils/struct-primitives';
 
 var DATE_FORMAT = 'YYYYMMDD';
 var DELIMITER = '~';
+var LIST_DELIMITER = '!';
 var CONDITION_DELIMITER = ';';
 
 /**
@@ -72,12 +73,15 @@ var addUrlRules = (urlSerializer) => {
   /**
    * Numbers
    */
-  urlSerializer.addRule(primitives.Num, {
+  var Num = {
     decode: NumDecode,
     encode: NumEncode
-  });
+  };
 
-  urlSerializer.addRule(primitives.ListNum, {
+  urlSerializer.addRule(primitives.Num, Num);
+  urlSerializer.addRule(primitives.ListNum, Num);
+
+  var ListNum = {
     decode: (raw) => {
       if (!raw || !raw.length) {
         return null;
@@ -90,17 +94,41 @@ var addUrlRules = (urlSerializer) => {
       }
       return value.map(NumEncode).join(DELIMITER);
     }
-  });
+  };
+
+  urlSerializer.addRule(primitives.ListNum, ListNum);
+  urlSerializer.addRule(primitives.MaybeListNum, ListNum);
+
+  var ListListNum = {
+    decode: (raw) => {
+      if (!raw || !raw.length) {
+        return null;
+      }
+      return raw.split(LIST_DELIMITER).map(ListNum.decode);
+    },
+    encode: (value) => {
+      if (!isArray(value)) {
+        return null;
+      }
+      return value.map(ListNum.encode).join(LIST_DELIMITER);
+    }
+  };
+
+  urlSerializer.addRule(primitives.ListListNum, ListListNum);
+  urlSerializer.addRule(primitives.ListMaybeListNum, ListListNum);
 
   /**
    * Strings
    */
-  urlSerializer.addRule(primitives.Str, {
+  var Str = {
     decode: StrDecode,
     encode: StrEncode
-  });
+  };
 
-  urlSerializer.addRule(primitives.ListStr, {
+  urlSerializer.addRule(primitives.Str, Str);
+  urlSerializer.addRule(primitives.MaybeStr, Str);
+
+  var ListStr = {
     decode: (raw) => {
       if (!raw || !raw.length) {
         return null;
@@ -113,17 +141,23 @@ var addUrlRules = (urlSerializer) => {
       }
       return value.map(StrEncode).join(DELIMITER);
     }
-  });
+  };
+
+  urlSerializer.addRule(primitives.ListStr, ListStr);
+  urlSerializer.addRule(primitives.MaybeListStr, ListStr);
 
   /**
    * Dates
    */
-  urlSerializer.addRule(primitives.Dat, {
+  var Dat = {
     decode: DateDecode,
     encode: DateEncode
-  });
+  };
 
-  urlSerializer.addRule(primitives.ListDat, {
+  urlSerializer.addRule(primitives.Dat, Dat);
+  urlSerializer.addRule(primitives.MaybeDat, Dat);
+
+  var ListDat = {
     decode: (raw) => {
       if (!raw || !raw.length) {
         return null;
@@ -136,17 +170,22 @@ var addUrlRules = (urlSerializer) => {
       }
       return value.map(DateEncode).join(DELIMITER);
     }
-  });
+  };
+  urlSerializer.addRule(primitives.ListDat, ListDat);
+  urlSerializer.addRule(primitives.MaybeListDat, ListDat);
 
   /**
    * Bools
    */
-  urlSerializer.addRule(primitives.Bool, {
+  var Bool = {
     decode: BoolDecode,
     encode: BoolEncode
-  });
+  };
 
-  urlSerializer.addRule(primitives.ListBool, {
+  urlSerializer.addRule(primitives.Bool, Bool);
+  urlSerializer.addRule(primitives.MaybeBool, Bool);
+
+  var ListBool = {
     decode: (raw) => {
       if (!raw || !raw.length) {
         return null;
@@ -159,8 +198,11 @@ var addUrlRules = (urlSerializer) => {
       }
       return value.map(BoolEncode).join(DELIMITER);
     }
-  });
-}
+  };
+
+  urlSerializer.addRule(primitives.ListBool, ListBool);
+  urlSerializer.addRule(primitives.MaybeListBool, ListBool);
+};
 
 export default class UrlSerializer extends Serializer {
   constructor(params) {

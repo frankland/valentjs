@@ -30,3 +30,8 @@ export const MaybeListNum = maybe(ListNum, 'MaybeListNum');
 export const MaybeListInt = maybe(ListInt, 'MaybeListInt');
 export const MaybeListStr = maybe(ListStr, 'MaybeListStr');
 export const MaybeListBool = maybe(ListBool, 'MaybeListBool');
+export const MaybeListDat = maybe(ListDat, 'MaybeListDat');
+
+
+export const ListListNum = list(ListNum, 'ListListNum');
+export const ListMaybeListNum = list(MaybeListNum, 'ListMaybeListNum');

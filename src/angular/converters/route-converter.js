@@ -1,6 +1,7 @@
 import groupBy from 'lodash/collection/groupBy';
 import clone from 'lodash/lang/cloneDeep';
 import isObject from 'lodash/lang/isPlainObject';
+import isFunction from 'lodash/lang/isFunction';
 import isString from 'lodash/lang/isString';
 
 import RouteModel from '../../route/route-model';
@@ -40,10 +41,11 @@ export default class RouteConverter {
               var struct = route.getStruct();
               var serializer = null;
 
-              if (struct instanceof AngularUrl) {
-                serializer = struct;
+              var pattern = urls[0];
+
+              if (isFunction(struct)) {
+                serializer = new struct(pattern);
               } else {
-                var pattern = urls[0];
                 serializer = new AngularUrl(pattern, struct);
               }
 
