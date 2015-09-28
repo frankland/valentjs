@@ -197,14 +197,22 @@ export default class Url extends UrlSerializer {
   map() {
     var params = this.parse();
     var mappings = this[local.mappings];
-
+    var tasks = [];
     for (var key of Object.keys(params)) {
       if (mappings.hasOwnProperty(key)) {
         var value = params[key];
         var callback = mappings[key];
 
-        callback(value);
+        var mapping = callback(value);
+        tasks.push(mapping);
       }
     }
+
+    return Promise.all(tasks);
+  }
+
+  isEmpty() {
+    var params = this.parse();
+    return Object.keys(params).length == 0;
   }
 }

@@ -1,4 +1,8 @@
-import isObject from 'lodash/lang/isObject'
+import isObject from 'lodash/lang/isObject';
+import isEqual from 'lodash/lang/isEqual';
+import cloneDeep from 'lodash/lang/cloneDeep';
+
+import transform from 'lodash/object/transform';
 
 import Url from '../../components/url';
 
@@ -10,7 +14,8 @@ var contexts = new WeakMap();
 var queue = new WeakMap();
 
 var local = {
-  context: Symbol('context')
+  context: Symbol('context'),
+  state: Symbol('state')
 };
 
 
@@ -59,6 +64,11 @@ export default class AngularUrl extends Url {
     });
   }
 
+  constructor(pattern, struct) {
+    super(pattern, struct);
+
+    this[local.state] = {};
+  }
 
   attach(context) {
     this[local.context] = context;
@@ -66,7 +76,6 @@ export default class AngularUrl extends Url {
 
   go(params) {
     var url = this.stringify(params);
-
     var $location = Injector.get('$location');
     $location.url(url);
   }
@@ -78,14 +87,22 @@ export default class AngularUrl extends Url {
     $window.location.href = url;
   }
 
-  watch(cb) {
+  watch(callback) {
     var context = this[local.context];
 
     Scope.get(context).then($scope => {
       $scope.$on('$routeUpdate', () => {
         var params = this.parse();
 
-        cb(params);
+        var diff = transform(params, (result, n, key) => {
+          if (!isEqual(n, this[local.state][key])) {
+            result[key] = n;
+          }
+        });
+
+        this[local.state] = cloneDeep(params);
+
+        callback(params, diff);
       });
     });
   }
