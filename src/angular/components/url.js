@@ -100,6 +100,15 @@ export default class AngularUrl extends Url {
     $window.location.href = url;
   }
 
+  stringify(params) {
+    var url = super.stringify(params);
+
+    var $browser = Injector.get('$browser');
+    var base = $browser.baseHref();
+
+    return base ? url.replace(/^\//,'') : url;
+  }
+
   watch(callback) {
     var context = this[local.context];
 

@@ -44,6 +44,7 @@ export default class RouteConverter {
               var pattern = urls[0];
 
               if (isFunction(struct)) {
+                console.info('care about function struct!');
                 serializer = new struct(pattern);
               } else {
                 serializer = new AngularUrl(pattern, struct);
@@ -130,7 +131,7 @@ export default class RouteConverter {
 
           $locationProvider.html5Mode({
             enabled: config.isHtml5Mode,
-            requireBase: false
+            //requireBase: true
           });
 
           if (config.otherwise) {
