@@ -72,7 +72,7 @@ export default class AngularUrl extends Url {
 
   parse() {
     var $location= Injector.get('$location');
-    return $location.$$url;
+    return this.decode($location.$$url);
   }
 
   attach(context) {
