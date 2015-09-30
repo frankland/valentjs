@@ -1,5 +1,6 @@
 import pluck from 'lodash/collection/pluck';
 import isString from 'lodash/lang/isString';
+import isObject from 'lodash/lang/isObject';
 
 import UrlPattern from 'url-pattern';
 
@@ -105,7 +106,11 @@ export default class Url extends UrlSerializer {
     return parts.join('&');
   }
 
-  go(params) {
+  go(params = {}) {
+    if (!isObject(params)) {
+      throw new Error('params should be an object');
+    }
+
     var encoded = this.stringify(params);
 
     /**
@@ -136,7 +141,7 @@ export default class Url extends UrlSerializer {
     var url = urlPattern.stringify(urlParams);
     var query = this.encodeSearchString(searchParams);
 
-    return [url, query].join('?');
+    return query ? [url, query].join('?') : url;
   }
 
   parse() {

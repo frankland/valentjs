@@ -74,14 +74,22 @@ export default class AngularUrl extends Url {
     this[local.context] = context;
   }
 
-  go(params) {
+  go(params = {}) {
+    if (!isObject(params)) {
+      throw new Error('params should be an object');
+    }
+
     var url = this.stringify(params);
     var $location = Injector.get('$location');
     $location.url(url);
   }
 
-  redirect() {
-    var url = this.encode(params);
+  redirect(params = {}) {
+    if (!isObject(params)) {
+      throw new Error('params should be an object');
+    }
+
+    var url = this.stringify(params);
     var $window = Injector.get('$window');
 
     $window.location.href = url;
