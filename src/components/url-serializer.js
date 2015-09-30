@@ -69,7 +69,7 @@ var BoolEncode = (value) => {
 };
 
 
-var addUrlRules = (urlSerializer) => {
+var addUrlRules = (urlSerializer, options) => {
   /**
    * Numbers
    */
@@ -86,13 +86,13 @@ var addUrlRules = (urlSerializer) => {
       if (!raw || !raw.length) {
         return null;
       }
-      return raw.split(DELIMITER).map(NumDecode);
+      return raw.split(options.delimiter).map(NumDecode);
     },
     encode: (value) => {
       if (!isArray(value)) {
         return null;
       }
-      return value.map(NumEncode).join(DELIMITER);
+      return value.map(NumEncode).join(options.delimiter);
     }
   };
 
@@ -104,13 +104,13 @@ var addUrlRules = (urlSerializer) => {
       if (!raw || !raw.length) {
         return null;
       }
-      return raw.split(LIST_DELIMITER).map(ListNum.decode);
+      return raw.split(options.list_delimiter).map(ListNum.decode);
     },
     encode: (value) => {
       if (!isArray(value)) {
         return null;
       }
-      return value.map(ListNum.encode).join(LIST_DELIMITER);
+      return value.map(ListNum.encode).join(options.list_delimiter);
     }
   };
 
@@ -133,13 +133,13 @@ var addUrlRules = (urlSerializer) => {
       if (!raw || !raw.length) {
         return null;
       }
-      return raw.split(DELIMITER).map(StrDecode);
+      return raw.split(options.delimiter).map(StrDecode);
     },
     encode: (value) => {
       if (!isArray(value)) {
         return null;
       }
-      return value.map(StrEncode).join(DELIMITER);
+      return value.map(StrEncode).join(options.delimiter);
     }
   };
 
@@ -162,13 +162,13 @@ var addUrlRules = (urlSerializer) => {
       if (!raw || !raw.length) {
         return null;
       }
-      return raw.split(DELIMITER).map(DateDecode);
+      return raw.split(options.delimiter).map(DateDecode);
     },
     encode: (value) => {
       if (!isArray(value)) {
         return null;
       }
-      return value.map(DateEncode).join(DELIMITER);
+      return value.map(DateEncode).join(options.delimiter);
     }
   };
   urlSerializer.addRule(primitives.ListDat, ListDat);
@@ -190,13 +190,13 @@ var addUrlRules = (urlSerializer) => {
       if (!raw || !raw.length) {
         return null;
       }
-      return raw.split(DELIMITER).map(BoolDecode);
+      return raw.split(options.delimiter).map(BoolDecode);
     },
     encode: (value) => {
       if (!isArray(value)) {
         return null;
       }
-      return value.map(BoolEncode).join(DELIMITER);
+      return value.map(BoolEncode).join(options.delimiter);
     }
   };
 
@@ -205,10 +205,15 @@ var addUrlRules = (urlSerializer) => {
 };
 
 export default class UrlSerializer extends Serializer {
-  constructor(params) {
-    super(params);
+  constructor(struct, options = {}) {
+    super(struct);
 
-    addUrlRules(this);
+    addUrlRules(this, {
+      delimiter: options.delimiter || DELIMITER,
+      date_format: options.date_format || DATE_FORMAT,
+      list_delimiter: options.delimiter || LIST_DELIMITER,
+      condition_delimiter: options.condition_delimiter || CONDITION_DELIMITER
+    });
   }
 
   normalizeStruct(struct) {
