@@ -71,7 +71,7 @@ export default class AngularUrl extends Url {
   }
 
   parse() {
-    var $location= Injector.get('$location');
+    var $location = Injector.get('$location');
     return this.decode($location.$$url);
   }
 
@@ -79,14 +79,45 @@ export default class AngularUrl extends Url {
     this[local.context] = context;
   }
 
+  silent(params = {}) {
+    let isChanged = this.isEqual(params);
+    if (!isChanged) {
+      let url = this.stringify(params);
+      let $location = Injector.get('$location');
+      let $rootScope = Injector.get('$rootScope');
+
+      var unsubscribe = $rootScope.$on('$routeUpdate', (event) => {
+        event.silent = true;
+        unsubscribe();
+      });
+
+      $location.url(url)
+    }
+
+    return isChanged;
+  }
+
   go(params = {}) {
+    let isChanged = this.isEqual(params);
+    if (!isChanged) {
+      let url = this.stringify(params);
+      let $location = Injector.get('$location');
+
+      $location.url(url)
+    }
+
+    return isChanged;
+  }
+
+
+  isEqual(params = {}) {
     if (!isObject(params)) {
       throw new Error('params should be an object');
     }
 
-    var url = this.stringify(params);
-    var $location = Injector.get('$location');
-    $location.url(url);
+    var existingParams = this.parse();
+
+    return isEqual(existingParams, params);
   }
 
   redirect(params = {}) {
@@ -106,25 +137,27 @@ export default class AngularUrl extends Url {
     var $browser = Injector.get('$browser');
     var base = $browser.baseHref();
 
-    return base ? url.replace(/^\//,'') : url;
+    return base ? url.replace(/^\//, '') : url;
   }
 
   watch(callback) {
     var context = this[local.context];
 
     Scope.get(context).then($scope => {
-      $scope.$on('$routeUpdate', () => {
-        var params = this.parse();
+      $scope.$on('$routeUpdate', (event) => {
+        if (!event.silent) {
+          var params = this.parse();
 
-        var diff = transform(params, (result, n, key) => {
-          if (!isEqual(n, this[local.state][key])) {
-            result[key] = n;
-          }
-        });
+          var diff = transform(params, (result, n, key) => {
+            if (!isEqual(n, this[local.state][key])) {
+              result[key] = n;
+            }
+          });
 
-        this[local.state] = cloneDeep(params);
+          this[local.state] = cloneDeep(params);
 
-        callback(params, diff);
+          callback(params, diff);
+        }
       });
     });
   }
