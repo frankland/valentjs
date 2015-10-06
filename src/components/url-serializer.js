@@ -146,6 +146,25 @@ var addUrlRules = (urlSerializer, options) => {
   urlSerializer.addRule(primitives.ListStr, ListStr);
   urlSerializer.addRule(primitives.MaybeListStr, ListStr);
 
+
+  var ListListStr = {
+    decode: (raw) => {
+      if (!raw || !raw.length) {
+        return null;
+      }
+      return raw.split(options.list_delimiter).map(ListStr.decode);
+    },
+    encode: (value) => {
+      if (!isArray(value)) {
+        return null;
+      }
+      return value.map(ListStr.encode).join(options.list_delimiter);
+    }
+  };
+
+  urlSerializer.addRule(primitives.ListListStr, ListListStr);
+  urlSerializer.addRule(primitives.ListMaybeListStr, ListListStr);
+
   /**
    * Dates
    */
