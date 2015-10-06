@@ -48,19 +48,20 @@ var formats = [{
 }];
 
 function hasMatches(str) {
-  var _hasMatches;
-  _hasMatches = false;
+  var hasMatches = false;
+
   formats.forEach(function(format) {
     if (format.regex.test(str)) {
-      return _hasMatches = true;
+      return hasMatches = true;
     }
   });
-  return _hasMatches;
+
+  return hasMatches;
 }
 
 function getOrderedMatches(str) {
-  var matches;
-  matches = [];
+  var matches = [];
+
   formats.forEach(function(format) {
     var match;
     match = str.match(format.regex);
@@ -77,14 +78,17 @@ function getOrderedMatches(str) {
 }
 
 function stringToArgs(str) {
-  var firstMatch, matches, styles;
-  styles = [];
+  var firstMatch = null;
+  var matches = null;
+  var styles = [];
+
   while (hasMatches(str)) {
     matches = getOrderedMatches(str);
     firstMatch = matches[0];
     str = str.replace(firstMatch.format.regex, firstMatch.format.replacer);
     styles = styles.concat(firstMatch.format.styles(firstMatch.match));
   }
+
   return [str].concat(styles);
 }
 
