@@ -212,6 +212,7 @@ export default class DirectiveConverter {
       $scope.$valentModel = model;
       var namespace = model.getControllerNamespace();
       $scope[namespace] = controller;
+
       /**
        * Add controller to current context to be available using
        * @require directive option

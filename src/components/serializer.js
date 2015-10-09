@@ -84,8 +84,7 @@ export default class Serializer {
         var value = params[key];
 
         var rule = rules.get(structItem);
-        var decoded = rule.decode(value);
-        decodedObject[key] = decoded;
+        decodedObject[key]= rule.decode(value);
       }
     }
 

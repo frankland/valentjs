@@ -10,7 +10,6 @@ var local = {
 
 
 export default class ObjectTransition {
-
   constructor(obj) {
     this[local.transition] = new Map();
     this[local.source] = obj;

@@ -4,8 +4,7 @@ import getter from 'lodash/object/get';
 import setter from 'lodash/object/set';
 
 export default class ObjectDescription {
-  static create() {
-    var templates = Array.prototype.slice.call(arguments);
+  static create(...templates) {
     var description = {};
     for (var config of templates) {
       description = assign(description, config);
