@@ -142,6 +142,7 @@ export default class AngularUrl extends Url {
 
   watch(callback) {
     var context = this[local.context];
+    this[local.state] = this.parse();
 
     Scope.get(context).then($scope => {
       $scope.$on('$routeUpdate', (event) => {
