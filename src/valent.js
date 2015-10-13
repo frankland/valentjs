@@ -44,6 +44,10 @@ export default class Valent {
 
     this[_framework].bootstrap(options);
 
+    /**
+     * NOTE: add organized validation for all components, controllers and routes
+     * before registration?
+     */
     try {
       for (let valentComponent of this[_components]) {
         let frameworkComponent = new this[_framework].component(valentComponent);

@@ -16,12 +16,14 @@ let translateParams = (component) => {
 
   if (component.isIsolated()) {
 
-    /**
-     * TODO: check params, interfaces and optional object's differences
-     * throw Error if there are crossed keys
-     */
     let interfaces = component.getInterfaces();
     let optionals = component.getOptionals();
+
+    for (let key of Object.keys(interfaces)) {
+      if (optionals.hasOwnProperty(key)) {
+        throw new Error('optionals and interfaces could not have same keys');
+      }
+    }
 
     Object.assign(params, interfaces, optionals);
   }
@@ -44,7 +46,7 @@ export default (component) => {
         controller.link(element, attrs, $scope);
       }
 
-      // Allow GC collect already uneeded variable
+      // GC
       controller = null;
     }
   };
@@ -123,7 +125,7 @@ export default (component) => {
     configuration.templateUrl = component.getTemplateUrl();
   } else if (component.hasTemplateMethod()) {
 
-    // set template
+    // set template using Components method
     configuration.template = (element, attrs) => {
       let method = component.getTemplateMethod();
       return  method(element, attrs);
