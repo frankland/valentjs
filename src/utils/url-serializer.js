@@ -4,223 +4,170 @@ import find from 'lodash/collection/find';
 import moment from 'moment';
 
 import Serializer from './serializer';
-import * as primitives from '../utils/struct-primitives';
-
-var DATE_FORMAT = 'YYYYMMDD';
-var DELIMITER = '~';
-var LIST_DELIMITER = '!';
-var CONDITION_DELIMITER = ';';
-
-/**
- * Numbers
- */
-var NumDecode = (raw) => {
-  if (raw === null) {
-    return null;
-  }
-  return parseFloat(raw, 10);
-};
-
-var NumEncode = (value) => {
-  var encoded = parseFloat(value, 10).toString(10);
-  if (encoded === 'NaN') {
-    return null;
-  }
-  return encoded;
-};
-
-/**
- * Strings
- */
-var StrDecode = (raw)  => {
-  if (raw === null) {
-    return null;
-  }
-  return '' + raw;
-};
-
-var StrEncode = (value) => {
-  if (value === null || value === undefined) {
-    return null;
-  }
-  return '' + value;
-};
-
-/**
- * Dates
- */
-var DateDecode = (raw) => {
-  return moment.utc(raw, DATE_FORMAT).toDate();
-};
-
-var DateEncode = (value) => {
-  return moment.utc(value).format(DATE_FORMAT);
-};
-
-/**
- * Booleans
- */
-var BoolDecode = (raw) => {
-  return raw !== '0';
-};
-
-var BoolEncode = (value) => {
-  return !!value ? '1' : '0';
-};
+import * as primitives from '../utils/primitives';
 
 
-var addUrlRules = (urlSerializer, options) => {
-  /**
-   * Numbers
-   */
-  var Num = {
-    decode: NumDecode,
-    encode: NumEncode
+let createDecoders = (options) => {
+  var decoders = {
+    // ------- NUMBER -------
+    num: (raw) => raw === null ? null : parseFloat(raw),
+    listNum: (raw) => !raw || !raw.length ? null : raw.split(options.list_delimiter).map(decoders.num),
+    matrixNum: (raw) => !raw || !raw.length ? null : raw.split(options.matrix_delimiter).map(decoders.listNum),
+
+    // ------- STRING -------
+    str: (raw) => raw === null ? null : '' + raw,
+    listStr: (raw) => !raw || !raw.length ? null : raw.split(options.list_delimiter).map(decoders.str),
+    matrixStr: (raw) => !raw || !raw.length ? null : raw.split(options.matrix_delimiter).map(decoders.listStr),
+
+    // ------- DATE-------
+    date: (raw) => moment.utc(raw, options.dateFormat).toDate(),
+    listDate: (raw) => !raw || !raw.length ? null : raw.split(options.list_delimiter).map(decoders.date),
+    matrixDate: (raw) => !raw || !raw.length ? null : raw.split(options.matrix_delimiter).map(decoders.listDate),
+
+
+    // ------- BOOL-------
+    bool: (raw) => raw !== '0',
+    listBool: (raw) => !raw || !raw.length ? null : raw.split(options.list_delimiter).map(decoders.bool),
+    matrixBool: (raw) => !raw || !raw.length ? null : raw.split(options.matrix_delimiter).map(decoders.listBool)
   };
 
-  urlSerializer.addRule(primitives.Num, Num);
-  urlSerializer.addRule(primitives.ListNum, Num);
 
-  var ListNum = {
-    decode: (raw) => {
-      if (!raw || !raw.length) {
-        return null;
-      }
-      return raw.split(options.delimiter).map(NumDecode);
+  return decoders;
+};
+
+let createEncoders = (options) => {
+  var encoders = {
+    // ------- NUMBER -------
+    num: (value) => {
+      let encoded = parseFloat(value).toString(10);
+      return encoded === 'NaN' ? null : encoded;
     },
-    encode: (value) => {
-      if (!isArray(value)) {
-        return null;
-      }
-      return value.map(NumEncode).join(options.delimiter);
-    }
+    listNum: (value) => !isArray(value) ? null : value.map(encoders.num).join(options.list_delimiter),
+    matrixNum: (value) => !isArray(value) ? null : value.map(encoders.listNum).join(options.matrix_delimiter),
+
+    // ------- STRING -------
+    str: (value) => value === null || value === undefined ? null : '' + value,
+    listStr: (value) => !isArray(value) ? null : value.map(encoders.str).join(options.list_delimiter),
+    matrixStr: (value) => !isArray(value) ? null : value.map(encoders.listStr).join(options.matrix_delimiter),
+
+    // ------- DATE-------
+    date: (value) => moment.utc(value).format(options.dateFormat),
+    listDate: (value) => !isArray(value) ? null : value.map(encoders.date).join(options.list_delimiter),
+    matrixDate: (value) => !isArray(value) ? null : value.map(encoders.listDate).join(options.matrix_delimiter),
+
+    // ------- BOOL-------
+    bool: (value) => !!value ? '1' : '0',
+    listBool: (value) => !isArray(value) ? null : value.map(encoders.bool).join(options.list_delimiter),
+    matrixBool: (value) => !isArray(value) ? null : value.map(encoders.listBool).join(options.matrix_delimiter)
   };
 
-  urlSerializer.addRule(primitives.ListNum, ListNum);
-  urlSerializer.addRule(primitives.MaybeListNum, ListNum);
+  return encoders;
+};
 
-  var ListListNum = {
-    decode: (raw) => {
-      if (!raw || !raw.length) {
-        return null;
-      }
-      return raw.split(options.list_delimiter).map(ListNum.decode);
-    },
-    encode: (value) => {
-      if (!isArray(value)) {
-        return null;
-      }
-      return value.map(ListNum.encode).join(options.list_delimiter);
-    }
+var addUrlRules = (serializer, options) => {
+  let decoders = createDecoders(options);
+  let encoders = createEncoders(options);
+
+  // ------ NUMBER -----
+  let num = {
+    decode: decoders.num,
+    encode: encoders.num
   };
 
-  urlSerializer.addRule(primitives.ListListNum, ListListNum);
-  urlSerializer.addRule(primitives.ListMaybeListNum, ListListNum);
+  serializer.addRule(primitives.Num, num);
+  serializer.addRule(primitives.ListNum, num);
 
-  /**
-   * Strings
-   */
-  var Str = {
-    decode: StrDecode,
-    encode: StrEncode
+  let numList = {
+    decode: decoders.listNum,
+    encode: encoders.listNum
   };
 
-  urlSerializer.addRule(primitives.Str, Str);
-  urlSerializer.addRule(primitives.MaybeStr, Str);
+  serializer.addRule(primitives.ListNum, numList);
+  serializer.addRule(primitives.MaybeListNum, numList);
 
-  var ListStr = {
-    decode: (raw) => {
-      if (!raw || !raw.length) {
-        return null;
-      }
-      return raw.split(options.delimiter).map(StrDecode);
-    },
-    encode: (value) => {
-      if (!isArray(value)) {
-        return null;
-      }
-      return value.map(StrEncode).join(options.delimiter);
-    }
+  let matrixNum = {
+    decide: decoders.matrixNum,
+    encode: encoders.matrixNum
   };
 
-  urlSerializer.addRule(primitives.ListStr, ListStr);
-  urlSerializer.addRule(primitives.MaybeListStr, ListStr);
+  serializer.addRule(primitives.MatrixNum, matrixNum);
+  serializer.addRule(primitives.MatrixMaybeNum, matrixNum);
 
-
-  var ListListStr = {
-    decode: (raw) => {
-      if (!raw || !raw.length) {
-        return null;
-      }
-      return raw.split(options.list_delimiter).map(ListStr.decode);
-    },
-    encode: (value) => {
-      if (!isArray(value)) {
-        return null;
-      }
-      return value.map(ListStr.encode).join(options.list_delimiter);
-    }
+  // ------ STRING -----
+  var str = {
+    decode: decoders.str,
+    encode: encoders.str
   };
 
-  urlSerializer.addRule(primitives.ListListStr, ListListStr);
-  urlSerializer.addRule(primitives.ListMaybeListStr, ListListStr);
+  serializer.addRule(primitives.Str, str);
+  serializer.addRule(primitives.MaybeStr, str);
 
-  /**
-   * Dates
-   */
-  var Dat = {
-    decode: DateDecode,
-    encode: DateEncode
+  let listStr = {
+    decode: decoders.listStr,
+    encode: encoders.listStr
   };
 
-  urlSerializer.addRule(primitives.Dat, Dat);
-  urlSerializer.addRule(primitives.MaybeDat, Dat);
+  serializer.addRule(primitives.ListStr, listStr);
+  serializer.addRule(primitives.MaybeListStr, listStr);
 
-  var ListDat = {
-    decode: (raw) => {
-      if (!raw || !raw.length) {
-        return null;
-      }
-      return raw.split(options.delimiter).map(DateDecode);
-    },
-    encode: (value) => {
-      if (!isArray(value)) {
-        return null;
-      }
-      return value.map(DateEncode).join(options.delimiter);
-    }
-  };
-  urlSerializer.addRule(primitives.ListDat, ListDat);
-  urlSerializer.addRule(primitives.MaybeListDat, ListDat);
 
-  /**
-   * Bools
-   */
-  var Bool = {
-    decode: BoolDecode,
-    encode: BoolEncode
+  let matrixStr = {
+    decode: decoders.matrixStr,
+    encode: encoders.matrixStr
   };
 
-  urlSerializer.addRule(primitives.Bool, Bool);
-  urlSerializer.addRule(primitives.MaybeBool, Bool);
+  serializer.addRule(primitives.MatrixStr, matrixStr);
+  serializer.addRule(primitives.MatrixMaybeStr, matrixStr);
 
-  var ListBool = {
-    decode: (raw) => {
-      if (!raw || !raw.length) {
-        return null;
-      }
-      return raw.split(options.delimiter).map(BoolDecode);
-    },
-    encode: (value) => {
-      if (!isArray(value)) {
-        return null;
-      }
-      return value.map(BoolEncode).join(options.delimiter);
-    }
+  // ------ DATES -----
+  var date = {
+    decode: decoders.date,
+    encode: encoders.date
   };
 
-  urlSerializer.addRule(primitives.ListBool, ListBool);
-  urlSerializer.addRule(primitives.MaybeListBool, ListBool);
+  serializer.addRule(primitives.Dat, date);
+  serializer.addRule(primitives.MaybeDat, date);
+
+  let listDate = {
+    decode: decoders.listDate,
+    encode: encoders.listDate,
+  };
+
+  serializer.addRule(primitives.ListDat, listDate);
+  serializer.addRule(primitives.MaybeListDat, listDate);
+
+  let matrixDate = {
+    decode: decoders.matrixDate,
+    encode: encoders.matrixDate
+  };
+
+  serializer.addRule(primitives.MatrixDate, matrixDate);
+  serializer.addRule(primitives.MatrixMaybeDate, matrixDate);
+
+  // ------ BOOL-----
+  var bool = {
+    decode: decoders.bool,
+    encode: encoders.bool
+  };
+
+  serializer.addRule(primitives.Bool, bool);
+  serializer.addRule(primitives.MaybeBool, bool);
+
+  let listBool = {
+    decode: decoders.listBool,
+    encode: encoders.listBool
+  };
+
+  serializer.addRule(primitives.ListBool, listBool);
+  serializer.addRule(primitives.MaybeListBool, listBool);
+
+  let matrixBool = {
+    decode: decoders.matrixBool,
+    encode: encode.matrixBool
+  };
+
+  serializer.addRule(primitives.MatrixBool, matrixBool);
+  serializer.addRule(primitives.MatrixMaybeBool, matrixBool);
 };
 
 export default class UrlSerializer extends Serializer {
@@ -228,10 +175,10 @@ export default class UrlSerializer extends Serializer {
     super(struct);
 
     addUrlRules(this, {
-      delimiter: options.delimiter || DELIMITER,
-      date_format: options.date_format || DATE_FORMAT,
-      list_delimiter: options.delimiter || LIST_DELIMITER,
-      condition_delimiter: options.condition_delimiter || CONDITION_DELIMITER
+      list_delimiter: options.list_delimiter || '~',
+      matrix_delimiter: options.matrix_delimiter || '!',
+      date_format: options.date_format || 'YYYYMMDD',
+      condition_delimiter: options.condition_delimiter || ';'
     });
   }
 
@@ -264,11 +211,17 @@ export default class UrlSerializer extends Serializer {
     return normalized;
   }
 
+  /**
+   * Overridden because of rename option
+   * @override
+   * @param params
+   * @returns {{}}
+   */
   encode(params) {
-    var struct = this.getStruct();
-    var rules = this.getRules();
+    let struct = this.getStruct();
+    let rules = this.getRules();
+    let encodedValues = {};
 
-    var encodedValues = {};
     for (var key of Object.keys(params)) {
       var value = params[key];
 
@@ -297,6 +250,12 @@ export default class UrlSerializer extends Serializer {
     return encodedValues;
   }
 
+  /**
+   * Overridden because of rename option
+   * @override
+   * @param params
+   * @returns {{}}
+   */
   decode(params) {
     var struct = this.getStruct();
     var rules = this.getRules();

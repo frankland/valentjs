@@ -30,11 +30,17 @@ export const MaybeListDat = maybe(ListDat, 'MaybeListDat');
 
 
 // [[1,..n],[1...m]...k]
-export const ListListNum = list(ListNum, 'ListListNum');
+export const MatrixNum = list(ListNum, 'MatrixNum');
 // [[1, undefined, .n],[1 undefined,..m]...k]
-export const ListMaybeListNum = list(MaybeListNum, 'ListMaybeListNum');
+export const MatrixMaybeNum = list(MaybeListNum, 'MatrixMaybeNum');
 
 // [['a',..n],['a'...m]...k]
-export const ListListStr = list(ListStr, 'ListListStr');
+export const MatrixStr = list(ListStr, 'MatrixStr');
 // [['a', undefined, .n],['a' undefined,..m]...k]
-export const ListMaybeListStr = list(MaybeListStr, 'ListMaybeListStr');
+export const MatrixMaybeStr = list(MaybeListStr, 'MatrixMaybeStr');
+
+export const MatrixDate = list(ListDat, 'MatrixDate');
+export const MatrixMaybeDate = list(MaybeListDat, 'MatrixMaybeDate');
+
+export const MatrixBool = list(ListBool, 'MatrixBool');
+export const MatrixMaybeBool = list(MaybeListBool, 'MatrixMaybeBool');
