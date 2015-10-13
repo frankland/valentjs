@@ -32,19 +32,6 @@ export default class Valent {
     version: this.version
   });
 
-  //constructor(framework, options) {
-  //  if (context.valent) {
-  //    throw new Error('Valent has already created');
-  //  }
-  //
-  //  let wrapper = wrappers[framework];
-  //  this[_framework] = new wrapper(config, options);
-  //
-  //  this[_controllers] = new Set();
-  //  this[_components] = new Set();
-  //  this[_routes] = new Set();
-  //}
-
   constructor() {
     this[_controllers] = new Set();
     this[_components] = new Set();
