@@ -1,4 +1,4 @@
-export default class RegisterException {
+export default class RegisterException extends Error {
   constructor(type, name, errors) {
     this.message = `Could not register "${type}" - "${name}".`;
 
