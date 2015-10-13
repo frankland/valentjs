@@ -42,6 +42,8 @@ export default class Valent {
     let wrapper = wrappers[framework];
     this[_framework] = new wrapper(this.config, options);
 
+    this[_framework].bootstrap(options);
+
     try {
       for (let valentComponent of this[_components]) {
         let frameworkComponent = new this[_framework].component(valentComponent);
