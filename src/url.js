@@ -1,10 +1,9 @@
-import pluck from 'lodash/collection/pluck';
 import isString from 'lodash/lang/isString';
 import isObject from 'lodash/lang/isObject';
 
 import UrlPattern from 'url-pattern';
 
-import UrlSerializer from './url-serializer';
+import UrlSerializer from './serializers/url-serializer';
 
 
 let _pattern = Symbol('pattern');
