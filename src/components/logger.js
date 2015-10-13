@@ -27,19 +27,21 @@ function getColor() {
   if (counter == colors.length) {
     counter = 0;
   }
+
   return colors[counter++];
 }
+
 var formats = [{
   regex: /\*([^\*]+)\*/,
-  replacer: (m, p1) => "%c" + p1 + "%c",
+  replacer: (m, p1) => `%c${p1}%c`,
   styles: () => ['font-style: italic', '']
 }, {
   regex: /\_([^\_]+)\_/,
-  replacer: (m, p1) => "%c" + p1 + "%c",
+  replacer: (m, p1) => `%c${p1}%c`,
   styles: () => ['font-weight: bold', '']
 }, {
   regex: /\`([^\`]+)\`/,
-  replacer: (m, p1) => "%c" + p1 + "%c",
+  replacer: (m, p1) => `%c${p1}%c`,
   styles: () => ['background: rgb(255, 255, 219); padding: 1px 5px; border: 1px solid rgba(0, 0, 0, 0.1)', '']
 }, {
   regex: /\[c\=(?:\"|\')?((?:(?!(?:\"|\')\]).)*)(?:\"|\')?\]((?:(?!\[c\]).)*)\[c\]/,
@@ -50,11 +52,12 @@ var formats = [{
 function hasMatches(str) {
   var hasMatches = false;
 
-  formats.forEach(function(format) {
+  for (let format of formats) {
     if (format.regex.test(str)) {
-      return hasMatches = true;
+      hasMatches = true;
+      break;
     }
-  });
+  }
 
   return hasMatches;
 }
@@ -62,19 +65,23 @@ function hasMatches(str) {
 function getOrderedMatches(str) {
   var matches = [];
 
-  formats.forEach(function(format) {
-    var match;
-    match = str.match(format.regex);
+  for (let format of formats) {
+    var match = str.match(format.regex);
+
     if (match) {
-      return matches.push({
+      matches.push({
         format: format,
         match: match
       });
+
+      break;
     }
-  });
-  return matches.sort(function(a, b) {
-    return a.match.index - b.match.index;
-  });
+  }
+
+  return matches;
+  //return matches.sort(function(a, b) {
+  //  return a.match.index - b.match.index;
+  //});
 }
 
 function stringToArgs(str) {
