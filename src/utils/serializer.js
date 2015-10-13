@@ -1,14 +1,13 @@
 import isFunction from 'lodash/lang/isFunction';
 
-var local = {
-  rules: Symbol('rules'),
-  struct: Symbol('struct')
-};
+
+let _struct = Symbol('struct');
+let _rules = Symbol('rules');
 
 export default class Serializer {
   constructor(struct) {
-    this[local.struct] = this.normalizeStruct(struct);
-    this[local.rules] = new WeakMap();
+    this[_struct] = this.normalizeStruct(struct);
+    this[_rules] = new WeakMap();
   }
 
   normalizeStruct(struct) {
@@ -20,11 +19,11 @@ export default class Serializer {
   }
 
   getRules() {
-    return this[local.rules];
+    return this[_rules];
   }
 
   getStruct() {
-    return this[local.struct];
+    return this[_struct];
   }
 
   addRule(namespace, serializer) {
@@ -33,7 +32,7 @@ export default class Serializer {
     }
 
     var normalized = this.normalizeRule(serializer);
-    this[local.rules].set(namespace, normalized);
+    this[_rules].set(namespace, normalized);
   }
 
   encode(params) {
@@ -58,8 +57,7 @@ export default class Serializer {
         }
 
         var rule = rules.get(structItem);
-        var encoded = rule.encode(value);
-        encodedObject[key] = encoded;
+        encodedObject[key] = rule.encode(value);
       }
     }
 

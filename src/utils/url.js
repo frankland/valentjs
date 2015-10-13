@@ -7,14 +7,11 @@ import UrlPattern from 'url-pattern';
 import UrlSerializer from './url-serializer';
 
 
-var local = {
-  pattern: Symbol('pattern'),
-  mappings: Symbol('mappings'),
-  urlPattern: Symbol('url-pattern'),
-
-  urlParamsKeys: Symbol('url-params-key'),
-  searchParamsKeys: Symbol('search-params-key')
-};
+let _pattern = Symbol('pattern');
+let _mappings = Symbol('mappings');
+let _urlPattern = Symbol('url-pattern');
+let _urlParamsKeys = Symbol('url-params-key');
+let _searchParamsKeys = Symbol('search-params-key');
 
 var routes = new Map();
 
@@ -58,8 +55,8 @@ export default class Url extends UrlSerializer {
 
     var urlPattern = new UrlPattern(pattern);
 
-    this[local.pattern] = pattern;
-    this[local.urlPattern] = urlPattern;
+    this[_pattern] = pattern;
+    this[_urlPattern] = urlPattern;
 
     var urlParams = urlPattern.ast.filter(item => item.tag === 'named')
       .map(item => item.value);
@@ -72,25 +69,25 @@ export default class Url extends UrlSerializer {
       }
     }
 
-    this[local.searchParamsKeys] = searchParams;
-    this[local.urlParamsKeys] = urlParams;
-    this[local.mappings] = {};
+    this[_searchParamsKeys] = searchParams;
+    this[_urlParamsKeys] = urlParams;
+    this[_mappings] = {};
   }
 
   getPattern() {
-    return this[local.pattern];
+    return this[_pattern];
   }
 
   getUrlPattern() {
-    return this[local.urlPattern];
+    return this[_urlPattern];
   }
 
   getUrlParamKeys() {
-    return this[local.urlParamsKeys];
+    return this[_urlParamsKeys];
   }
 
   getSearchParamKeys() {
-    return this[local.searchParamsKeys];
+    return this[_searchParamsKeys];
   }
 
   encodeSearchString(params) {
@@ -196,12 +193,12 @@ export default class Url extends UrlSerializer {
   }
 
   setMapping(key, mapper) {
-    this[local.mappings][key] = mapper;
+    this[_mappings][key] = mapper;
   }
 
   map() {
     var params = this.parse();
-    var mappings = this[local.mappings];
+    var mappings = this[_mappings];
     var tasks = [];
 
     for (var key of Object.keys(params)) {

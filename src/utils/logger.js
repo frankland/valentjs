@@ -23,13 +23,13 @@ var colors = [
 
 var counter = 0;
 
-function getColor() {
+let getColor = () => {
   if (counter == colors.length) {
     counter = 0;
   }
 
   return colors[counter++];
-}
+};
 
 var formats = [{
   regex: /\*([^\*]+)\*/,
