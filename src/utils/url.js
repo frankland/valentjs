@@ -13,7 +13,7 @@ let _urlPattern = Symbol('url-pattern');
 let _urlParamsKeys = Symbol('url-params-key');
 let _searchParamsKeys = Symbol('search-params-key');
 
-var routes = new Map();
+let routes = new Map();
 
 export default class Url extends UrlSerializer {
 
@@ -53,17 +53,17 @@ export default class Url extends UrlSerializer {
   constructor(pattern, struct) {
     super(struct);
 
-    var urlPattern = new UrlPattern(pattern);
+    let urlPattern = new UrlPattern(pattern);
 
     this[_pattern] = pattern;
     this[_urlPattern] = urlPattern;
 
-    var urlParams = urlPattern.ast.filter(item => item.tag === 'named')
+    let urlParams = urlPattern.ast.filter(item => item.tag === 'named')
       .map(item => item.value);
 
-    var searchParams = [];
+    let searchParams = [];
 
-    for (var key of Object.keys(struct)) {
+    for (let key of Object.keys(struct)) {
       if (urlParams.indexOf(key) === -1) {
         searchParams.push(key);
       }
@@ -91,11 +91,11 @@ export default class Url extends UrlSerializer {
   }
 
   encodeSearchString(params) {
-    var parts = [];
+    let parts = [];
 
-    for (var param of Object.keys(params)) {
-      var value = params[param];
-      var part = `${param}=${encodeURIComponent(value)}`;
+    for (let param of Object.keys(params)) {
+      let value = params[param];
+      let part = `${param}=${encodeURIComponent(value)}`;
 
       parts.push(part);
     }
@@ -108,7 +108,7 @@ export default class Url extends UrlSerializer {
       throw new Error('params should be an object');
     }
 
-    var encoded = this.stringify(params);
+    let encoded = this.stringify(params);
 
     /**
      * TODO: check redirect method
@@ -119,15 +119,15 @@ export default class Url extends UrlSerializer {
   // --------------------------------
 
   stringify(params) {
-    var encodedParams = this.encode(params);
+    let encodedParams = this.encode(params);
 
-    var urlPattern = this.getUrlPattern();
-    var urlParamKeys = this.getUrlParamKeys();
+    let urlPattern = this.getUrlPattern();
+    let urlParamKeys = this.getUrlParamKeys();
 
-    var searchParams = {};
-    var urlParams = {};
+    let searchParams = {};
+    let urlParams = {};
 
-    for (var key of Object.keys(encodedParams)) {
+    for (let key of Object.keys(encodedParams)) {
       if (urlParamKeys.indexOf(key) === -1) {
         searchParams[key] = encodedParams[key];
       } else {
@@ -135,17 +135,17 @@ export default class Url extends UrlSerializer {
       }
     }
 
-    var url = urlPattern.stringify(urlParams);
-    var query = this.encodeSearchString(searchParams);
+    let url = urlPattern.stringify(urlParams);
+    let query = this.encodeSearchString(searchParams);
 
     return query ? [url, query].join('?') : url;
   }
 
   parse() {
-    var pathname = window.location.pathname;
-    var search = window.location.search;
+    let pathname = window.location.pathname;
+    let search = window.location.search;
 
-    var url = pathname;
+    let url = pathname;
     if (search) {
       url += `?${search}`;
     }
@@ -154,13 +154,13 @@ export default class Url extends UrlSerializer {
   }
 
   decodeSearchString(queryString) {
-    var queryParams = {};
-    var queryPairs = queryString.split('&');
+    let queryParams = {};
+    let queryPairs = queryString.split('&');
 
-    for (var pair of queryPairs) {
-      var tuple = pair.split('=');
-      var key = tuple[0];
-      var value = tuple.slice(1).join('');
+    for (let pair of queryPairs) {
+      let tuple = pair.split('=');
+      let key = tuple[0];
+      let value = tuple.slice(1).join('');
 
       queryParams[key] = decodeURIComponent(value);
     }
@@ -169,26 +169,26 @@ export default class Url extends UrlSerializer {
   }
 
   decode(path) {
-    var splittedPath = path.split('?');
-    var searchString = splittedPath.slice(1).join('');
+    let splittedPath = path.split('?');
+    let searchString = splittedPath.slice(1).join('');
 
-    var url = splittedPath[0];
+    let url = splittedPath[0];
 
-    var urlPattern = this.getUrlPattern();
-    var urlParams = urlPattern.match(url);
+    let urlPattern = this.getUrlPattern();
+    let urlParams = urlPattern.match(url);
 
     if (!urlParams) {
-      var pattern = this.getPattern();
+      let pattern = this.getPattern();
       throw new Error(`Wrong url pattern. Expected "${pattern}", got "${path}"`);
     }
 
-    var searchParams = {};
+    let searchParams = {};
 
     if (searchString) {
       searchParams = this.decodeSearchString(searchString);
     }
 
-    var params = Object.assign(urlParams, searchParams);
+    let params = Object.assign(urlParams, searchParams);
     return super.decode(params);
   }
 
@@ -197,16 +197,16 @@ export default class Url extends UrlSerializer {
   }
 
   map() {
-    var params = this.parse();
-    var mappings = this[_mappings];
-    var tasks = [];
+    let params = this.parse();
+    let mappings = this[_mappings];
+    let tasks = [];
 
-    for (var key of Object.keys(params)) {
+    for (let key of Object.keys(params)) {
       if (mappings.hasOwnProperty(key)) {
-        var value = params[key];
-        var callback = mappings[key];
+        let value = params[key];
+        let callback = mappings[key];
 
-        var mapping = callback(value);
+        let mapping = callback(value);
         tasks.push(mapping);
       }
     }
@@ -215,7 +215,7 @@ export default class Url extends UrlSerializer {
   }
 
   isEmpty() {
-    var params = this.parse();
+    let params = this.parse();
     return Object.keys(params).length == 0;
   }
 }

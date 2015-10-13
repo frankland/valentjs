@@ -183,13 +183,13 @@ export default class UrlSerializer extends Serializer {
   }
 
   normalizeStruct(struct) {
-    var normalized = {};
+    let normalized = {};
 
     for (var key of Object.keys(struct)) {
       var value = struct[key];
 
-      var keyStruct = null;
-      var rename = null;
+      let keyStruct = null;
+      let rename = null;
 
       if (isArray(value)) {
 
@@ -223,27 +223,27 @@ export default class UrlSerializer extends Serializer {
     let encodedValues = {};
 
     for (var key of Object.keys(params)) {
-      var value = params[key];
+      let value = params[key];
 
       if (!struct.hasOwnProperty(key)) {
         throw new Error(`key "${key}" is not described at url serializer`);
       }
 
-      var keyStruct = struct[key].struct;
+      let keyStruct = struct[key].struct;
       if (!rules.has(keyStruct)) {
         throw new Error(`serialize rule for "${key}" is not described at url serializer`);
       }
 
       try {
-        var valueStruct = keyStruct(value);
+        let valueStruct = keyStruct(value);
       } catch (e) {
         throw new Error(`value with id "${key}" has wrong struct. Expected "${keyStruct.displayName}", but value is "${value}"`);
       }
 
-      var rule = rules.get(keyStruct);
-      var encodedValue = rule.encode(value);
+      let rule = rules.get(keyStruct);
+      let encodedValue = rule.encode(value);
 
-      var rename = struct[key].rename;
+      let rename = struct[key].rename;
       encodedValues[rename] = encodedValue;
     }
 
@@ -257,15 +257,15 @@ export default class UrlSerializer extends Serializer {
    * @returns {{}}
    */
   decode(params) {
-    var struct = this.getStruct();
-    var rules = this.getRules();
+    let struct = this.getStruct();
+    let rules = this.getRules();
 
-    var decodedValues = {};
+    let decodedValues = {};
 
-    for (var key of Object.keys(params)) {
-      var value = params[key];
+    for (let key of Object.keys(params)) {
+      let value = params[key];
 
-      var structItem = find(struct, {
+      let structItem = find(struct, {
         rename: key
       });
 
@@ -274,15 +274,15 @@ export default class UrlSerializer extends Serializer {
         throw new Error(`Key "${key}" is not described at url serialization rules`);
       }
 
-      var keyStruct = structItem.struct;
+      let keyStruct = structItem.struct;
       if (!rules.has(keyStruct)) {
         throw new Error(`serialize rule for "${key}" is not described at url serializer`);
       }
 
-      var rule = rules.get(keyStruct);
-      var decodedValue = rule.decode(value);
+      let rule = rules.get(keyStruct);
+      let decodedValue = rule.decode(value);
 
-      var name = structItem.name;
+      let name = structItem.name;
       decodedValues[name] = decodedValue;
     }
 

@@ -13,7 +13,7 @@ export default (left, right, callOptions) => {
 
   if (diff) {
     for (let chunk of diff) {
-      var lastKey = chunk.path[chunk.path.length - 1];
+      let lastKey = chunk.path[chunk.path.length - 1];
 
       if (options.ignored.indexOf(lastKey) == -1) {
         if (chunk.kind == 'A') {

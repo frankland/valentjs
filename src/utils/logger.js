@@ -1,4 +1,4 @@
-var colors = [
+let colors = [
   '#008EBA',
   '#99CC00',
   '#AA66CC',
@@ -21,7 +21,7 @@ var colors = [
   '#7FB2F0'
 ];
 
-var counter = 0;
+let counter = 0;
 
 let getColor = () => {
   if (counter == colors.length) {
@@ -31,7 +31,7 @@ let getColor = () => {
   return colors[counter++];
 };
 
-var formats = [{
+let formats = [{
   regex: /\*([^\*]+)\*/,
   replacer: (m, p1) => `%c${p1}%c`,
   styles: () => ['font-style: italic', '']
@@ -45,12 +45,12 @@ var formats = [{
   styles: () => ['background: rgb(255, 255, 219); padding: 1px 5px; border: 1px solid rgba(0, 0, 0, 0.1)', '']
 }, {
   regex: /\[c\=(?:\"|\')?((?:(?!(?:\"|\')\]).)*)(?:\"|\')?\]((?:(?!\[c\]).)*)\[c\]/,
-  replacer: (m, p1, p2) => "%c" + p2 + "%c",
+  replacer: (m, p1, p2) => `%c${p2}%c`,
   styles: (match) =>  [match[1], '']
 }];
 
 function hasMatches(str) {
-  var hasMatches = false;
+  let hasMatches = false;
 
   for (let format of formats) {
     if (format.regex.test(str)) {
@@ -63,10 +63,10 @@ function hasMatches(str) {
 }
 
 function getOrderedMatches(str) {
-  var matches = [];
+  let matches = [];
 
   for (let format of formats) {
-    var match = str.match(format.regex);
+    let match = str.match(format.regex);
 
     if (match) {
       matches.push({
@@ -85,9 +85,9 @@ function getOrderedMatches(str) {
 }
 
 function stringToArgs(str) {
-  var firstMatch = null;
-  var matches = null;
-  var styles = [];
+  let firstMatch = null;
+  let matches = null;
+  let styles = [];
 
   while (hasMatches(str)) {
     matches = getOrderedMatches(str);
@@ -101,8 +101,8 @@ function stringToArgs(str) {
 
 export default class Logger {
   static create(name) {
-    var background = getColor();
-    var color = '#fff;';
+    let background = getColor();
+    let color = '#fff;';
 
     return new Logger(name, color, background);
   }
@@ -135,9 +135,9 @@ export default class Logger {
   log(message, ...rest) {
     if (this.isEnabled) {
 
-      var customized = stringToArgs(message);
-      var completeMessage = customized[0];
-      var styles = customized.slice(1);
+      let customized = stringToArgs(message);
+      let completeMessage = customized[0];
+      let styles = customized.slice(1);
 
       console.log(
         `%c${this.name}%c ${completeMessage}`,
