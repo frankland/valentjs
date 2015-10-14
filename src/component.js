@@ -7,25 +7,27 @@ let validate = (name, Component, options) => {
     errors.push('component\'s name could not be empty or contain spaces');
   }
 
+  // --- VALIDATE COMPONENT CONSTRUCTOR -----
   if (!isFunction(Component)) {
-    errors.push('component should be a constructor');
-  } else {
-    let template = options.template;
-    let templateUrl = options.templateUrl;
+    errors.push('controller should be a constructor');
+  }
 
-    if (!template && !templateUrl && !isFunction(Component.template)) {
-      errors.push('One of options.template, options.templateUrl or components\'s class static function "template()" should be defined');
-    } else if (template) {
+  // ----- VALIDATE TEMPLATES -----
+  let template = options.template;
+  let templateUrl = options.templateUrl;
 
-      if (!isString(template) && !isFunction(template)) {
-        errors.push('template should be string or function');
-      }
+  if (!template && !templateUrl && !isFunction(Component.render)) {
+    errors.push('One of options.template, options.templateUrl or components\'s class static function "template()" should be defined');
+  } else if (template) {
 
-    } else if (templateUrl) {
+    if (!isString(template) && !isFunction(template)) {
+      errors.push('template should be string or function');
+    }
 
-      if (!isString(templateUrl)) {
-        errors.push('templateUrl should be string');
-      }
+  } else if (templateUrl) {
+
+    if (!isString(templateUrl)) {
+      errors.push('templateUrl should be string');
     }
   }
 
@@ -33,7 +35,6 @@ let validate = (name, Component, options) => {
 };
 
 export default class ValentComponent {
-
   constructor(name, Component, options) {
     let errors = validate(name, Component, options);
     if (errors.length) {

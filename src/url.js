@@ -5,52 +5,79 @@ import UrlPattern from 'url-pattern';
 
 import UrlSerializer from './serializers/url-serializer';
 
+let decodeSearchString = (queryString) => {
+  let queryParams = {};
+  let queryPairs = queryString.split('&');
+
+  for (let pair of queryPairs) {
+    let tuple = pair.split('=');
+    let key = tuple[0];
+    let value = tuple.slice(1).join('');
+
+    queryParams[key] = decodeURIComponent(value);
+  }
+
+  return queryParams;
+};
+
+let encodeSearchString = (params) => {
+  let parts = [];
+
+  for (let param of Object.keys(params)) {
+    let value = params[param];
+    let part = `${param}=${encodeURIComponent(value)}`;
+
+    parts.push(part);
+  }
+
+  return parts.join('&');
+};
+
 
 let _pattern = Symbol('pattern');
-let _mappings = Symbol('mappings');
+let _links = Symbol('mappings');
 let _urlPattern = Symbol('url-pattern');
 let _urlParamsKeys = Symbol('url-params-key');
 let _searchParamsKeys = Symbol('search-params-key');
 
-let routes = new Map();
+let _serializer = Symbol('url-serializer');
 
-export default class Url extends UrlSerializer {
+//let routes = new Map();
 
-  static add(namespace, url) {
-    if (!(url instanceof Url)) {
-      throw new Error(`url for "${namespace}" should be instance of Url`);
-    }
-
-    routes.set(namespace, url);
-  }
-
-  static has(namespace) {
-    return routes.has(namespace);
-  }
-
-  /**
-   * TODO: add lazzy URL creating
-   * @param namespace
-   * @returns {*}
-   */
-  static get(namespace) {
-    if (!isString(namespace)) {
-      throw new Error(`Wrong arguments for Url.get`);
-    }
-
-    if (!routes.has(namespace)) {
-      throw new Error('Url does not exists');
-    }
-
-    return routes.get(namespace);
-  }
-
-  static clear() {
-    routes = new Map();
-  }
+/**
+ * TODO: support HTML5 history API
+ */
+export default class Url {
+  //static add(namespace, url) {
+  //  if (!(url instanceof Url)) {
+  //    throw new Error(`url for "${namespace}" should be instance of Url`);
+  //  }
+  //
+  //  routes.set(namespace, url);
+  //}
+  //
+  //static has(namespace) {
+  //  return routes.has(namespace);
+  //}
+  //
+  //static get(namespace) {
+  //  if (!isString(namespace)) {
+  //    throw new Error(`Wrong arguments for Url.get`);
+  //  }
+  //
+  //  if (!routes.has(namespace)) {
+  //    throw new Error('Url does not exists');
+  //  }
+  //
+  //  return routes.get(namespace);
+  //}
+  //
+  //static clear() {
+  //  routes = new Map();
+  //}
 
   constructor(pattern, struct) {
-    super(struct);
+    this[_serializer] =  new UrlSerializer(struct);
 
     let urlPattern = new UrlPattern(pattern);
 
@@ -70,7 +97,7 @@ export default class Url extends UrlSerializer {
 
     this[_searchParamsKeys] = searchParams;
     this[_urlParamsKeys] = urlParams;
-    this[_mappings] = {};
+    this[_links] = {};
   }
 
   getPattern() {
@@ -89,19 +116,6 @@ export default class Url extends UrlSerializer {
     return this[_searchParamsKeys];
   }
 
-  encodeSearchString(params) {
-    let parts = [];
-
-    for (let param of Object.keys(params)) {
-      let value = params[param];
-      let part = `${param}=${encodeURIComponent(value)}`;
-
-      parts.push(part);
-    }
-
-    return parts.join('&');
-  }
-
   go(params = {}) {
     if (!isObject(params)) {
       throw new Error('params should be an object');
@@ -118,9 +132,8 @@ export default class Url extends UrlSerializer {
   // --------------------------------
 
   stringify(params) {
-    let encodedParams = this.encode(params);
+    let encodedParams = this[_serializer].encode(params);
 
-    let urlPattern = this.getUrlPattern();
     let urlParamKeys = this.getUrlParamKeys();
 
     let searchParams = {};
@@ -134,44 +147,16 @@ export default class Url extends UrlSerializer {
       }
     }
 
-    let url = urlPattern.stringify(urlParams);
-    let query = this.encodeSearchString(searchParams);
+    let urlPattern = this.getUrlPattern();
 
-    return query ? [url, query].join('?') : url;
+    let url = urlPattern.stringify(urlParams);
+    let search = encodeSearchString(searchParams);
+
+    return query ? [url, search].join('?') : url;
   }
 
   parse() {
-    let pathname = window.location.pathname;
-    let search = window.location.search;
-
-    let url = pathname;
-    if (search) {
-      url += `?${search}`;
-    }
-
-    return this.decode(url);
-  }
-
-  decodeSearchString(queryString) {
-    let queryParams = {};
-    let queryPairs = queryString.split('&');
-
-    for (let pair of queryPairs) {
-      let tuple = pair.split('=');
-      let key = tuple[0];
-      let value = tuple.slice(1).join('');
-
-      queryParams[key] = decodeURIComponent(value);
-    }
-
-    return queryParams;
-  }
-
-  decode(path) {
-    let splittedPath = path.split('?');
-    let searchString = splittedPath.slice(1).join('');
-
-    let url = splittedPath[0];
+    let url = window.location.pathname;
 
     let urlPattern = this.getUrlPattern();
     let urlParams = urlPattern.match(url);
@@ -183,38 +168,42 @@ export default class Url extends UrlSerializer {
 
     let searchParams = {};
 
-    if (searchString) {
-      searchParams = this.decodeSearchString(searchString);
+    let search = window.location.search;
+    if (search) {
+      searchParams = decodeSearchString(search);
     }
 
     let params = Object.assign(urlParams, searchParams);
-    return super.decode(params);
-  }
 
-  setMapping(key, mapper) {
-    this[_mappings][key] = mapper;
-  }
-
-  map() {
-    let params = this.parse();
-    let mappings = this[_mappings];
-    let tasks = [];
-
-    for (let key of Object.keys(params)) {
-      if (mappings.hasOwnProperty(key)) {
-        let value = params[key];
-        let callback = mappings[key];
-
-        let mapping = callback(value);
-        tasks.push(mapping);
-      }
-    }
-
-    return Promise.all(tasks);
+    return this[_serializer].decode(params);
   }
 
   isEmpty() {
     let params = this.parse();
     return Object.keys(params).length == 0;
+  }
+
+  // ---------------------
+
+  link(key, link) {
+    this[_links][key] = link;
+  }
+
+  apply() {
+    let params = this.parse();
+    let links = this[_links];
+    let tasks = [];
+
+    for (let key of Object.keys(params)) {
+      if (links.hasOwnProperty(key)) {
+        let value = params[key];
+        let link = links[key];
+
+        let task = link(value);
+        tasks.push(task);
+      }
+    }
+
+    return Promise.all(tasks);
   }
 }

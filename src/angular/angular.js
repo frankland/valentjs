@@ -1,4 +1,6 @@
 import componentTranslator from './translators/component';
+import controllerTranslator from './translators/controller';
+import routeTranslator from './translators/route';
 
 import Component from './component';
 import Controller from './controller';
@@ -19,18 +21,32 @@ export default class Angular {
 
       angular.module(module)
         .directive(translated.name, translated.configuration);
-
-      if (this.debug) {
-        console.log(`registered component "${translated.name}"`);
-      }
     },
 
-    controller: () => {
+    controller: (controller) => {
+      let translated = controllerTranslator(controller);
+      let module = translated.module || this[_module];
 
+      angular.module(module)
+        .controller(translated.name, translated.configuration.controller);
     },
 
-    route: () => {
+    route: (route) => {
+      let translated = routeTranslator(route);
+      let module = translated.module || this[_module];
 
+      angular.module(module)
+        .config(['$routeProvider', ($routeProvider) => {
+
+          for (let url of translated.configuration.routes) {
+
+            $routeProvider.when(url, {
+              controller: '',
+              template : {},
+              resolve: {}
+            });
+          }
+        }]);
     }
   };
 

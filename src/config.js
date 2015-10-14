@@ -21,8 +21,12 @@ export default class ApplicationConfig {
       this.set(`routing.resolvers.${key}`, resolver);
     },
 
-    setProtector: (protector) => {
-      this.set('routing.protector', protector);
+    enableHistoryApi: () => {
+      this.set('routing.html5Mode', true);
+    },
+
+    disableHistoryApi: () => {
+      this.set('routing.html5Mode', false);
     }
   };
 
@@ -34,7 +38,9 @@ export default class ApplicationConfig {
 
   constructor(config) {
     this[_config] = Object.assign(config, {
-
+      routing: {
+        html5Mode: true
+      }
     });
   }
 

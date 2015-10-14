@@ -1,6 +1,5 @@
 import Angular from 'angular/angular';
 
-import RegisterException from './register-exception';
 import ValentComponent from './component';
 
 var valent = null;
@@ -16,14 +15,28 @@ if (context.valent) {
   };
 }
 
+class RegisterException extends Error {
+  constructor(type, name, errors) {
+    this.message = `Could not register "${type}" - "${name}".`;
+
+    for (let error of errors) {
+      this.message += "\n - " + error;
+    }
+
+    this.message += "\n";
+  }
+}
+
+
 let wrappers = {
   angular: Angular
 };
 
-let _controllers = new Symbol('controllers');
-let _components = new Symbol('components');
-let _routes = new Symbol('routes');
-let _framework = new Symbol('framework');
+let _controllers = Symbol('controllers');
+let _components = Symbol('components');
+let _routes = Symbol('routes');
+let _framework = Symbol('framework');
+let _urls = Symbol('urls');
 
 export default class Valent {
   version = '0.1.0';
@@ -74,5 +87,9 @@ export default class Valent {
 
   route(controller, options) {
 
+  }
+
+  url(namespace) {
+    return this[_urls].get(namespace);
   }
 }
