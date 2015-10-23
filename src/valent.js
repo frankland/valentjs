@@ -1,44 +1,14 @@
-import Angular from 'angular/angular';
+import RegisterException from './exceptions/register';
+import ApplicationConfig from './application-config';
 
-import ValentComponent from './component';
-
-var valent = null;
-var context = typeof window !== 'undefined' ? window : global;
-
-if (context.valent) {
-  throw new Error('Seems there are multiple installations of Valent');
-} else {
-  context.valent = {
-    bootstrap: (framework, options = {}) => {
-      context.valent = new Valent(framework, options);
-    }
-  };
-}
-
-class RegisterException extends Error {
-  constructor(type, name, errors) {
-    this.message = `Could not register "${type}" - "${name}".`;
-
-    for (let error of errors) {
-      this.message += "\n - " + error;
-    }
-
-    this.message += "\n";
-  }
-}
-
-
-let wrappers = {
-  angular: Angular
-};
 
 let _controllers = Symbol('controllers');
 let _components = Symbol('components');
 let _routes = Symbol('routes');
 let _framework = Symbol('framework');
-let _urls = Symbol('urls');
+let _bootstrap = Symbol('bootstrap');
 
-export default class Valent {
+class Valent {
   version = '0.1.0';
 
   config = new ApplicationConfig({
@@ -46,50 +16,88 @@ export default class Valent {
   });
 
   constructor() {
+    this[_bootstrap] = false;
+
     this[_controllers] = new Set();
     this[_components] = new Set();
     this[_routes] = new Set();
   }
 
-  bootstrap(framework, options) {
-    let wrapper = wrappers[framework];
-    this[_framework] = new wrapper(this.config, options);
-
-    this[_framework].bootstrap(options);
-
+  bootstrap(framework) {
+    this[_framework] = framework;
+    this.url = this[_framework].getUrlManager();
     /**
      * NOTE: add organized validation for all components, controllers and routes
      * before registration?
      */
-    try {
-      for (let valentComponent of this[_components]) {
-        let frameworkComponent = new this[_framework].component(valentComponent);
-        this[_framework].register.component(frameworkComponent);
+    //try {
+      for (let component of this[_components]) {
+        let frameworkComponent = new this[_framework].component(component.name, component.controller, component.options);
+        this[_framework].translate.component(frameworkComponent, this.config);
       }
-    } catch (error) {
-      throw new Error(`could not register components for "${framework}"`)
+    //} catch (error) {
+    //  throw new Error(`could not register components for "${framework}". ${error.message}`);
+    //}
+
+    for (let route of this[_routes]) {
+      let frameworkRoute = new this[_framework].route(route.name, route.url, route.options);
+      this[_framework].translate.route(frameworkRoute, this.config);
     }
+
+    for (let controller of this[_controllers]) {
+      let frameworkController = new this[_framework].controller(controller.name, controller.controller, controller.options);
+      this[_framework].translate.controller(frameworkController, this.config);
+    }
+
+    this[_framework].bootstrap(this.config);
+
+    this[_bootstrap] = true;
   }
 
   component(name, Component, options) {
-    try {
-      var valentComponent = new ValentComponent(name, Component, options);
-    } catch (error) {
-      throw new RegisterException('component', error.name, error.messages);
+    if (this[_bootstrap]) {
+      throw new Error('todo');
     }
 
-    this[_components].set(valentComponent);
+    this[_components].add({
+      name,
+      controller: Component,
+      options
+    });
   }
 
-  controller(name, controller, options) {
+  controller(name, Controller, options) {
+    if (this[_bootstrap]) {
+      throw new Error('todo');
+    }
 
+    this[_controllers].add({
+      name,
+      controller: Controller,
+      options
+    });
   }
 
-  route(controller, options) {
+  route(name, url, options) {
+    if (this[_bootstrap]) {
+      throw new Error('todo');
+    }
 
+    this[_routes].add({
+      name,
+      url,
+      options
+    });
   }
+}
 
-  url(namespace) {
-    return this[_urls].get(namespace);
-  }
+
+
+var valent = null;
+var context = typeof window !== 'undefined' ? window : global;
+
+if (context.valent) {
+  throw new Error('Seems there are multiple installations of Valent');
+} else {
+  context.valent = new Valent();
 }

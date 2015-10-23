@@ -4,7 +4,7 @@ import moment from 'moment';
 
 import * as primitives from '../utils/primitives';
 
-import RenameSerializer from '../utils/renmae-serializer';
+import RenameSerializer from './rename-serializer';
 
 
 let createDecoders = (options) => {

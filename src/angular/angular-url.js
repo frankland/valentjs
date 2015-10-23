@@ -4,79 +4,33 @@ import cloneDeep from 'lodash/lang/cloneDeep';
 
 import transform from 'lodash/object/transform';
 
-import Url from '../../components/url';
+import Url from '../url';
 
-import Scope from './scope';
-import Injector from './injector';
-import Diggest from './diggest';
+import Scope from './services/scope';
+import Injector from './services/injector';
 
-var contexts = new WeakMap();
-var queue = new WeakMap();
+let contexts = new WeakMap();
+let queue = new WeakMap();
 
-var local = {
-  context: Symbol('context'),
-  state: Symbol('state')
-};
+let _scope = Symbol('scope');
+let _state = Symbol('state');
 
 
 export default class AngularUrl extends Url {
 
-  /**
-   * Associate controller's name with controller's context (URL scope)
-   * @param namespace
-   * @param context
-   */
-  static attach(namespace, context) {
-    if (!Url.has(namespace)) {
-      throw new Error(`Can not attach context. Url struct for "${namespace}" does not defined`);
-    }
-
-    var url = Url.get(namespace);
-    url.attach(context);
-
-    contexts.set(context, url);
-
-    if (queue.has(context)) {
-      var resolve = queue.get(context);
-      resolve(url);
-
-      queue.delete(context);
-    }
-  }
-
-  static isAttached(context) {
-    return contexts.has(context);
-  }
-
-  static create(context) {
-    if (!isObject(context)) {
-      throw new Error(`Wrong arguments for AngularUrl.get`);
-    }
-
-    return new Promise((resolve, reject) => {
-      if (AngularUrl.isAttached(context)) {
-        var url = contexts.get(context);
-        resolve(url);
-
-      } else {
-        queue.set(context, resolve);
-      }
-    });
-  }
-
   constructor(pattern, struct) {
     super(pattern, struct);
 
-    this[local.state] = {};
+    this[_state] = {};
+  }
+
+  attachScope($scope) {
+    this[_scope] = $scope;
   }
 
   parse() {
     var $location = Injector.get('$location');
     return this.decode($location.$$url);
-  }
-
-  attach(context) {
-    this[local.context] = context;
   }
 
   silent(params = {}) {
@@ -110,16 +64,6 @@ export default class AngularUrl extends Url {
   }
 
 
-  isEqual(params = {}) {
-    if (!isObject(params)) {
-      throw new Error('params should be an object');
-    }
-
-    var existingParams = this.parse();
-
-    return isEqual(existingParams, params);
-  }
-
   redirect(params = {}) {
     if (!isObject(params)) {
       throw new Error('params should be an object');
@@ -141,7 +85,7 @@ export default class AngularUrl extends Url {
   }
 
   watch(callback) {
-    var context = this[local.context];
+    var context = this[_scope];
 
     Scope.get(context).then($scope => {
       $scope.$on('$routeUpdate', (event) => {
@@ -149,12 +93,12 @@ export default class AngularUrl extends Url {
           var params = this.parse();
 
           var diff = transform(params, (result, n, key) => {
-            if (!isEqual(n, this[local.state][key])) {
+            if (!isEqual(n, this[_state][key])) {
               result[key] = n;
             }
           });
 
-          this[local.state] = cloneDeep(params);
+          this[_state] = cloneDeep(params);
 
           callback(params, diff);
         }

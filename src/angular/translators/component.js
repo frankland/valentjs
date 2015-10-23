@@ -1,5 +1,91 @@
 import camelCase from 'lodash/string/camelCase';
+import isObject from 'lodash/lang/isObject';
+import isString from 'lodash/lang/isString';
+import isFunction from 'lodash/lang/isFunction';
+import isArray from 'lodash/lang/isArray';
 
+import Logger from '../../utils/logger';
+
+import RuntimeException from '../../exceptions/runtime';
+import DirectiveParams from '../services/directive-params';
+import Scope from '../services/scope';
+
+
+let initController = ($scope, $attrs, model) => {
+  let instances = [];
+
+  // gather interfaces
+  let interfaces = model.getInterfaces();
+
+  for (let key of Object.keys(interfaces)) {
+    let instance = $scope[key];
+
+    if (!instance) {
+      throw Error(`directive should implements interface "${key}"`);
+    }
+
+    let InterfaceClass = interfaces[key];
+
+    if (!(instance instanceof InterfaceClass)) {
+      throw Error(`interface "${key}" has wrong class`);
+    }
+
+    instances.push(instance);
+  }
+
+  // gather optional
+  let optionals = model.getOptional();
+
+  for (let key of Object.keys(optionals)) {
+    let interfaceInstance = $scope[key];
+
+    let instance = null;
+    if (interfaceInstance) {
+
+      let InterfaceClass = optionals[key];
+
+      if (!(interfaceInstance instanceof InterfaceClass)) {
+        throw Error(`interface "${key}" has wrong class`);
+      }
+
+      instance = $scope[key];
+    }
+
+    instances.push(instance);
+  }
+
+  let Controller = model.getController();
+  let params = new DirectiveParams($scope, $attrs, model);
+
+  let name = model.getName();
+  var logger = Logger.create(name);
+
+  let controller  = new Controller(...instances, params, logger);
+  Scope.attach(controller, $scope);
+
+  let namespace = model.getNamespace();
+  $scope[namespace] = controller;
+
+  $scope.$valent = getValentInfo(model);
+
+  // $scope events
+  $scope.$on('$destroy', () => {
+    if (isFunction(controller.destructor)) {
+      controller.destructor();
+    }
+  });
+
+  return $scope[namespace];
+};
+
+let getValentInfo = (component) => {
+
+  return {
+    type: 'component',
+    name: component.getName(),
+    namespace: component.getNamespace()
+  };
+};
 
 let translateRestrict = (component) => {
   let restrict = 'E';
@@ -13,30 +99,43 @@ let translateRestrict = (component) => {
 
 let translateParams = (component) => {
   let params = component.getParams();
+  let translatedParams = Object.assign({}, params);
 
   if (component.isIsolated()) {
 
     let interfaces = component.getInterfaces();
-    let optionals = component.getOptionals();
+    let optionals = component.getOptional();
+    let substitutions = component.getSubstitution();
 
+    // TODO: cross of 3 arrays
     for (let key of Object.keys(interfaces)) {
       if (optionals.hasOwnProperty(key)) {
         throw new Error('optionals and interfaces could not have same keys');
       }
     }
 
-    Object.assign(params, interfaces, optionals);
+    for (let key of Object.keys(interfaces)) {
+      let translatedKey = camelCase(key);
+      translatedParams[translatedKey] = '=';
+    }
+
+    for (let key of Object.keys(optionals)) {
+      let translatedKey = camelCase(key);
+      translatedParams[translatedKey] = '=';
+    }
+
+    for (let key of Object.keys(substitutions)) {
+      let translatedKey = camelCase(key);
+      translatedParams[translatedKey] = '=';
+    }
   }
 
-  return params;
+  return translatedParams;
 };
 
 export default (component) => {
-  let name = component.getName();
   let module = component.getModule();
-
   let controller = null;
-  let Controller = component.getController();
 
   let link = (params, $scope, element, attrs, require) => {
     if (controller.link) {
@@ -45,59 +144,45 @@ export default (component) => {
       } else {
         controller.link(element, attrs, $scope);
       }
-
-      // GC
-      controller = null;
     }
+
+    if (isArray(require)) {
+      if (isFunction(controller.require)) {
+        let requiredControllers = [];
+
+        for (let required of require) {
+          let requiredController = required;
+          if (required.hasOwnProperty('$valent')) {
+            let namespace = required.$value.namespace;
+            requiredController = required[namespace];
+          }
+
+          requiredControllers.push(requiredController);
+        }
+
+        controller.require(...requiredControllers);
+
+      } else {
+        throw new Error('Require option is configured but controller does not has "require" method');
+      }
+    }
+
+    // GC
+    controller = null;
   };
 
   let configuration = {
     replace: false,
     restrict: translateRestrict(component),
     scope: translateParams(component),
+    require: component.getRequire(),
     controller: ['$scope', '$attrs', ($scope, $attrs) => {
-      let interfaces = component.getInterfaces();
-      let instances = [];
-
-      for (let key of Object.keys(interfaces)) {
-        let interfaceInstance = $scope[key];
-
-        if (!interfaceInstance) {
-          throw new Error(`directive should implements interface "${key}"`);
-        }
-
-        let InterfaceClass = interfaces[key];
-
-        if (!(interfaceInstance instanceof  InterfaceClass)) {
-          throw new Error(`interface "${key}" has wrong class`);
-        }
-
-        instances.push($scope[key]);
+      let name = component.getName();
+      try {
+        controller = initController($scope, $attrs, component);
+      } catch (error) {
+        throw new RuntimeException(name, error.message);
       }
-
-      let optionals = component.getOptionals();
-      for (let key of Object.keys(optionals)) {
-        let interfaceInstance = $scope[key];
-        if (interfaceInstance) {
-
-          let InterfaceClass = optionals[key];
-
-          if (!(interfaceInstance instanceof  InterfaceClass)) {
-            throw new Error(`interface "${key}" has wrong class`);
-          }
-
-          instances.push($scope[key]);
-        }
-      }
-
-      let namespace = component.getNamespace();
-      let params = {};
-      $scope[namespace] = new Controller(...instances, params);
-
-      // Allow GC collect already uneeded variable
-      Controller = null;
-
-      controller = $scope[namespace];
     }],
 
     link: ($scope, element, attrs, require) => {
@@ -105,6 +190,7 @@ export default (component) => {
     }
   };
 
+  let Controller = component.getController();
   if (Controller.compile) {
     configuration.compile = (element, attrs) => {
       let params = Controller.compile(element, attrs);
@@ -115,7 +201,7 @@ export default (component) => {
     };
   }
 
-  if (component.hasTemplate())  {
+  if (component.hasTemplate()) {
 
     // set template
     configuration.template = component.getTemplate();
@@ -128,12 +214,19 @@ export default (component) => {
     // set template using Components method
     configuration.template = (element, attrs) => {
       let method = component.getTemplateMethod();
-      return  method(element, attrs);
+      let template = method(element, attrs);
+
+      if (!isString(template)) {
+        let name = component.getName();
+        throw new RuntimeException(name, 'result of Component.render() should be a string');
+      }
+
+      return template;
     }
   }
 
   return {
-    name,
+    name: component.getDirectiveName(),
     module,
     configuration
   }

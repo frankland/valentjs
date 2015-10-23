@@ -1,5 +1,6 @@
 import isString from 'lodash/lang/isString';
 import isObject from 'lodash/lang/isObject';
+import isEqual from 'lodash/lang/isEqual';
 
 import UrlPattern from 'url-pattern';
 
@@ -48,33 +49,6 @@ let _serializer = Symbol('url-serializer');
  * TODO: support HTML5 history API
  */
 export default class Url {
-  //static add(namespace, url) {
-  //  if (!(url instanceof Url)) {
-  //    throw new Error(`url for "${namespace}" should be instance of Url`);
-  //  }
-  //
-  //  routes.set(namespace, url);
-  //}
-  //
-  //static has(namespace) {
-  //  return routes.has(namespace);
-  //}
-  //
-  //static get(namespace) {
-  //  if (!isString(namespace)) {
-  //    throw new Error(`Wrong arguments for Url.get`);
-  //  }
-  //
-  //  if (!routes.has(namespace)) {
-  //    throw new Error('Url does not exists');
-  //  }
-  //
-  //  return routes.get(namespace);
-  //}
-  //
-  //static clear() {
-  //  routes = new Map();
-  //}
 
   constructor(pattern, struct) {
     this[_serializer] =  new UrlSerializer(struct);
@@ -181,6 +155,16 @@ export default class Url {
   isEmpty() {
     let params = this.parse();
     return Object.keys(params).length == 0;
+  }
+
+  isEqual(params = {}) {
+    if (!isObject(params)) {
+      throw new Error('params should be an object');
+    }
+
+    var existingParams = this.parse();
+
+    return isEqual(existingParams, params);
   }
 
   // ---------------------

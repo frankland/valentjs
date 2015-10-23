@@ -13,12 +13,24 @@ export default class ApplicationConfig {
       this.set('routing.hooks.error', handler);
     },
 
+    getHooks: () => {
+      return this.get('routing.hooks', {});
+    },
+
     otherwise: (otherwise) => {
       this.set('routing.otherwise', otherwise);
     },
 
     addResolver: (key, resolver) => {
       this.set(`routing.resolvers.${key}`, resolver);
+    },
+
+    getResolvers: () => {
+      return this.get('routing.resolvers', {});
+    },
+
+    requireBase: (requireBase) => {
+      this.set('routing.requireBase', requireBase);
     },
 
     enableHistoryApi: () => {
@@ -33,6 +45,10 @@ export default class ApplicationConfig {
   exception = {
     handler: (handler) => {
       this.set('exception.handler', handler);
+    },
+
+    getHandler: () => {
+      return this.get('exception.handler');
     }
   };
 
@@ -44,11 +60,11 @@ export default class ApplicationConfig {
     });
   }
 
-  get(key) {
-    return getter(this.config, key);
+  get(key, defaultValue = null) {
+    return getter(this[_config], key, defaultValue);
   }
 
   set(key, value) {
-    return getter(this.config, key, value);
+    return setter(this[_config], key, value);
   }
 }

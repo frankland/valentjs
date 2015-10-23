@@ -6,13 +6,13 @@ export default class RenameSerializer extends Serializer {
 
   constructor(struct, options = {}) {
     let normalizedStruct = {};
-
+    let renameOptions = {};
     for (let key of Object.keys(struct)) {
       let value = struct[key];
       let filedStruct = null;
 
       if (isArray(value)) {
-        this.renameOptions[key] = value[0];
+        renameOptions[key] = value[0];
         filedStruct = value[1];
       } else {
         filedStruct = value;
@@ -22,6 +22,7 @@ export default class RenameSerializer extends Serializer {
     }
 
     super(normalizedStruct);
+    this.renameOptions = renameOptions;
   }
 
   encode(params) {
