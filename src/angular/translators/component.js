@@ -66,8 +66,6 @@ let initController = ($scope, $attrs, model) => {
   let namespace = model.getNamespace();
   $scope[namespace] = controller;
 
-  $scope.$valent = getValentInfo(model);
-
   // $scope events
   $scope.$on('$destroy', () => {
     if (isFunction(controller.destructor)) {
@@ -173,11 +171,13 @@ export default (component) => {
     scope: translateParams(component),
     require: component.getRequire(),
     controller: ['$scope', '$attrs', ($scope, $attrs) => {
+      $scope.$valent = getValentInfo(component);
+
       let name = component.getName();
       try {
         controller = initController($scope, $attrs, component);
       } catch (error) {
-        throw new RuntimeException(name, error.message);
+        throw new RuntimeException(name, 'component', error.message);
       }
     }],
 
@@ -214,7 +214,7 @@ export default (component) => {
 
       if (!isString(template)) {
         let name = component.getName();
-        throw new RuntimeException(name, 'result of Component.render() should be a string');
+        throw new RuntimeException(name, 'component', 'result of Component.render() should be a string');
       }
 
       return template;

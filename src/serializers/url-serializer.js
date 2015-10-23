@@ -24,7 +24,6 @@ let createDecoders = (options) => {
     listDate: (raw) => !raw || !raw.length ? null : raw.split(options.list_delimiter).map(decoders.date),
     matrixDate: (raw) => !raw || !raw.length ? null : raw.split(options.matrix_delimiter).map(decoders.listDate),
 
-
     // ------- BOOL-------
     bool: (raw) => raw !== '0',
     listBool: (raw) => !raw || !raw.length ? null : raw.split(options.list_delimiter).map(decoders.bool),
@@ -163,7 +162,7 @@ var addUrlRules = (addRule, options) => {
 
   let matrixBool = {
     decode: decoders.matrixBool,
-    encode: encode.matrixBool
+    encode: encoders.matrixBool
   };
 
   addRule(primitives.MatrixBool, matrixBool);
@@ -171,7 +170,7 @@ var addUrlRules = (addRule, options) => {
 };
 
 export default class UrlSerializer extends RenameSerializer {
-  constructor(struct) {
+  constructor(struct, options = {}) {
     super(struct);
 
     addUrlRules((struct, description) => {

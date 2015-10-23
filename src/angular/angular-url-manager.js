@@ -11,11 +11,11 @@ export default class AngularUrlManager extends UrlManager {
   }
 
   attach($scope) {
-    if (!$scope.hasOwnProperty('$valentInfo')) {
-      throw new Error('can not attach $scope because there is not $valentInfo attribute');
+    if (!$scope.hasOwnProperty('$valent')) {
+      throw new Error('can not attach $scope because there is not $valent attribute');
     }
 
-    let info = $scope.valentInfo;
+    let info = $scope.$valent;
     let namespace = info.namespace;
     let context = $scope[namespace];
 
@@ -26,27 +26,30 @@ export default class AngularUrlManager extends UrlManager {
   }
 
   detach($scope) {
-    if (!$scope.hasOwnProperty('$valentInfo')) {
-      throw new Error('can not attach $scope because there is not $valentInfo attribute');
+    if (!$scope.hasOwnProperty('$valent')) {
+      throw new Error('can not attach $scope because there is not $valent attribute');
     }
 
-    let info = $scope.valentInfo;
+    let info = $scope.$valent;
     let namespace = info.namespace;
     let context = $scope[namespace];
 
     this[_contexts].delete(context);
   }
 
+
   get(name) {
-    if (!this[_queue].has(name)) {
-      throw new Error(`can not get url "${name}" because there is no attached scope`);
-    }
+    //if (!this[_queue].has(name)) {
+    //  throw new Error(`can not get url "${name}" because there is no attached scope`);
+    //}
 
     let url = super.get(name);
 
-    if (!url.hasScope()) {
+    if (!url.hasScope() && this[_queue].has(name)) {
       let $scope = this[_queue].get(name);
       url.attachScope($scope);
+
+      this[_queue].delete(name);
     }
 
     return url;
@@ -54,7 +57,7 @@ export default class AngularUrlManager extends UrlManager {
 
   create(context) {
     if (!this[_contexts].has(context)) {
-      throw new Error(`can not get url by context`);
+      throw new Error(`can not get url by context. Seems $scope is not attached yet`);
     }
 
     let name = this[_contexts].get(context);

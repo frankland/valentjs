@@ -60,15 +60,14 @@ export default class ValentController {
       } else if (this.hasTemplateMethod()) {
 
         // set template using Components method
-        routeOptions.template = (...args) => {
-          let method = this.getTemplateMethod();
-          let template = method(...args);
+        let method = this.getTemplateMethod();
+        let template = method(this);
 
-          if (!isString(template)) {
-            let name = this.getName();
-            throw new RuntimeException(name, 'result of Component.render() should be a string');
-          }
+        if (!isString(template)) {
+          throw new RuntimeException(name, 'result of Component.render() should be a string');
         }
+
+        routeOptions.template = template;
       }
 
       valent.route(this.name, this.options.url, routeOptions);

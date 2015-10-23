@@ -1,7 +1,7 @@
 export default class TranslateException extends Error {
-  constructor(name, error) {
+  constructor(name, type, error) {
     super();
 
-    this.message = `could not transalte "${name}" - ${error}`;
+    this.message = `could not transalte "${name}" type - ${error}`;
   }
 }

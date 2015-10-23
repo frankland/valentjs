@@ -1,5 +1,6 @@
 import isArray from 'lodash/lang/isArray';
 import isFunction from 'lodash/lang/isFunction';
+import AngularUrl from '../angular-url';
 
 export default (route, config) => {
   let name = route.getName();

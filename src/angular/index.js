@@ -32,7 +32,7 @@ export default class Angular {
         var translated = componentTranslator(component, config);
       } catch (error) {
         let name = component.getName();
-        throw new TranslateException(name, error.message);
+        throw new TranslateException(name, 'component', error.message);
       }
 
       let application = translated.module || this[_module];
@@ -45,23 +45,23 @@ export default class Angular {
       try {
         var translated = controllerTranslator(controller, config);
       } catch (error) {
-        let name = component.getName();
+        let name = controller.getName();
         throw new TranslateException(name, error.message);
       }
 
       let application = translated.module || this[_module];
 
       angular.module(application)
-        .controller(translated.name, translated.configuration);
+        .controller(translated.name, 'controller', translated.configuration);
     },
 
     route: (route, config) => {
-      let name = component.getName();
+      let name = route.getName();
 
       try {
         var translated = routeTranslator(route, config);
       } catch (error) {
-        throw new TranslateException(name, error.message);
+        throw new TranslateException(name, 'route', error.message);
       }
 
       let urlManager = this[_urlManager];
@@ -109,8 +109,7 @@ export default class Angular {
       }]);
     }
 
-    angular.module(module).config(['$locationProvider', '$routeProvider', ($locationProvider, $routeProvider) => {
-
+    angular.module(module).config(['$locationProvider', '$routeProvider', ($locationProvider, $routeProvider) => {;
       $locationProvider.html5Mode({
         enabled: config.get('routing.html5Mode'),
         requireBase: config.get('routing.requireBase')
@@ -131,7 +130,6 @@ export default class Angular {
     }]);
 
     angular.module(module).run(['$injector', '$rootScope', '$location', ($injector, $rootScope, $location) => {
-
       // initialize injector
       Injector.setInjector($injector);
 

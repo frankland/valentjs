@@ -94,7 +94,7 @@ export default class ValentController {
   }
 
   getResolvers() {
-    return this.options.resolve;
+    return this.options.resolve || {};
   }
 
   getParams() {

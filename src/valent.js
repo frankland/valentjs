@@ -37,26 +37,26 @@ class Valent {
         this[_framework].translate.component(frameworkComponent, this.config);
       }
     } catch (error) {
-      throw new Error(`could not register components for "${framework}". ${error.message}`);
+      throw new Error(`could not register components. ${error.message}`);
     }
 
-    try {
+    //try {
       for (let controller of this[_controllers]) {
         let frameworkController = new this[_framework].controller(controller.name, controller.controller, controller.options);
         this[_framework].translate.controller(frameworkController, this.config);
       }
-    } catch (error) {
-      throw new Error(`could not register controllers for "${framework}". ${error.message}`);
-    }
+    //} catch (error) {
+    //  throw new Error(`could not register controllers. ${error.message}`);
+    //}
 
-    try {
+    //try {
       for (let route of this[_routes]) {
         let frameworkRoute = new this[_framework].route(route.name, route.url, route.options);
         this[_framework].translate.route(frameworkRoute, this.config);
       }
-    } catch (error) {
-      throw new Error(`could not register routes for "${framework}". ${error.message}`);
-    }
+    //} catch (error) {
+    //  throw new Error(`could not register routes. ${error.message}`);
+    //}
 
     this[_framework].bootstrap(this.config);
 

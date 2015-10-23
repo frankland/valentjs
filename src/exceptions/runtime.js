@@ -1,12 +1,6 @@
 export default class RuntimeException extends Error {
-  constructor(name, error) {
+  constructor(name, type, error) {
     super();
-    this.message = `could not init "${name}" - ${error}`;
+    this.message = `runtime error with "${name}" ${type} - ${error}`;
   }
-
-  //static at(name) {
-  //  return (error) => {
-  //    return new RuntimeException(name, error);
-  //  }
-  //}
 }

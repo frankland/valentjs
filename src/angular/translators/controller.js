@@ -1,7 +1,9 @@
 import Logger from '../../utils/logger';
 import Scope from '../services/scope';
 
-let initController = ($scope, model, resolvers) => {
+import RuntimeException from '../../exceptions/runtime';
+
+let initController = ($scope, model, valentResolve) => {
 
   let Controller = model.getController();
 
@@ -9,13 +11,11 @@ let initController = ($scope, model, resolvers) => {
   var logger = Logger.create(name);
 
   let url = valent.url.get(name);
-  let controller = new Controller(resolvers, url, logger);
+  let controller = new Controller(valentResolve, url, logger);
   Scope.attach(controller, $scope);
 
   let namespace = model.getNamespace();
   $scope[namespace] = controller;
-
-  $scope.$valent = getValentInfo(model);
 
   // $scope events
   $scope.$on('$destroy', () => {
@@ -40,21 +40,14 @@ export default (model, config) => {
   let name = model.getName();
   let module = model.getModule();
 
-  let dependencies = [];
+  let configuration = ['$scope', 'valentResolve', ($scope, valentResolve) => {
+    $scope.$valent = getValentInfo(model);
 
-  let localResolvers = model.getResolvers();
-  let localDependencies = Object.keys(localResolvers);
-
-  let globalResolvers = config.route.getResolvers();
-  let globalDependencies = Object.keys(globalResolvers);
-
-  let resolverKeys = globalDependencies.concat(localDependencies);
-  if (!!resolverKeys.length) {
-    dependencies.push('valentResolve');
-  }
-
-  let configuration = ['$scope', ...dependencies, ($scope, ...services) => {
-    initController($scope, model, services);
+    try {
+      initController($scope, model, valentResolve);
+    } catch (error) {
+      throw new RuntimeException(name, 'controller', error.message);
+    }
 
     // attach $scope to url. needs for url.watch and get url by context. useful at parent classes
     valent.url.attach($scope);
