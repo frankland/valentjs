@@ -21,11 +21,16 @@ export default class AngularUrl extends Url {
   constructor(pattern, struct) {
     super(pattern, struct);
 
+    this[_scope] = null;
     this[_state] = {};
   }
 
   attachScope($scope) {
     this[_scope] = $scope;
+  }
+
+  hasScope() {
+    return !!this[_scope];
   }
 
   parse() {

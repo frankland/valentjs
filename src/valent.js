@@ -26,27 +26,36 @@ class Valent {
   bootstrap(framework) {
     this[_framework] = framework;
     this.url = this[_framework].getUrlManager();
+
     /**
      * NOTE: add organized validation for all components, controllers and routes
      * before registration?
      */
-    //try {
+    try {
       for (let component of this[_components]) {
         let frameworkComponent = new this[_framework].component(component.name, component.controller, component.options);
         this[_framework].translate.component(frameworkComponent, this.config);
       }
-    //} catch (error) {
-    //  throw new Error(`could not register components for "${framework}". ${error.message}`);
-    //}
-
-    for (let route of this[_routes]) {
-      let frameworkRoute = new this[_framework].route(route.name, route.url, route.options);
-      this[_framework].translate.route(frameworkRoute, this.config);
+    } catch (error) {
+      throw new Error(`could not register components for "${framework}". ${error.message}`);
     }
 
-    for (let controller of this[_controllers]) {
-      let frameworkController = new this[_framework].controller(controller.name, controller.controller, controller.options);
-      this[_framework].translate.controller(frameworkController, this.config);
+    try {
+      for (let controller of this[_controllers]) {
+        let frameworkController = new this[_framework].controller(controller.name, controller.controller, controller.options);
+        this[_framework].translate.controller(frameworkController, this.config);
+      }
+    } catch (error) {
+      throw new Error(`could not register controllers for "${framework}". ${error.message}`);
+    }
+
+    try {
+      for (let route of this[_routes]) {
+        let frameworkRoute = new this[_framework].route(route.name, route.url, route.options);
+        this[_framework].translate.route(frameworkRoute, this.config);
+      }
+    } catch (error) {
+      throw new Error(`could not register routes for "${framework}". ${error.message}`);
     }
 
     this[_framework].bootstrap(this.config);

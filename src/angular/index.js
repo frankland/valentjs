@@ -51,7 +51,6 @@ export default class Angular {
 
       let application = translated.module || this[_module];
 
-      console.log(application, translated.name, translated.configuration);
       angular.module(application)
         .controller(translated.name, translated.configuration);
     },
@@ -74,7 +73,6 @@ export default class Angular {
         .config(['$routeProvider', ($routeProvider) => {
 
           for (let url of translated.routes) {
-            console.log(application, url, translated.configuration);
             $routeProvider.when(url, translated.configuration);
           }
         }]);
