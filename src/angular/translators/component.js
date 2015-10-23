@@ -139,11 +139,7 @@ export default (component) => {
 
   let link = (params, $scope, element, attrs, require) => {
     if (controller.link) {
-      if (params) {
-        controller.link(params, element, attrs, $scope);
-      } else {
-        controller.link(element, attrs, $scope);
-      }
+      controller.link(element, params, attrs, $scope);
     }
 
     if (isArray(require)) {
