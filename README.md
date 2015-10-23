@@ -1,64 +1,102 @@
-# Valent
+# v0.1
 
-[![Build Status](https://travis-ci.org/frankland/valent.svg)](https://travis-ci.org/frankland/valent)
-
-Valent is the wrapper on the angular. Provide easier way to register angular components and
-add unique directive features.
-
-## Install
-
-`bower install valent`
-
-## Components
-
-### Controller
-#### Controller using flow
 ```js
-import Controller from 'valent/controller';
+import Angular from 'valent/angular';
 
-class HomeController {
+angular.module('playground', [
+  'ngRoute'
+]);
 
+valent.config.exception.handler((error) => {
+  console.log(error);
+});
+
+valent.config.route.onChangeError(() => {
+  console.log('error');
+});
+
+valent.config.route.addResolver('user', () => {
+  return {
+    name: 'dev'
+  }
+});
+
+
+let framework = new Angular({
+  module: 'playground'
+});
+
+
+valent.bootstrap(framework);
+```
+
+```js
+
+class IndexController {
+  constructor(resolved, url, logger) {
+    
+  }
+
+  static render() {
+    return `
+      <h1>Index Controlelr</h1>
+      <div>
+        <button ng-clikc="controller.cilck()">click me</button>
+      </div>`;
+  }
 }
 
-Controller('home.index')
-    .src(HomeController)
-    .templateUrl('/home/index.html');
+valent.controller('index', IndexController, {
+  url: '/index',
+  // template: '<div>asdsa</div>',
+  struct: {
+    id: Num
+  },
+  resolve: {
+    schema: () => {
+      return ['a', 'b', 'c'];
+    }
+  }
+});
 ```
 
-#### Controller using model
 ```js
-import Controller from 'valent/controller/controller-model';
-import Valent from 'valent';
 
-class HomeController {
+class HelloWorld {
+  constructor(clicker, selector, params) {
+    
+  }
 
+  require(ngModel) {
+    console.log(ngModel);
+  }
+ 
+  static render() {
+
+    return `
+      <div>
+        {{ controller.name }}
+        <button ng-click="controller.click()">click me</button>
+      </div>`;
+  }
 }
-var homeController = new Controller('home.index');
-homeController.setSource(HomeController);
 
-Valent.addController(homeController);
+
+valent.component('hello-world', HelloWorld, {
+  interfaces: {  // :D
+    clicker: Clicker
+  },
+  optional: { // :|
+    selector: Selector
+  },
+  substitution: { // :(
+    toggler: Toggler
+  },
+  params: {
+    title: '@',
+    appName: '@'
+  },
+  require: ['ngModel']
+});
+
 ```
-
-### Route
-#### Route using flow
-```js
-import Route from 'valent/route';
-
-
-
-```
-
-
-#### Route using model
-
-# test
-
-
-#### TODO:
-
-- [ ] Remove factory component. Remove DI from components. That need because I want components to be independent of js framework
-- [ ] Redev Manager. It should not be a singleton
-- [ ] Redev Angular converters. Remove static methods?
-- [ ] Update components/serializer
-- [ ] Add components/url-serializer and components/url-struct to UrlManager
-- [ ] Add base class for components
