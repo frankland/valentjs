@@ -1,3 +1,15 @@
+
+
+//--------- SERIALIZERS ---------
+import './serializers/serializer';
+import './serializers/rename-serializer';
+import './serializers/url-serializer';
+import './serializers/coding-serializer';
+
+//
+
+
+
 //import './utils/object-description';
 //import './utils/object-transition';
 ////

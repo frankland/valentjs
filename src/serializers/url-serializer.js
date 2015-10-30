@@ -1,5 +1,6 @@
 import isObject from 'lodash/lang/isObject';
 import isArray from 'lodash/lang/isArray';
+import isString from 'lodash/lang/isString';
 import moment from 'moment';
 
 import * as primitives from '../utils/primitives';
@@ -85,8 +86,8 @@ var addUrlRules = (addRule, options) => {
   addRule(primitives.MaybeListNum, numList);
 
   let matrixNum = {
-    decide: decoders.matrixNum,
-    encode: encoders.matrixNum
+    encode: encoders.matrixNum,
+    decode: decoders.matrixNum
   };
 
   addRule(primitives.MatrixNum, matrixNum);
@@ -129,7 +130,7 @@ var addUrlRules = (addRule, options) => {
 
   let listDate = {
     decode: decoders.listDate,
-    encode: encoders.listDate,
+    encode: encoders.listDate
   };
 
   addRule(primitives.ListDat, listDate);
@@ -181,5 +182,14 @@ export default class UrlSerializer extends RenameSerializer {
       date_format: options.date_format || 'YYYYMMDD',
       condition_delimiter: options.condition_delimiter || ';'
     });
+  }
+
+  decode(params){
+    for(let i of Object.keys(params)){
+      if(!isString(params[i])){
+        throw new Error('URL param should be String');
+      }
+    }
+    return super.decode(params);
   }
 }
