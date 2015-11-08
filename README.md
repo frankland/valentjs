@@ -17,6 +17,11 @@ if there is **20** "+1" comments at this issues - documents will be in 1 week
 
 https://github.com/frankland/valent/issues/5
 
+
+or  join gitter chat
+
+https://gitter.im/frankland/valent
+
 :)
 
 # v0.1
