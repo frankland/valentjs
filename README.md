@@ -1,5 +1,7 @@
 # Valent
 
+[![Join the chat at https://gitter.im/frankland/valent](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/frankland/valent?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 [![Build Status](https://travis-ci.org/frankland/valent.svg)](https://travis-ci.org/frankland/valent)
 
 Valent is the wrapper on the angular. Provide easier way to register angular components and
