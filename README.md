@@ -1,3 +1,13 @@
+# DOCUMENTATIONS
+
+if there is **2** "+1" comments at this issues - documents will be in 4 week 
+if there is **10** "+1" comments at this issues - documents will be in 2 week
+if there is **20** "+1" comments at this issues - documents will be in 1 week
+
+https://github.com/frankland/valent/issues/5
+
+:)
+
 # v0.1
 
 ```js
