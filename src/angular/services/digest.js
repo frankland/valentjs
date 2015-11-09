@@ -16,7 +16,7 @@ function safe(scope, fn) {
   }
 }
 
-export default class Diggest {
+export default class Digest {
   static run(context, fn) {
     if (context) {
       if (Scope.has(context)) {
