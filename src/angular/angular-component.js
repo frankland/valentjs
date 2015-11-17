@@ -57,7 +57,7 @@ export default class AngularComponent extends ValentComponent {
 
   isIsolated() {
     let params = this.getParams();
-    return isObject(params);
+    return isObject(params) || params === true;
   }
 
   getParams() {

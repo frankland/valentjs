@@ -52,7 +52,7 @@ export default (model, config) => {
     // attach $scope to url. needs for url.watch and get url by context. useful at parent classes
     valent.url.attach($scope);
 
-    $scope.$on('$destory', () => {
+    $scope.$on('$destroy', () => {
       valent.url.detach($scope);
     });
   }];

@@ -60,11 +60,13 @@ let initController = ($scope, $attrs, model) => {
   let name = model.getName();
   var logger = Logger.create(name);
 
-  let controller  = new Controller(...instances, params, logger);
+  let controller = new Controller(...instances, params, logger);
   Scope.attach(controller, $scope);
 
-  let namespace = model.getNamespace();
-  $scope[namespace] = controller;
+  if (model.isIsolated()) {
+    let namespace = model.getNamespace();
+    $scope[namespace] = controller;
+  }
 
   // $scope events
   $scope.$on('$destroy', () => {
@@ -73,7 +75,7 @@ let initController = ($scope, $attrs, model) => {
     }
   });
 
-  return $scope[namespace];
+  return controller;
 };
 
 let getValentInfo = (component) => {
@@ -89,17 +91,17 @@ let translateRestrict = (component) => {
   let restrict = 'E';
 
   if (component.withoutTemplate()) {
-    restrict = 'A';
+    //restrict = 'A';
   }
 
   return restrict;
 };
 
 let translateParams = (component) => {
-  let params = component.getParams();
-  let translatedParams = Object.assign({}, params);
+  let translatedParams = component.getParams();
 
-  if (component.isIsolated()) {
+  if (component.isIsolated() && isObject(translatedParams)) {
+    translatedParams = Object.assign({}, translatedParams);
 
     let interfaces = component.getInterfaces();
     let optionals = component.getOptional();
@@ -128,6 +130,7 @@ let translateParams = (component) => {
     }
   }
 
+  console.log(translatedParams);
   return translatedParams;
 };
 
@@ -137,7 +140,7 @@ export default (component) => {
 
   let link = (params, $scope, element, attrs, require) => {
     if (controller.link) {
-      controller.link(element, params, attrs, $scope);
+      controller.link(element, params, $scope);
     }
 
     if (isArray(require)) {
@@ -187,7 +190,8 @@ export default (component) => {
   };
 
   let Controller = component.getController();
-  if (Controller.compile) {
+
+  if (isFunction(Controller.compile)) {
     configuration.compile = (element, attrs) => {
       let params = Controller.compile(element, attrs);
 

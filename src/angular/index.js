@@ -52,7 +52,7 @@ export default class Angular {
       let application = translated.module || this[_module];
 
       angular.module(application)
-        .controller(translated.name, 'controller', translated.configuration);
+        .controller(translated.name, translated.configuration);
     },
 
     route: (route, config) => {
@@ -109,7 +109,7 @@ export default class Angular {
       }]);
     }
 
-    angular.module(module).config(['$locationProvider', '$routeProvider', ($locationProvider, $routeProvider) => {;
+    angular.module(module).config(['$locationProvider', '$routeProvider', ($locationProvider, $routeProvider) => {
       $locationProvider.html5Mode({
         enabled: config.get('routing.html5Mode'),
         requireBase: config.get('routing.requireBase')
@@ -122,7 +122,7 @@ export default class Angular {
         if (isString(otherwise)) {
           otherwiseConfig.redirectTo = otherwise;
         } else {
-
+          // TODO:
         }
 
         $routeProvider.otherwise(otherwiseConfig);

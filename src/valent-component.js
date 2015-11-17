@@ -22,7 +22,8 @@ let validate = (component) => {
   let templateUrl = component.getTemplateUrl();
 
   if (component.withoutTemplate()) {
-    errors.push('One of options.template, options.templateUrl or components\'s class static function "render()" should be defined');
+    console.log('fix here');
+    //errors.push('One of options.template, options.templateUrl or components\'s class static function "render()" should be defined');
   } else if (template) {
 
     if (!isString(template) && !isFunction(template)) {
