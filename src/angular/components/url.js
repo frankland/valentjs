@@ -146,19 +146,19 @@ export default class AngularUrl extends Url {
 
     Scope.get(context).then($scope => {
       $scope.$on('$routeUpdate', (event) => {
-        if (!event.silent) {
-          var params = this.parse();
+        var params = this.parse();
 
-          var diff = transform(params, (result, n, key) => {
-            if (!isEqual(n, this[local.state][key])) {
-              result[key] = n;
-            }
-          });
+        var diff = transform(params, (result, n, key) => {
+          if (!isEqual(n, this[local.state][key])) {
+            result[key] = n;
+          }
+        });
 
-          this[local.state] = cloneDeep(params);
+        this[local.state] = cloneDeep(params);
 
-          callback(params, diff);
-        }
+        callback(params, diff, {
+          silent: event.silent
+        });
       });
     });
   }
