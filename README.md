@@ -1,4 +1,38 @@
+# DOCUMENTATIONS
+
+if there is **2** "+1" comments at this issues - documents will be in 4 week 
+
+---
+
+
+if there is **10** "+1" comments at this issues - documents will be in 2 week
+
+
+---
+
+if there is **20** "+1" comments at this issues - documents will be in 1 week
+
+---
+
+
+https://github.com/frankland/valent/issues/5
+
+or  join gitter chat
+
+https://gitter.im/frankland/valent
+
+:)
+
+Main branch for 0.1.0 version
+
+https://github.com/frankland/valent/tree/rework
+
+
+
+
 # Valent
+
+[![Join the chat at https://gitter.im/frankland/valent](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/frankland/valent?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 [![Build Status](https://travis-ci.org/frankland/valent.svg)](https://travis-ci.org/frankland/valent)
 
