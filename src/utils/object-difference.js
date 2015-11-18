@@ -8,7 +8,7 @@ export default class ObjectDifference {
     if (logger) {
       this.logger = logger;
     } else {
-      this.logger = console.log.bind(console);
+      this.logger = console;
     }
   }
 
