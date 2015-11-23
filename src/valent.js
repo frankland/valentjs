@@ -28,30 +28,40 @@ class Valent {
     this.url = this[_framework].getUrlManager();
 
     /**
-     * NOTE: add organized validation for all components, controllers and routes
-     * before registration?
+     * NOTE: add organized validation for all components, controllers and routes before translation?
      */
+
+    // --- TRANSLATE COMPONENTS(DIRECTIVES)
     try {
+      let FrameworkComponentClass = this[_framework].component;
+
       for (let component of this[_components]) {
-        let frameworkComponent = new this[_framework].component(component.name, component.controller, component.options);
+        let frameworkComponent = new FrameworkComponentClass(component.name, component.controller, component.options);
         this[_framework].translate.component(frameworkComponent, this.config);
       }
     } catch (error) {
       throw new Error(`could not register components. ${error.message}`);
     }
 
+
+    // --- TRANSLATE CONTROLLERS
     try {
+      let FrameworkControllerClass = this[_framework].controller;
+
       for (let controller of this[_controllers]) {
-        let frameworkController = new this[_framework].controller(controller.name, controller.controller, controller.options);
+        let frameworkController = new FrameworkControllerClass(controller.name, controller.controller, controller.options);
         this[_framework].translate.controller(frameworkController, this.config);
       }
     } catch (error) {
       throw new Error(`could not register controllers. ${error.message}`);
     }
 
+    // --- TRANSLATE ROUTING
     try {
+      let FrameworkRouteClass = this[_framework].route;
+
       for (let route of this[_routes]) {
-        let frameworkRoute = new this[_framework].route(route.name, route.url, route.options);
+        let frameworkRoute = new FrameworkRouteClass(route.name, route.url, route.options);
         this[_framework].translate.route(frameworkRoute, this.config);
       }
     } catch (error) {
@@ -65,7 +75,7 @@ class Valent {
 
   component(name, Component, options) {
     if (this[_bootstrap]) {
-      throw new Error('todo');
+      throw new Error('component could no be registered after bootstrap');
     }
 
     this[_components].add({
@@ -77,7 +87,7 @@ class Valent {
 
   controller(name, Controller, options) {
     if (this[_bootstrap]) {
-      throw new Error('todo');
+      throw new Error('controller could no be registered after bootstrap');
     }
 
     this[_controllers].add({
@@ -89,7 +99,7 @@ class Valent {
 
   route(name, url, options) {
     if (this[_bootstrap]) {
-      throw new Error('todo');
+      throw new Error('route could no be registered after bootstrap');;
     }
 
     this[_routes].add({
