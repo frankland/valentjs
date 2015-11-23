@@ -9,20 +9,15 @@ import Url from '../url';
 import Scope from './services/scope';
 import Injector from './services/injector';
 
-let contexts = new WeakMap();
-let queue = new WeakMap();
-
 let _scope = Symbol('scope');
 let _state = Symbol('state');
 
-
 export default class AngularUrl extends Url {
-
   constructor(pattern, struct) {
     super(pattern, struct);
 
-    this[_scope] = null;
     this[_state] = {};
+    this[_scope] = null;
   }
 
   attachScope($scope) {
@@ -35,40 +30,39 @@ export default class AngularUrl extends Url {
 
   parse() {
     var $location = Injector.get('$location');
-    return this.decode($location.$$url);
-  }
+    let decoded = this.decode($location.$$url);
 
-  silent(params = {}) {
-    let isChanged = this.isEqual(params);
-    if (!isChanged) {
-      let url = this.stringify(params);
-      let $location = Injector.get('$location');
-      let $rootScope = Injector.get('$rootScope');
+    this.cacheParams(decoded);
 
-      var unsubscribe = $rootScope.$on('$routeUpdate', (event) => {
-        event.silent = true;
-        unsubscribe();
-      });
-
-      $location.url(url)
-    }
-
-    return isChanged;
+    return decoded;
   }
 
   go(params, options) {
     let isChanged = this.isEqual(params);
 
     if (!isChanged) {
-      let url = this.stringify(params);
       let $location = Injector.get('$location');
 
-      $location.url(url)
+      if (options) {
+        let $rootScope = Injector.get('$rootScope');
+        
+        var unsubscribe = $rootScope.$on('$routeUpdate', event => {
+
+          Object.assign(event, {
+            $valentEvent: options
+          });
+
+          unsubscribe();
+        });
+      }
+
+      let url = this.stringify(params);
+      $location.url(url);
     }
 
     return isChanged;
   }
-  
+
   redirect(params = {}) {
     if (!isObject(params)) {
       throw new Error('params should be an object');
@@ -91,23 +85,38 @@ export default class AngularUrl extends Url {
 
   watch(callback) {
     var context = this[_scope];
+    let off = null;
+    let unsubscribed = false;
 
     Scope.get(context).then($scope => {
-      $scope.$on('$routeUpdate', (event) => {
-        if (!event.silent) {
+      if (!unsubscribed) {
+        off = $scope.$on('$routeUpdate', (event) => {
+          let valentEvent = event.$valentEvent;
+
           var params = this.parse();
 
           var diff = transform(params, (result, n, key) => {
-            if (!isEqual(n, this[_state][key])) {
+            // TODO: use cached params instead of state
+            let state = this[_state][key];
+
+            if (!isEqual(n, state)) {
               result[key] = n;
             }
           });
 
           this[_state] = cloneDeep(params);
 
-          callback(params, diff);
-        }
-      });
+          callback(params, diff, valentEvent);
+        });
+      }
     });
+
+    return () => {
+      if (off) {
+        off();
+      } else {
+        unsubscribed = true;
+      }
+    };
   }
 }

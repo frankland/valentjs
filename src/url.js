@@ -40,16 +40,13 @@ let _links = Symbol('mappings');
 let _urlPattern = Symbol('url-pattern');
 let _urlParamsKeys = Symbol('url-params-key');
 let _searchParamsKeys = Symbol('search-params-key');
-let _cachedParams = Symbol('cached-params');
 let _serializer = Symbol('url-serializer');
 
 export default class Url {
+  cache = {};
 
   constructor(pattern, struct) {
     this[_serializer] = new UrlSerializer(struct);
-
-    this[_cachedParams] = null;
-
     let urlPattern = new UrlPattern(pattern);
 
     this[_pattern] = pattern;
@@ -127,6 +124,16 @@ export default class Url {
   }
 
   parse() {
+    /**
+     * TODO: use cached params
+     *
+     * if there is no cached params - parse url. Otherwise - return cached params
+     *
+     * if (!Object.keys(this.cache)) {
+     *
+     * }
+     * @type {string}
+     */
     let url = window.location.pathname;
 
     let urlPattern = this.getUrlPattern();
@@ -145,11 +152,23 @@ export default class Url {
     }
 
     let params = Object.assign(urlParams, searchParams);
+    let decoded = this[_serializer].decode(params);
 
-    return this[_serializer].decode(params);
+    this.cacheParams(decoded);
+
+    return decoded;
+  }
+
+  cacheParams(params) {
+    this.cache = params;
+  }
+
+  clearCachedParams() {
+    this.cache = {};
   }
 
   isEmpty() {
+    // TODO: use cached params
     let params = this.parse();
     return Object.keys(params).length == 0;
   }
@@ -159,6 +178,7 @@ export default class Url {
       throw new Error('params should be an object');
     }
 
+    // TODO: use cached params
     var existingParams = this.parse();
 
     return isEqual(existingParams, params);
@@ -171,11 +191,13 @@ export default class Url {
   }
 
   apply() {
+    // TODO: use cached params
     let params = this.parse();
     let links = this[_links];
     let tasks = [];
 
     for (let key of Object.keys(params)) {
+
       if (links.hasOwnProperty(key)) {
         let value = params[key];
         let link = links[key];
