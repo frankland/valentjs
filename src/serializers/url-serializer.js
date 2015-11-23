@@ -9,7 +9,7 @@ import RenameSerializer from './rename-serializer';
 
 
 let createDecoders = (options) => {
-  var decoders = {
+  let decoders = {
     // ------- NUMBER -------
     num: (raw) => raw === null ? null : parseFloat(raw),
     listNum: (raw) => !raw || !raw.length ? null : raw.split(options.list_delimiter).map(decoders.num),
@@ -36,7 +36,7 @@ let createDecoders = (options) => {
 };
 
 let createEncoders = (options) => {
-  var encoders = {
+  let encoders = {
     // ------- NUMBER -------
     num: (value) => {
       let encoded = parseFloat(value).toString(10);
@@ -64,7 +64,7 @@ let createEncoders = (options) => {
   return encoders;
 };
 
-var addUrlRules = (addRule, options) => {
+let addUrlRules = (addRule, options) => {
   let decoders = createDecoders(options);
   let encoders = createEncoders(options);
 
@@ -94,7 +94,7 @@ var addUrlRules = (addRule, options) => {
   addRule(primitives.MatrixMaybeNum, matrixNum);
 
   // ------ STRING -----
-  var str = {
+  let str = {
     decode: decoders.str,
     encode: encoders.str
   };
@@ -120,7 +120,7 @@ var addUrlRules = (addRule, options) => {
   addRule(primitives.MatrixMaybeStr, matrixStr);
 
   // ------ DATES -----
-  var date = {
+  let date = {
     decode: decoders.date,
     encode: encoders.date
   };
@@ -145,7 +145,7 @@ var addUrlRules = (addRule, options) => {
   addRule(primitives.MatrixMaybeDate, matrixDate);
 
   // ------ BOOL-----
-  var bool = {
+  let bool = {
     decode: decoders.bool,
     encode: encoders.bool
   };

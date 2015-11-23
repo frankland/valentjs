@@ -101,8 +101,8 @@ class Valent {
 }
 
 
-var valent = null;
-var context = typeof window !== 'undefined' ? window : global;
+let valent = null;
+let context = typeof window !== 'undefined' ? window : global;
 
 if (context.valent) {
   throw new Error('Seems there are multiple installations of Valent');

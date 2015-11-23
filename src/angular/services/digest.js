@@ -6,7 +6,7 @@ function safe(scope, fn) {
     return;
   }
 
-  var phase = scope.$root.$$phase;
+  let phase = scope.$root.$$phase;
   if (phase == '$apply' || phase == '$digest') {
     if (angular.isFunction(fn)) {
       fn();
@@ -25,7 +25,7 @@ export default class Digest {
         });
       }
     } else {
-      var scope = Injector.get('$rootScope');
+      let scope = Injector.get('$rootScope');
       safe(scope, fn);
     }
   }

@@ -58,7 +58,7 @@ let initController = ($scope, $attrs, model) => {
   let params = new DirectiveParams($scope, $attrs, model);
 
   let name = model.getName();
-  var logger = Logger.create(name);
+  let logger = Logger.create(name);
 
   let controller = new Controller(...instances, params, logger);
   Scope.attach(controller, $scope);

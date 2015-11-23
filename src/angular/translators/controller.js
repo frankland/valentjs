@@ -8,7 +8,7 @@ let initController = ($scope, model, valentResolve) => {
   let Controller = model.getController();
 
   let name = model.getName();
-  var logger = Logger.create(name);
+  let logger = Logger.create(name);
 
   let url = valent.url.get(name);
   let controller = new Controller(valentResolve, url, logger);

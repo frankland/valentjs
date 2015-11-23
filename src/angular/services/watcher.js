@@ -31,7 +31,7 @@ export default class Watcher {
 
         this[_scope] = angularScope;
 
-        for (var task of this[_queue]) {
+        for (let task of this[_queue]) {
           task.off = this[task.method].apply(this, task.arguments);
         }
       });
@@ -45,7 +45,7 @@ export default class Watcher {
   }
 
   static create(context) {
-    var scope = null;
+    let scope = null;
 
     if (context) {
       scope = Scope.get(context);
@@ -57,13 +57,13 @@ export default class Watcher {
   }
 
   watch() {
-    var off = null;
+    let off = null;
 
     if (this[_scope]) {
-      var $scope = this[_scope];
+      let $scope = this[_scope];
       off = $scope.$watch.apply($scope, arguments);
     } else {
-      var task = {
+      let task = {
         method: 'watch',
         arguments: Array.prototype.slice.call(arguments)
       };
@@ -83,12 +83,12 @@ export default class Watcher {
   }
 
   //watchGroup() {
-  //  var $scope = this[_scope];
+  //  let $scope = this[_scope];
   //  return $scope.$watchGroup.apply($scope, arguments);
   //}
   //
   //watchCollection() {
-  //  var $scope = this[_scope];
+  //  let $scope = this[_scope];
   //  return $scope.$watchCollection.apply($scope, arguments);
   //}
 }

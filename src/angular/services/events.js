@@ -1,6 +1,6 @@
 import Scope from './scope';
 
-var local = {
+let local = {
   context: Symbol('context')
 };
 

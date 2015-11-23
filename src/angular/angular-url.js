@@ -29,7 +29,7 @@ export default class AngularUrl extends Url {
   }
 
   parse() {
-    var $location = Injector.get('$location');
+    let $location = Injector.get('$location');
     let decoded = this.decode($location.$$url);
 
     this.cacheParams(decoded);
@@ -45,8 +45,8 @@ export default class AngularUrl extends Url {
 
       if (options) {
         let $rootScope = Injector.get('$rootScope');
-        
-        var unsubscribe = $rootScope.$on('$routeUpdate', event => {
+
+        let unsubscribe = $rootScope.$on('$routeUpdate', event => {
 
           Object.assign(event, {
             $valentEvent: options
@@ -68,23 +68,23 @@ export default class AngularUrl extends Url {
       throw new Error('params should be an object');
     }
 
-    var url = this.stringify(params);
-    var $window = Injector.get('$window');
+    let url = this.stringify(params);
+    let $window = Injector.get('$window');
 
     $window.location.href = url;
   }
 
   stringify(params) {
-    var url = super.stringify(params);
+    let url = super.stringify(params);
 
-    var $browser = Injector.get('$browser');
-    var base = $browser.baseHref();
+    let $browser = Injector.get('$browser');
+    let base = $browser.baseHref();
 
     return base ? url.replace(/^\//, '') : url;
   }
 
   watch(callback) {
-    var context = this[_scope];
+    let context = this[_scope];
     let off = null;
     let unsubscribed = false;
 
@@ -93,9 +93,9 @@ export default class AngularUrl extends Url {
         off = $scope.$on('$routeUpdate', (event) => {
           let valentEvent = event.$valentEvent;
 
-          var params = this.parse();
+          let params = this.parse();
 
-          var diff = transform(params, (result, n, key) => {
+          let diff = transform(params, (result, n, key) => {
             // TODO: use cached params instead of state
             let state = this[_state][key];
 

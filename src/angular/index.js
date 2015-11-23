@@ -29,7 +29,7 @@ export default class Angular {
   translate = {
     component: (component, config) => {
       try {
-        var translated = componentTranslator(component, config);
+        let translated = componentTranslator(component, config);
       } catch (error) {
         let name = component.getName();
         throw new TranslateException(name, 'component', error.message);
@@ -43,7 +43,7 @@ export default class Angular {
 
     controller: (controller, config) => {
       try {
-        var translated = controllerTranslator(controller, config);
+        let translated = controllerTranslator(controller, config);
       } catch (error) {
         let name = controller.getName();
         throw new TranslateException(name, error.message);
@@ -59,7 +59,7 @@ export default class Angular {
       let name = route.getName();
 
       try {
-        var translated = routeTranslator(route, config);
+        let translated = routeTranslator(route, config);
       } catch (error) {
         throw new TranslateException(name, 'route', error.message);
       }

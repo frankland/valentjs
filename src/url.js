@@ -179,7 +179,7 @@ export default class Url {
     }
 
     // TODO: use cached params
-    var existingParams = this.parse();
+    let existingParams = this.parse();
 
     return isEqual(existingParams, params);
   }

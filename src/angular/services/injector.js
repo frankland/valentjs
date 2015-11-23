@@ -8,7 +8,7 @@ class Injector {
   }
 
   get(dependency) {
-    var $injector = this.$injector;
+    let $injector = this.$injector;
 
     if (!$injector) {
       throw new Error('Injector is not defined');
