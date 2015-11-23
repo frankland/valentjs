@@ -4,6 +4,8 @@ import isString from 'lodash/lang/isString';
 import isFunction from 'lodash/lang/isFunction';
 import isArray from 'lodash/lang/isArray';
 
+import uniq from 'lodash/array/uniq';
+
 import Logger from '../../utils/logger';
 
 import RuntimeException from '../../exceptions/runtime';
@@ -105,14 +107,20 @@ let translateParams = (component) => {
 
     let interfaces = component.getInterfaces();
     let optionals = component.getOptional();
-    let substitutions = component.getSubstitution();
+    let pipes = component.getPipes();
 
-    // TODO: cross of 3 arrays
-    for (let key of Object.keys(interfaces)) {
-      if (optionals.hasOwnProperty(key)) {
-        throw new Error('optionals and interfaces could not have same keys');
-      }
+
+    let interfaceKeys = Object.keys(interfaces);
+    let optionalsKeys = Object.keys(optionals);
+    let pipesKeys = Object.keys(interfaces);
+
+    let keys = interfaceKeys.concat(optionalsKeys).concat(pipesKeys);
+    let uniqKeys = uniq(keys);
+
+    if (keys.length != uniqKeys.length) {
+      throw new Error('optionals / interfaces / pipes could not have same keys');
     }
+
 
     for (let key of Object.keys(interfaces)) {
       let translatedKey = camelCase(key);
@@ -124,13 +132,12 @@ let translateParams = (component) => {
       translatedParams[translatedKey] = '=';
     }
 
-    for (let key of Object.keys(substitutions)) {
+    for (let key of Object.keys(pipes)) {
       let translatedKey = camelCase(key);
       translatedParams[translatedKey] = '=';
     }
   }
 
-  console.log(translatedParams);
   return translatedParams;
 };
 

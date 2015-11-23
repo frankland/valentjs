@@ -118,12 +118,12 @@ export default class ValentComponent {
     return this.options.optional || {};
   }
 
-  hasSubstitution() {
-    let substitution = this.options.substitution;
-    return !!Object.keys(substitution).length;
+  hasPipes() {
+    let pipes = this.options.pipes;
+    return !!Object.keys(pipes).length;
   }
 
-  getSubstitution() {
-    return this.options.substitution || {};
+  getPipes() {
+    return this.options.pipes || {};
   }
 }

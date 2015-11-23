@@ -13,8 +13,8 @@ let getAvailableParams = (component) => {
   let name = component.getName();
   keys.push(name);
 
-  let substitutions = component.getSubstitution();
-  for (let key of Object.keys(substitutions)) {
+  let pipes = component.getPipes();
+  for (let key of Object.keys(pipes)) {
     let translatedKey = camelCase(key);
     keys.push(translatedKey);
   }
@@ -27,7 +27,7 @@ let _attrs = Symbol('$attrs');
 let _definitions = Symbol('definitions');
 let _watcher = Symbol('$watcher');
 let _name = Symbol('name');
-let _substitutions = Symbol('substitutions');
+let _pipes = Symbol('pipes');
 
 export default class DirectiveParams {
   constructor($scope, $attrs, component) {
@@ -38,14 +38,14 @@ export default class DirectiveParams {
 
     this[_watcher] = new Watcher($scope);
 
-    let substitutions = component.getSubstitution();
+    let pipes = component.getPipes();
 
-    this[_substitutions] = {};
-    for (let key of Object.keys(substitutions)) {
+    this[_pipes] = {};
+    for (let key of Object.keys(pipes)) {
       let translatedKey = camelCase(key);
 
-      this[_substitutions][translatedKey] = {
-        substitution: substitutions[key],
+      this[_pipes][translatedKey] = {
+        substitution: pipes[key],
         value: null
       };
     }
@@ -63,19 +63,19 @@ export default class DirectiveParams {
     let value = this[_scope][key];
     let attrs = this[_attrs].$attr;
 
-    if (this[_substitutions].hasOwnProperty(key)) {
-      let state = this[_substitutions][key];
-      let Substitutions = state.substitution;
+    if (this[_pipes].hasOwnProperty(key)) {
+      let state = this[_pipes][key];
+      let Pipe = state.pipe;
 
       if (!attrs.hasOwnProperty(key)) {
         if (!state.value) {
-          state.value = new Substitutions();
+          state.value = new Pipe();
         }
 
         value = state.value;
       } else {
-        if (!(value instanceof Substitutions)) {
-          throw new Error(`"${this[_name]}" - directive substitution "${key}" has wrong class`);
+        if (!(value instanceof Pipe)) {
+          throw new Error(`"${this[_name]}" - directive pipe "${key}" has wrong class`);
         }
       }
     }
