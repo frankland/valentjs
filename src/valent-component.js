@@ -7,6 +7,7 @@ let validate = (component) => {
   let errors = [];
 
   let name = component.getName();
+  
   if (!name || name.indexOf(' ') != -1) {
     errors.push('component\'s name could not be empty or contain spaces');
   }
@@ -22,8 +23,9 @@ let validate = (component) => {
   let templateUrl = component.getTemplateUrl();
 
   if (component.withoutTemplate()) {
-    console.log('fix here');
-    //errors.push('One of options.template, options.templateUrl or components\'s class static function "render()" should be defined');
+    if (!component.hasCompileMethod()) {
+      errors.push('One of options template / templateUrl or components\'s class static function "render()" or "compile()" should be defined');
+    }
   } else if (template) {
 
     if (!isString(template) && !isFunction(template)) {
@@ -88,6 +90,10 @@ export default class ValentComponent {
 
   withoutTemplate() {
     return !this.hasTemplate() && !this.hasTemplateUrl() && !this.hasTemplateMethod();
+  }
+
+  hasCompileMethod() {
+    return isFunction(this.Component.compile);
   }
 
   getParams() {
