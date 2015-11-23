@@ -24,7 +24,9 @@ let validate = (component) => {
 
   if (component.withoutTemplate()) {
     if (!component.hasCompileMethod()) {
-      errors.push('One of options template / templateUrl or components\'s class static function "render()" or "compile()" should be defined');
+      // TODO: means that component with restrict "A"?
+      // errors.push('One of config options - template / templateUrl or components\'s class static function "render()" or "compile()" should be defined');
+      console.log('devnotes: check');
     }
   } else if (template) {
 
@@ -109,13 +111,13 @@ export default class ValentComponent {
     return this.options.interfaces || {};
   }
 
-  hasOptionals() {
-    let optionals = this.getOptional();
-    return !!Object.keys(optionals).length;
+  hasOptions() {
+    let options = this.getOptions();
+    return !!Object.keys(options).length;
   }
 
-  getOptional() {
-    return this.options.optional || {};
+  getOptions() {
+    return this.options.options || {};
   }
 
   hasPipes() {
@@ -125,5 +127,9 @@ export default class ValentComponent {
 
   getPipes() {
     return this.options.pipes || {};
+  }
+
+  getRestrict() {
+    return this.options.restrict;
   }
 }

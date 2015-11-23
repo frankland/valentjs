@@ -35,16 +35,16 @@ let initController = ($scope, $attrs, componentModel) => {
     instances.push(instance);
   }
 
-  // gather optional
-  let optionals = componentModel.getOptional();
+  // gather options
+  let options = componentModel.getOptions();
 
-  for (let key of Object.keys(optionals)) {
+  for (let key of Object.keys(options)) {
     let interfaceInstance = $scope[key];
 
     let instance = null;
     if (interfaceInstance) {
 
-      let InterfaceClass = optionals[key];
+      let InterfaceClass = options[key];
 
       if (!(interfaceInstance instanceof InterfaceClass)) {
         throw Error(`interface "${key}" has wrong class`);
@@ -81,9 +81,8 @@ let initController = ($scope, $attrs, componentModel) => {
 };
 
 let getValentInfo = (componentModel) => {
-
   return {
-    type: 'componentModel',
+    type: 'component',
     name: componentModel.getName(),
     namespace: componentModel.getNamespace()
   };
@@ -92,52 +91,55 @@ let getValentInfo = (componentModel) => {
 let translateRestrict = (componentModel) => {
   let restrict = 'E';
 
-  if (componentModel.withoutTemplate()) {
-    //restrict = 'A';
+  // TODO: check if we need to compile directive with restrict A
+  if (componentModel.withoutTemplate() && !componentModel.hasCompileMethod()) {
+    restrict = 'A';
   }
 
   return restrict;
 };
 
 let translateParams = (componentModel) => {
-  let translatedParams = componentModel.getParams();
+  let params = componentModel.getParams();
+  let translatedParams = null;
 
-  if (componentModel.isIsolated() && isObject(translatedParams)) {
-    translatedParams = Object.assign({}, translatedParams);
+  if (componentModel.isIsolated()) {
+    translatedParams = Object.assign({}, params);
 
     let interfaces = componentModel.getInterfaces();
-    let optionals = componentModel.getOptional();
+    let options = componentModel.getOptions();
     let pipes = componentModel.getPipes();
 
-
     let interfaceKeys = Object.keys(interfaces);
-    let optionalsKeys = Object.keys(optionals);
-    let pipesKeys = Object.keys(interfaces);
+    let optionsKeys = Object.keys(options);
+    let pipesKeys = Object.keys(pipes);
 
-    let keys = interfaceKeys.concat(optionalsKeys).concat(pipesKeys);
+    let keys = interfaceKeys.concat(optionsKeys).concat(pipesKeys);
     let uniqKeys = uniq(keys);
 
     if (keys.length != uniqKeys.length) {
-      throw new Error('optionals / interfaces / pipes could not have same keys');
+      throw new Error('options / interfaces / pipes could not have same keys');
     }
-
 
     for (let key of Object.keys(interfaces)) {
-      let translatedKey = camelCase(key);
-      translatedParams[translatedKey] = '=';
+      let interfaceKey = camelCase(key);
+      translatedParams[interfaceKey] = '=';
     }
 
-    for (let key of Object.keys(optionals)) {
-      let translatedKey = camelCase(key);
-      translatedParams[translatedKey] = '=';
+    for (let key of Object.keys(options)) {
+      let optionKey = camelCase(key);
+      translatedParams[optionKey] = '=';
     }
 
     for (let key of Object.keys(pipes)) {
-      let translatedKey = camelCase(key);
-      translatedParams[translatedKey] = '=';
+      let pipeKey = camelCase(key);
+      translatedParams[pipeKey] = '=';
     }
+  } else {
+    translatedParams = !!params;
   }
 
+  console.log(translatedParams);
   return translatedParams;
 };
 
@@ -187,7 +189,7 @@ export default (componentModel) => {
       try {
         controller = initController($scope, $attrs, componentModel);
       } catch (error) {
-        throw new RuntimeException(name, 'componentModel', error.message);
+        throw new RuntimeException(name, 'component', error.message);
       }
     }],
 

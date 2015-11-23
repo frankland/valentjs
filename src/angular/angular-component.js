@@ -16,12 +16,8 @@ let validate = (component) => {
     errors.push('components params should be an object or boolean');
   }
 
-  if (!component.isIsolated() && (component.hasInterfaces() || component.hasOptionals())) {
-    errors.push('It is not available to setup interfaces of optional params if params are defined as boolean');
-  }
-
-  if (component.withoutTemplate() && !component.hasCompileMethod()) {
-    errors.push('directive should implement compile method or defined with template');
+  if (!component.isIsolated() && (component.hasInterfaces() || component.hasOptions())) {
+    errors.push('It is not available to setup interfaces of optional params if params are defined as boolean (not isolated scope)');
   }
 
   return errors;
@@ -36,10 +32,6 @@ export default class AngularComponent extends ValentComponent {
     if (errors.length) {
       throw new RegisterException(name, 'angular-component', errors);
     }
-  }
-
-  hasCompileMethod() {
-    return isFunction(this.Component.compile);
   }
 
   getDirectiveName() {

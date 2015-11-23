@@ -8,7 +8,7 @@ export default (routeModel, config) => {
 
   let resolvers = {
     valentResolve: () => {
-      let globalResolvers = config.routeModel.getResolvers();
+      let globalResolvers = config.route.getResolvers();
       let globalDependencies = Object.keys(globalResolvers);
 
       let globalTasks = [];

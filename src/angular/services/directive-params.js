@@ -10,6 +10,7 @@ let getAvailableParams = (component) => {
     keys = Object.keys(params);
   }
 
+  // TODO: only if restrict == A?
   let name = component.getName();
   keys.push(name);
 
@@ -29,6 +30,9 @@ let _watcher = Symbol('$watcher');
 let _name = Symbol('name');
 let _pipes = Symbol('pipes');
 
+/**
+ * TODO: redevelop component
+ */
 export default class DirectiveParams {
   constructor($scope, $attrs, component) {
     this[_scope] = $scope;
@@ -45,7 +49,7 @@ export default class DirectiveParams {
       let translatedKey = camelCase(key);
 
       this[_pipes][translatedKey] = {
-        substitution: pipes[key],
+        pipe: pipes[key],
         value: null
       };
     }
