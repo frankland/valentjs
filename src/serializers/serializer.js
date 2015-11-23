@@ -1,8 +1,10 @@
 import isFunction from 'lodash/lang/isFunction';
 import isObject from 'lodash/lang/isObject';
 import isArray from 'lodash/lang/isArray';
+import isEmpty from 'lodash/lang/isEmpty';
 
 import t from 'tcomb';
+
 let _struct = Symbol('struct');
 let _rules = Symbol('rules');
 
@@ -36,23 +38,32 @@ export default class Serializer {
 
     let rules = this.getRules();
     let encodedObject = {};
-    //let props = struct;
+
     for (let key of Object.keys(struct)) {
+
       if (params.hasOwnProperty(key)) {
         let structItem = struct[key];
+
         if (false && !rules.has(structItem)) {
           throw new Error(`rule for struct with id "${key}" does not exist`);
         }
+
         let value = params[key];
-        if (!structItem.is(value)) {
-          try {
-            structItem(value);
-          } catch (e) {
-            throw new Error(`value with id "${key}" has wrong struct. Expected "${structItem.displayName}", but value is "${value}"`);
+        let isEncodeAllowed = this.isEncodeAllowed(key, value);
+
+        if (isEncodeAllowed) {
+          if (!structItem.is(value)) {
+            try {
+              structItem(value);
+            } catch (e) {
+              throw new Error(`value with id "${key}" has wrong struct. Expected "${structItem.displayName}", but value is "${value}"`);
+            }
           }
+
+          let rule = rules.get(structItem);
+
+          encodedObject[key] = rule.encode(value);
         }
-        let rule = rules.get(structItem);
-        encodedObject[key] = rule.encode(value);
       }
     }
 
@@ -82,5 +93,10 @@ export default class Serializer {
     }
 
     return decodedObject;
+  }
+
+  // should be overridden in child serializers
+  isEncodeAllowed(key, value) {
+    return true;
   }
 }

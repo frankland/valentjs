@@ -6,12 +6,7 @@ import Serializer from './serializer';
 import t from 'tcomb';
 
 export default class RenameSerializer extends Serializer {
-
-  constructor(struct/*, options = {}*/) {
-
-    //if(!isObject(struct) || isArray(struct) || isFunction(struct)){
-    //  throw new Error('struct should be an object');
-    //}
+  constructor(struct) {
     let normalizedStruct = {};
     let renameOptions = {};
 
@@ -30,7 +25,9 @@ export default class RenameSerializer extends Serializer {
       }
       normalizedStruct[key] = filedStruct;
     }
+
     super(normalizedStruct);
+
     this.renameOptions = renameOptions;
   }
 
@@ -53,13 +50,12 @@ export default class RenameSerializer extends Serializer {
   }
 
   getOriginalName(renamed) {
-
     if (!isString(renamed)) {
       throw new Error('renamed must be a string');
     }
 
-
     let original = null;
+
     for (let key of Object.keys(this.renameOptions)) {
       if (this.renameOptions[key] === renamed) {
         original = key;
@@ -71,7 +67,6 @@ export default class RenameSerializer extends Serializer {
   }
 
   decode(params) {
-
     let normalized = {};
 
     for (let key of Object.keys(params)) {
@@ -87,7 +82,6 @@ export default class RenameSerializer extends Serializer {
         normalized[key] = value;
       }
     }
-
 
     return super.decode(normalized);
   }

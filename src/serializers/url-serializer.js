@@ -1,6 +1,8 @@
 import isObject from 'lodash/lang/isObject';
 import isArray from 'lodash/lang/isArray';
 import isString from 'lodash/lang/isString';
+import isEmpty from 'lodash/lang/isEmpty';
+
 import moment from 'moment';
 
 import * as primitives from '../utils/primitives';
@@ -184,9 +186,13 @@ export default class UrlSerializer extends RenameSerializer {
     });
   }
 
+  isEncodeAllowed(key, value) {
+    return !isEmpty(value);
+  }
+
   decode(params) {
-    for (let i of Object.keys(params)) {
-      if (!isString(params[i])) {
+    for (let key of Object.keys(params)) {
+      if (!isString(params[key])) {
         throw new Error('URL param should be String');
       }
     }
