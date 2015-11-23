@@ -3,18 +3,18 @@ import Scope from '../services/scope';
 
 import RuntimeException from '../../exceptions/runtime';
 
-let initController = ($scope, model, valentResolve) => {
+let initController = ($scope, controllerModel, valentResolve) => {
 
-  let Controller = model.getController();
+  let Controller = controllerModel.getController();
 
-  let name = model.getName();
+  let name = controllerModel.getName();
   let logger = Logger.create(name);
 
   let url = valent.url.get(name);
   let controller = new Controller(valentResolve, url, logger);
   Scope.attach(controller, $scope);
 
-  let namespace = model.getNamespace();
+  let namespace = controllerModel.getNamespace();
   $scope[namespace] = controller;
 
   // $scope events
@@ -27,24 +27,23 @@ let initController = ($scope, model, valentResolve) => {
   return $scope[namespace];
 };
 
-let getValentInfo = (model) => {
-
+let getValentInfo = (controllerModel) => {
   return {
     type: 'controller',
-    name: model.getName(),
-    namespace: model.getNamespace()
+    name: controllerModel.getName(),
+    namespace: controllerModel.getNamespace()
   };
 };
 
-export default (model, config) => {
-  let name = model.getName();
-  let module = model.getModule();
+export default (controllerModel, config) => {
+  let name = controllerModel.getName();
+  let module = controllerModel.getModule();
 
   let configuration = ['$scope', 'valentResolve', ($scope, valentResolve) => {
-    $scope.$valent = getValentInfo(model);
+    $scope.$valent = getValentInfo(controllerModel);
 
     try {
-      initController($scope, model, valentResolve);
+      initController($scope, controllerModel, valentResolve);
     } catch (error) {
       throw new RuntimeException(name, 'controller', error.message);
     }

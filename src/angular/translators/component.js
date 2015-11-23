@@ -13,11 +13,11 @@ import DirectiveParams from '../services/directive-params';
 import Scope from '../services/scope';
 
 
-let initController = ($scope, $attrs, model) => {
+let initController = ($scope, $attrs, componentModel) => {
   let instances = [];
 
   // gather interfaces
-  let interfaces = model.getInterfaces();
+  let interfaces = componentModel.getInterfaces();
 
   for (let key of Object.keys(interfaces)) {
     let instance = $scope[key];
@@ -36,7 +36,7 @@ let initController = ($scope, $attrs, model) => {
   }
 
   // gather optional
-  let optionals = model.getOptional();
+  let optionals = componentModel.getOptional();
 
   for (let key of Object.keys(optionals)) {
     let interfaceInstance = $scope[key];
@@ -56,17 +56,17 @@ let initController = ($scope, $attrs, model) => {
     instances.push(instance);
   }
 
-  let Controller = model.getController();
-  let params = new DirectiveParams($scope, $attrs, model);
+  let Controller = componentModel.getController();
+  let params = new DirectiveParams($scope, $attrs, componentModel);
 
-  let name = model.getName();
+  let name = componentModel.getName();
   let logger = Logger.create(name);
 
   let controller = new Controller(...instances, params, logger);
   Scope.attach(controller, $scope);
 
-  if (model.isIsolated()) {
-    let namespace = model.getNamespace();
+  if (componentModel.isIsolated()) {
+    let namespace = componentModel.getNamespace();
     $scope[namespace] = controller;
   }
 
@@ -80,34 +80,34 @@ let initController = ($scope, $attrs, model) => {
   return controller;
 };
 
-let getValentInfo = (component) => {
+let getValentInfo = (componentModel) => {
 
   return {
-    type: 'component',
-    name: component.getName(),
-    namespace: component.getNamespace()
+    type: 'componentModel',
+    name: componentModel.getName(),
+    namespace: componentModel.getNamespace()
   };
 };
 
-let translateRestrict = (component) => {
+let translateRestrict = (componentModel) => {
   let restrict = 'E';
 
-  if (component.withoutTemplate()) {
+  if (componentModel.withoutTemplate()) {
     //restrict = 'A';
   }
 
   return restrict;
 };
 
-let translateParams = (component) => {
-  let translatedParams = component.getParams();
+let translateParams = (componentModel) => {
+  let translatedParams = componentModel.getParams();
 
-  if (component.isIsolated() && isObject(translatedParams)) {
+  if (componentModel.isIsolated() && isObject(translatedParams)) {
     translatedParams = Object.assign({}, translatedParams);
 
-    let interfaces = component.getInterfaces();
-    let optionals = component.getOptional();
-    let pipes = component.getPipes();
+    let interfaces = componentModel.getInterfaces();
+    let optionals = componentModel.getOptional();
+    let pipes = componentModel.getPipes();
 
 
     let interfaceKeys = Object.keys(interfaces);
@@ -141,8 +141,8 @@ let translateParams = (component) => {
   return translatedParams;
 };
 
-export default (component) => {
-  let module = component.getModule();
+export default (componentModel) => {
+  let module = componentModel.getModule();
   let controller = null;
 
   let link = (params, $scope, element, attrs, require) => {
@@ -177,17 +177,17 @@ export default (component) => {
 
   let configuration = {
     replace: false,
-    restrict: translateRestrict(component),
-    scope: translateParams(component),
-    require: component.getRequire(),
+    restrict: translateRestrict(componentModel),
+    scope: translateParams(componentModel),
+    require: componentModel.getRequire(),
     controller: ['$scope', '$attrs', ($scope, $attrs) => {
-      $scope.$valent = getValentInfo(component);
+      $scope.$valent = getValentInfo(componentModel);
 
-      let name = component.getName();
+      let name = componentModel.getName();
       try {
-        controller = initController($scope, $attrs, component);
+        controller = initController($scope, $attrs, componentModel);
       } catch (error) {
-        throw new RuntimeException(name, 'component', error.message);
+        throw new RuntimeException(name, 'componentModel', error.message);
       }
     }],
 
@@ -196,7 +196,7 @@ export default (component) => {
     }
   };
 
-  let Controller = component.getController();
+  let Controller = componentModel.getController();
 
   if (isFunction(Controller.compile)) {
     configuration.compile = (element, attrs) => {
@@ -208,24 +208,24 @@ export default (component) => {
     };
   }
 
-  if (component.hasTemplate()) {
+  if (componentModel.hasTemplate()) {
 
     // set template
-    configuration.template = component.getTemplate();
-  } else if (component.hasTemplateUrl()) {
+    configuration.template = componentModel.getTemplate();
+  } else if (componentModel.hasTemplateUrl()) {
 
     // set templateUrl
-    configuration.templateUrl = component.getTemplateUrl();
-  } else if (component.hasTemplateMethod()) {
+    configuration.templateUrl = componentModel.getTemplateUrl();
+  } else if (componentModel.hasTemplateMethod()) {
 
     // set template using Components method
     configuration.template = (element, attrs) => {
-      let method = component.getTemplateMethod();
+      let method = componentModel.getTemplateMethod();
       let template = method(element, attrs);
 
       if (!isString(template)) {
-        let name = component.getName();
-        throw new RuntimeException(name, 'component', 'result of Component.render() should be a string');
+        let name = componentModel.getName();
+        throw new RuntimeException(name, 'componentModel', 'result of Component.render() should be a string');
       }
 
       return template;
@@ -233,7 +233,7 @@ export default (component) => {
   }
 
   return {
-    name: component.getDirectiveName(),
+    name: componentModel.getDirectiveName(),
     module,
     configuration
   }

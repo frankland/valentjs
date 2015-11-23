@@ -2,19 +2,19 @@ import isArray from 'lodash/lang/isArray';
 import isFunction from 'lodash/lang/isFunction';
 import AngularUrl from '../angular-url';
 
-export default (route, config) => {
-  let name = route.getName();
-  let module = route.getModule();
+export default (routeModel, config) => {
+  let name = routeModel.getName();
+  let module = routeModel.getModule();
 
   let resolvers = {
     valentResolve: () => {
-      let globalResolvers = config.route.getResolvers();
+      let globalResolvers = config.routeModel.getResolvers();
       let globalDependencies = Object.keys(globalResolvers);
 
       let globalTasks = [];
       for (let key of Object.keys(globalResolvers)) {
         let resolver = globalResolvers[key];
-        let task = resolver(route);
+        let task = resolver(routeModel);
 
         globalTasks.push(task);
       }
@@ -30,13 +30,13 @@ export default (route, config) => {
           index++;
         }
 
-        let localResolvers = route.getResolvers();
+        let localResolvers = routeModel.getResolvers();
         let localDependencies = Object.keys(localResolvers);
 
         let localTasks = [];
         for (let key of Object.keys(localResolvers)) {
           let resolver = localResolvers[key];
-          let task = resolver(route);
+          let task = resolver(routeModel);
 
           localTasks.push(task);
         }
@@ -57,34 +57,34 @@ export default (route, config) => {
     }
   };
 
-  let params = route.getParams();
+  let params = routeModel.getParams();
   let configuration = Object.assign(params, {
     controller: name,
     resolve: resolvers
   });
 
-  if (route.hasTemplate()) {
+  if (routeModel.hasTemplate()) {
 
     // set template
-    let template = route.getTemplate();
+    let template = routeModel.getTemplate();
     if (isFunction(template)) {
-      configuration.template = template.bind(route);
+      configuration.template = template.bind(routeModel);
     } else {
       configuration.template = template;
     }
-  } else if (route.hasTemplateUrl()) {
+  } else if (routeModel.hasTemplateUrl()) {
 
     // set templateUrl
-    configuration.templateUrl = route.hasTemplateUrl();
+    configuration.templateUrl = routeModel.hasTemplateUrl();
   }
 
-  let routes = route.getUrl();
+  let routes = routeModel.getUrl();
   if (!isArray(routes)) {
     routes = [routes];
   }
 
   // create URL
-  let struct = route.getStruct();
+  let struct = routeModel.getStruct();
   let pattern = routes[0];
 
   let url = () => {
