@@ -81,14 +81,4 @@ export default class Watcher {
 
     return off;
   }
-
-  //watchGroup() {
-  //  let $scope = this[_scope];
-  //  return $scope.$watchGroup.apply($scope, arguments);
-  //}
-  //
-  //watchCollection() {
-  //  let $scope = this[_scope];
-  //  return $scope.$watchCollection.apply($scope, arguments);
-  //}
 }
