@@ -119,10 +119,12 @@ export default class Angular {
 
       if (otherwise) {
         let otherwiseConfig = {};
+
         if (isString(otherwise)) {
           otherwiseConfig.redirectTo = otherwise;
         } else {
-          // TODO:
+          // TODO: lol
+          throw new Error('That is really lol but this case is not implemented ("othwerwise" is not a string)');
         }
 
         $routeProvider.otherwise(otherwiseConfig);
