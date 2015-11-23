@@ -40,18 +40,15 @@ let _links = Symbol('mappings');
 let _urlPattern = Symbol('url-pattern');
 let _urlParamsKeys = Symbol('url-params-key');
 let _searchParamsKeys = Symbol('search-params-key');
-
+let _cachedParams = Symbol('cached-params');
 let _serializer = Symbol('url-serializer');
 
-//let routes = new Map();
-
-/**
- * TODO: support HTML5 history API
- */
 export default class Url {
 
   constructor(pattern, struct) {
-    this[_serializer] =  new UrlSerializer(struct);
+    this[_serializer] = new UrlSerializer(struct);
+
+    this[_cachedParams] = null;
 
     let urlPattern = new UrlPattern(pattern);
 

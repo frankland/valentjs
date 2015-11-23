@@ -56,8 +56,9 @@ export default class AngularUrl extends Url {
     return isChanged;
   }
 
-  go(params = {}) {
+  go(params, options) {
     let isChanged = this.isEqual(params);
+
     if (!isChanged) {
       let url = this.stringify(params);
       let $location = Injector.get('$location');
@@ -67,8 +68,7 @@ export default class AngularUrl extends Url {
 
     return isChanged;
   }
-
-
+  
   redirect(params = {}) {
     if (!isObject(params)) {
       throw new Error('params should be an object');

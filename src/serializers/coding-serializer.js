@@ -4,8 +4,7 @@ import isObject from 'lodash/lang/isObject';
 import isFunction from 'lodash/lang/isFunction';
 import * as primitives  from '../../src/utils/primitives';
 
-let _alias = {
-};
+let _alias = {};
 let _rules = {};
 
 export default class CodingSerializer {
@@ -21,14 +20,13 @@ export default class CodingSerializer {
     }
 
     if (rules !== undefined && (!isObject(rules) ||
-      isArray(rules) || isFunction(rules) ||
-      !isFunction(rules.encode) || !isFunction(rules.decode))) {
+      isArray(rules) || isFunction(rules) || !isFunction(rules.encode) || !isFunction(rules.decode))) {
 
       throw new Error('Serialize rule should implement both @encode and @decode methods');
     }
 
     _alias[alias] = struct;
-    if(rules){
+    if (rules) {
       _rules[alias] = rules;
     }
   }

@@ -45,9 +45,9 @@ export default class Serializer {
         }
         let value = params[key];
         if (!structItem.is(value)) {
-          try{
+          try {
             structItem(value);
-          } catch(e) {
+          } catch (e) {
             throw new Error(`value with id "${key}" has wrong struct. Expected "${structItem.displayName}", but value is "${value}"`);
           }
         }

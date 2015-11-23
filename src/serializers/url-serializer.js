@@ -184,9 +184,9 @@ export default class UrlSerializer extends RenameSerializer {
     });
   }
 
-  decode(params){
-    for(let i of Object.keys(params)){
-      if(!isString(params[i])){
+  decode(params) {
+    for (let i of Object.keys(params)) {
+      if (!isString(params[i])) {
         throw new Error('URL param should be String');
       }
     }

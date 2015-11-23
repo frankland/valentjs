@@ -11,7 +11,7 @@ export default (route, config) => {
       let globalResolvers = config.route.getResolvers();
       let globalDependencies = Object.keys(globalResolvers);
 
-      let globalTasks =  [];
+      let globalTasks = [];
       for (let key of Object.keys(globalResolvers)) {
         let resolver = globalResolvers[key];
         let task = resolver(route);

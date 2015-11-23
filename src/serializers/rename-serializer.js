@@ -54,10 +54,9 @@ export default class RenameSerializer extends Serializer {
 
   getOriginalName(renamed) {
 
-    if(!isString(renamed)){
+    if (!isString(renamed)) {
       throw new Error('renamed must be a string');
     }
-
 
 
     let original = null;
