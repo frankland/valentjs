@@ -31,15 +31,12 @@ let digest = (context, fn) => {
   }
 };
 
-/**
- * TODO: add possibility to configure debounce options
- */
-const DEBOUNCE_TIMOUT = 50;
+const DEBOUNCE_TIMEOUT = 50;
 
 const DEBOUNCE_CONFIG = {
   leading: false,
   trailing: true
 };
 
-let timeout = valent.config.get('angular.digest.timeout', DEBOUNCE_TIMOUT);
-export default debounce(digest, timeout, options);
+let timeout = valent.config.get('angular.digest.timeout', DEBOUNCE_TIMEOUT);
+export default debounce(digest, timeout, DEBOUNCE_CONFIG);
