@@ -14,46 +14,21 @@ function isValidScope(angularScope) {
   return angularScope && angularScope.$evalAsync && angularScope.$watch;
 }
 
-/**
- * TODO: auto add "controller" to watch conditions
- * TODO: setScope and exceptions
- */
 export default class Watcher {
-  constructor($scope) {
+  constructor(context) {
     this[_queue] = new Set();
 
-    if ($scope instanceof Promise) {
-      $scope.then((angularScope) => {
-
-        if (!isValidScope(angularScope)) {
-          throw new Error('$scope for watcher is not valid');
-        }
-
-        this[_scope] = angularScope;
+    if (context) {
+      Scope.get(context).then($scope => {
+        this[_scope] = $scope;
 
         for (let task of this[_queue]) {
-          task.off = this[task.method].apply(this, task.arguments);
+          task.off = this.watch(...task.arguments);
         }
       });
     } else {
-      if (!isValidScope($scope)) {
-        throw new Error('$scope for watcher is not valid');
-      }
-
-      this[_scope] = $scope;
+      this[_scope] = Injector.get('$rootScope');
     }
-  }
-
-  static create(context) {
-    let scope = null;
-
-    if (context) {
-      scope = Scope.get(context);
-    } else {
-      scope = Injector.get('$rootScope');
-    }
-
-    return new Watcher(scope);
   }
 
   watch() {
@@ -64,13 +39,12 @@ export default class Watcher {
       off = $scope.$watch.apply($scope, arguments);
     } else {
       let task = {
-        method: 'watch',
         arguments: Array.prototype.slice.call(arguments)
       };
 
       this[_queue].add(task);
 
-      off = function() {
+      off = () => {
         if (this[_scope]) {
           task.off();
         } else {
