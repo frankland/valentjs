@@ -243,6 +243,9 @@ valent.controller(home, HomeController, {
 ----
 
 ## Defined structures
+```js
+import * as primitives from 'valent/utils/primitives';
+```
 
 ----
 
@@ -251,6 +254,120 @@ valent.controller(home, HomeController, {
 ----
 
 ## URL 
+```js
+import Url from 'valent/angular/angular-url';
+import * as primitives from 'valent/utils/primitives';
+
+let url = new Url('/store/:id/:tags', {
+	id: primitives.Num,
+	search: ['q', primitives.MaybeListStr,
+	tags: primitives.MaybeListStr,
+	period: primitives.MaybeListDat
+});
+```
+
+Constructor takes 2 arguments:
+
+ - pattern - url pattern with placeholders. 
+ - struct - url params structure. Defined types. If struct value defined as array - first element - how this parameter will be renamed.
+
+```js 
+import Url from 'valent/angular/angular-url';
+import * as primitives from 'valent/utils/primitives';
+
+let url = new Url('/store/:id/:tags', {
+	id: primitives.Num,
+	search: ['q', primitives.MaybeStr,
+	tags: primitives.MaybeListStr,
+	period: primitives.MaybeListDat
+});
+
+let route = url.stringify({
+	id: 1,
+	search: 'Hello',
+	tags: ['yellow', 'large']
+});
+
+equal(route, '/store/1/yellow-large?q=Hello');
+
+// And if current url is 
+// '/store/1/yellow-large?q=Hello?period=20151110-20151120'
+
+let params = url.parse();
+equal(parms, {
+	id: 1,
+	search: 'Hello',
+	tags: ['yellow', 'large'],
+	period: [ 
+	// date objects. btw - not sure about correct timezones...
+		Wed Nov 10 2015 00:00:00 GMT+0200 (EET),
+		Wed Nov 20 2015 00:00:00 GMT+0200 (EET)
+	]
+});
+```
+
+Structures with **Maybe** prefix - means that this parameters are not required. If passed parameters have wrong type - will be exception. Parameters that are not described as placeholder at url pattern - will be added as GET parameter.
+
+Provide helpful methods to work with url.
+Available methods:
+
+ - go(params, options) - replace current url with generating according to passed params. Works in angular context - all route events will be fired. **options** - event options that will be available at url watchers.
+ - stringify(params) - return url according to passed params
+ - redirect(params) - same as **go()** but with page reloading
+ - parse - parse current url and return decoded params
+ - watch(callback) - listen url changes (\$scope event **\$routeUpdate**) and execute callback. Callback arguments - params, diff, options.  
+	 - params - current url params. 
+	 - diff - difference between previous url update.
+	 - options - event options that were passed to **go()** method
+ - isEmpty - return true if there are no params in current url
+ - link(key, fn) - describe setter for url param.
+ - apply - execute all added **link()** functions
+
+Url link and apply example. If url is changed (no matter how - back/forward browser buttons, url.go(params) method,  page reload etc.) - each **link** function will be executed and take current value of binded param.
+
+```js
+import Url from 'valent/angular/angular-url';
+
+class HomeController {
+	filters = {};
+	
+	constructor(resovled, url) {
+		url.link('id', id => {
+			this.id = id;
+		});
+		
+		url.link('tags', tags => {
+			this.filters.tags = tags;
+		});
+
+		url.link('search', search => {
+			this.filters.search = search;
+		});
+	
+		url.watch((params, diff, options) => {
+			/**
+			 * We can not run apply automatically 
+			 * on route update because there are
+			 * a lot of cases when developers should
+			 * call apply() manually
+			 */
+			url.apply();
+		});
+	}
+}
+
+valent.controller('store', StoreController, {
+	url: '/store/:id/:tags',
+	struct: {
+		id: primitives.Num,
+		search: ['q', primitives.MaybeStr,
+		tags: primitives.MaybeListStr,
+	}
+});
+```
+
+
+ 
 
 ----
 
@@ -260,12 +377,23 @@ valent.controller(home, HomeController, {
 ```js
 import Digest from 'valent/angular/services/digest';
 ```
+Wrapper for AngularJS
+
+```js
+import Digest from 'valent/angular/services/digest';
+
+class HomeController {
+	constructor() {
+		digest(this);
+	}
+}
+```
 
 ### Injector
 ```js
 import Injector from 'valent/angular/services/injector';
 ```
-AngularJS $injector. Only method **get()** is available and only after application bootstrap (after angular run phase).
+AngularJS [\$injector](https://docs.angularjs.org/api/auto/service/$injector) service. Only method **get()** is available and only after application bootstrap (after angular run phase).
 
 ```js
 import Injector from 'valent/angular/services/injector';
@@ -281,7 +409,7 @@ class HomeController {
 ```js
 import Watcher from 'valent/angular/services/watcher';
 ```
-Service is using to create watchers. watchGroup, watchCollection and deep watch - are not available. 
+Service is using to create [watchers](https://docs.angularjs.org/api/ng/type/$rootScope.Scope#$watch). watchGroup, watchCollection and deep watch - are not available. 
 
 	NOTE: We highly recommend NOT to use watchers. No matter how watchers are created - using this service or native $scope methods.
 
@@ -309,7 +437,7 @@ class HomeController {
 import Events from 'valent/angular/services/events';
 ```
 
-Provide access to $scope events. Constructor takes one argument - controller's context.
+Provide access to [$scope events](https://docs.angularjs.org/guide/scope#scope-events-propagation). Constructor takes one argument - controller's context.
 
 ```js
 import Events from 'valent/angular/services/events';
