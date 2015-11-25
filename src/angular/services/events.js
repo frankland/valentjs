@@ -1,18 +1,16 @@
 import Scope from './scope';
 
-let local = {
-  context: Symbol('context')
-};
+let _context = Symbol('context');
 
 export default class Events {
   constructor(controller) {
-    this[local.context] = controller;
+    this[_context] = controller;
   }
 
   on(event, fn) {
-    Scope.get(this[local.context])
-      .then(($scope) => {
-        return $scope.$on(event, fn);
-      });
+    let context = this[_context];
+
+    return Scope.get(context)
+      .then($scope =>  $scope.$on(event, fn));
   }
 }
