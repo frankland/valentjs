@@ -39,4 +39,10 @@ const DEBOUNCE_CONFIG = {
 };
 
 let timeout = valent.config.get('angular.digest.timeout', DEBOUNCE_TIMEOUT);
-export default debounce(digest, timeout, DEBOUNCE_CONFIG);
+let debounced = debounce(digest, timeout, DEBOUNCE_CONFIG);
+
+debounced.configure = (timeout) => {
+  return debounce(digest, timeout, DEBOUNCE_CONFIG);
+};
+
+export default debounced;
