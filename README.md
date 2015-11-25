@@ -28,7 +28,8 @@ and features form the box:
  - No access to **$scope**
 
 
-----------
+-----
+
 ## AngularJS bootstrap 
 
 **valent** - same as **angular** - variable at the global namespace.
@@ -46,9 +47,6 @@ valent.bootstrap(framework);
 ```html
 <body ng-app="your-application-name"></body>
 ```
-
-----
-
 ## Configuration
 
 `valent.config` could be used as key/value storage. Keys with dots will be translated into nested objects.
@@ -230,8 +228,6 @@ valent.controller(home, HomeController, {
 });
 ```
 
-----
-
 ## Directive
 
 ### Interfaces
@@ -240,14 +236,10 @@ valent.controller(home, HomeController, {
 
 ### Pipes
 
-----
-
 ## Defined structures
 ```js
 import * as primitives from 'valent/utils/primitives';
 ```
-
-----
 
 ## Serializers
 
@@ -336,9 +328,6 @@ equal(decided, new User({
 }));
 ```
 
-
-----
-
 ## URL 
 ```js
 import Url from 'valent/angular/angular-url';
@@ -412,7 +401,7 @@ Available methods:
 
 Url link and apply example. If url is changed (no matter how - back/forward browser buttons, url.go(params) method,  page reload etc.) - each **link** function will be executed and take current value of binded param.
 
-```javascript
+```js
 import Url from 'valent/angular/angular-url';
 
 class HomeController {
@@ -458,7 +447,6 @@ valent.controller('store', StoreController, {
 	}
 });
 ```
-----
 
 ## Services
 
