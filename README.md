@@ -321,6 +321,7 @@ Available methods:
 	 - options - event options that were passed to **go()** method
  - isEmpty - return true if there are no params in current url
  - link(key, fn) - describe setter for url param.
+ - linkTo(store) - automatically link all structure params to store object
  - apply - execute all added **link()** functions
 
 Url link and apply example. If url is changed (no matter how - back/forward browser buttons, url.go(params) method,  page reload etc.) - each **link** function will be executed and take current value of binded param.
@@ -332,14 +333,20 @@ class HomeController {
 	filters = {};
 	
 	constructor(resovled, url) {
+		/**
+		 *  url params "search", "tags" 
+		 *  will be linked this this.filters object	
+		 */
+		url.linkTo(this.filters, [
+			'tags',
+			'search'
+		]);
+		
+		// add link for "id" param
 		url.link('id', id => {
 			this.id = id;
 		});
 		
-		url.link('tags', tags => {
-			this.filters.tags = tags;
-		});
-
 		url.link('search', search => {
 			this.filters.search = search;
 		});
@@ -365,10 +372,6 @@ valent.controller('store', StoreController, {
 	}
 });
 ```
-
-
- 
-
 ----
 
 ## Services
