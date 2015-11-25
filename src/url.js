@@ -1,6 +1,7 @@
 import isString from 'lodash/lang/isString';
 import isObject from 'lodash/lang/isObject';
 import isEqual from 'lodash/lang/isEqual';
+import isArray from 'lodash/lang/isArray';
 
 import UrlPattern from 'url-pattern';
 
@@ -66,6 +67,10 @@ export default class Url {
     this[_searchParamsKeys] = searchParams;
     this[_urlParamsKeys] = urlParams;
     this[_links] = {};
+  }
+
+  getStruct() {
+    return this[_serializer].getStruct();
   }
 
   getPattern() {
@@ -188,6 +193,25 @@ export default class Url {
 
   link(key, link) {
     this[_links][key] = link;
+  }
+
+  linkTo(store, params) {
+    if (params && !isArray(params)) {
+      throw new Error('available params for linkTo should be an array');
+    }
+
+    let struct =  this.getStruct();
+
+    for (let key of Object.struct(struct)) {
+      if (params && params.indexOf(key) != -1) {
+
+        this.link(key, value => {
+          Object.assign(store, {
+            key: value
+          });
+        });
+      }
+    }
   }
 
   apply() {
