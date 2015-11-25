@@ -251,6 +251,92 @@ import * as primitives from 'valent/utils/primitives';
 
 ## Serializers
 
+There 3 serializers
+
+ - base serializer 
+ - rename serializer
+ - url serializer - extends rename serializer with already added rules for all struc that defined in primitives (valent/utils/primitives)
+
+```js
+import Serializer from 'valent/serializers/serializer';
+import RenameSerializer from 'valent/serializers/rename-serializer';
+import UrlSerializer from 'valent/serializers/url-serializer';
+```
+
+#### Base serializer
+Constructor takes 1 argument - params structure. Does not contain any encode/decode rules 
+
+ - encode(decoded)
+ - decode(encoded)
+
+##### RenameSerialzier
+
+#### Custom serializer
+
+Extends custom serializers from base or rename serializer and add rule for encode/decode.
+
+```js
+import tcomb from 'tcomb';
+import Serializer from 'valent/serializers/serializer';
+
+let User = tcomb.struct({
+	id: tcomb.Num,
+	name: tcomb.Str
+});
+
+class UserSerializer extends Serializer {
+	constructor() {
+		super({
+			user: User
+		});
+		
+		this.addRule(User, {
+			encode: (user) => `${user.id}:${user.name}`,
+			decode: raw => {
+				let splitted = raw.split(':');
+				return new UserStruct({
+					id: splitted[0],
+					name: splitted[1]
+				});
+			}		
+		});
+	},
+	
+	/**
+	 *  We should override encode/decode methods 
+	 *  because by default encode method takes object
+	 *  same as struct that is defined in constructor
+	 */
+	encode(user) {
+		return super.encode({user});
+	}
+	
+	decode(raw) {
+		let decoded = super.decode(raw);
+		return decoded.user;
+	}
+}
+
+let serializer = new UserSerializer();
+
+let user = new User({
+	id: 1,
+	name: 'Lorem'
+});
+
+// encode
+let encoded = serializer.encode(user); 
+equal(encoded, '1:Lorem');
+
+// decode
+let decoded = serializer.decode('2:Ipsum');
+equal(decided, new User({
+	id: 2,
+	name: Ipsum
+}));
+```
+
+
 ----
 
 ## URL 
@@ -326,7 +412,7 @@ Available methods:
 
 Url link and apply example. If url is changed (no matter how - back/forward browser buttons, url.go(params) method,  page reload etc.) - each **link** function will be executed and take current value of binded param.
 
-```js
+```javascript
 import Url from 'valent/angular/angular-url';
 
 class HomeController {
