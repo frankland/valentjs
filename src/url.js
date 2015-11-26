@@ -221,15 +221,15 @@ export default class Url {
     this[_links][key] = link;
   }
 
-  linkTo(store, params) {
-    if (params && !isArray(params)) {
+  linkTo(store, params = []) {
+    if (!isArray(params)) {
       throw new Error('available params for linkTo should be an array');
     }
 
     let struct = this.getStruct();
 
-    for (let key of Object.struct(struct)) {
-      if (params && params.indexOf(key) != -1) {
+    for (let key of Object.keys(struct)) {
+      if (!params.length || params.indexOf(key) != -1) {
 
         this.link(key, value => {
           Object.assign(store, {
