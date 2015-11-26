@@ -1,3 +1,5 @@
+import isFunction from 'lodash/lang/isFunction';
+
 import Logger from '../../utils/logger';
 import Scope from '../services/scope';
 
@@ -10,7 +12,10 @@ let initController = ($scope, controllerModel, valentResolve) => {
   let name = controllerModel.getName();
   let logger = Logger.create(name);
 
+  // attach scope to AngularUrl to allow use watch() method
   let url = valent.url.get(name);
+  url.attachScope($scope);
+
   let controller = new Controller(valentResolve, url, logger);
   Scope.attach(controller, $scope);
 

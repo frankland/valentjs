@@ -30,6 +30,7 @@ export default class AngularUrl extends Url {
 
   parse() {
     let $location = Injector.get('$location');
+
     let decoded = this.decode($location.$$url);
 
     this.cacheParams(decoded);
@@ -84,39 +85,25 @@ export default class AngularUrl extends Url {
   }
 
   watch(callback) {
-    let context = this[_scope];
-    let off = null;
-    let unsubscribed = false;
+    let $scope = this[_scope];
 
-    Scope.get(context).then($scope => {
-      if (!unsubscribed) {
-        off = $scope.$on('$routeUpdate', (event) => {
-          let valentEvent = event.$valentEvent;
+    return $scope.$on('$routeUpdate', (event) => {
+      let valentEvent = event.$valentEvent;
 
-          let params = this.parse();
+      let params = this.parse();
 
-          let diff = transform(params, (result, n, key) => {
-            // TODO: use cached params instead of state
-            let state = this[_state][key];
+      let diff = transform(params, (result, n, key) => {
+        // TODO: use cached params instead of state
+        let state = this[_state][key];
 
-            if (!isEqual(n, state)) {
-              result[key] = n;
-            }
-          });
+        if (!isEqual(n, state)) {
+          result[key] = n;
+        }
+      });
 
-          this[_state] = cloneDeep(params);
+      this[_state] = cloneDeep(params);
 
-          callback(params, diff, valentEvent);
-        });
-      }
+      callback(params, diff, valentEvent);
     });
-
-    return () => {
-      if (off) {
-        off();
-      } else {
-        unsubscribed = true;
-      }
-    };
   }
 }

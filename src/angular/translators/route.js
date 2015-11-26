@@ -59,6 +59,7 @@ export default (routeModel, config) => {
 
   let params = routeModel.getParams();
   let configuration = Object.assign(params, {
+    reloadOnSearch: false,
     controller: name,
     resolve: resolvers
   });

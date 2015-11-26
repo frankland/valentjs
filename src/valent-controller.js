@@ -38,7 +38,11 @@ export default class ValentController {
 
     if (this.options.url) {
       let routeOptions = this.options.routeOptions || {};
-      routeOptions.url = this.options.url;
+
+      Object.assign(routeOptions,{
+        url:  this.getUrl(),
+        struct:  this.getStruct()
+      });
 
       let module = this.options.module;
       if (module) {
@@ -116,6 +120,10 @@ export default class ValentController {
 
   getUrl() {
     return this.options.url;
+  }
+
+  getStruct() {
+    return this.options.struct || {};
   }
 
   hasResolvers() {

@@ -139,7 +139,6 @@ let translateParams = (componentModel) => {
     translatedParams = !!params;
   }
 
-  console.log(translatedParams);
   return translatedParams;
 };
 

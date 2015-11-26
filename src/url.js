@@ -69,6 +69,10 @@ export default class Url {
     this[_links] = {};
   }
 
+  getSerializer() {
+    return this[_serializer];
+  }
+
   getStruct() {
     return this[_serializer].getStruct();
   }
@@ -88,6 +92,39 @@ export default class Url {
   getSearchParamKeys() {
     return this[_searchParamsKeys];
   }
+
+  // -----
+
+  decode(path) {
+    var splittedPath = path.split('?');
+    var search = splittedPath.slice(1).join('');
+
+    var url = splittedPath[0];
+
+    let urlPattern = this.getUrlPattern();
+    let urlParams = urlPattern.match(url);
+
+    if (!urlParams) {
+      let pattern = this.getPattern();
+      throw new Error(`Wrong url pattern. Expected "${pattern}", got "${path}"`);
+    }
+
+    let searchParams = {};
+
+    //let search = window.location.search;
+    if (search) {
+      searchParams = decodeSearchString(search);
+    }
+
+    let params = Object.assign(urlParams, searchParams);
+    let decoded = this[_serializer].decode(params);
+
+    this.cacheParams(decoded);
+
+    return decoded;
+  }
+
+  // -----
 
   go(params = {}) {
     if (!isObject(params)) {
@@ -122,10 +159,11 @@ export default class Url {
 
     let urlPattern = this.getUrlPattern();
 
+
     let url = urlPattern.stringify(urlParams);
     let search = encodeSearchString(searchParams);
 
-    return query ? [url, search].join('?') : url;
+    return search ? [url, search].join('?') : url;
   }
 
   parse() {
@@ -139,29 +177,17 @@ export default class Url {
      * }
      * @type {string}
      */
-    let url = window.location.pathname;
 
-    let urlPattern = this.getUrlPattern();
-    let urlParams = urlPattern.match(url);
 
-    if (!urlParams) {
-      let pattern = this.getPattern();
-      throw new Error(`Wrong url pattern. Expected "${pattern}", got "${path}"`);
-    }
+    var pathname = window.location.pathname;
+    var search = window.location.search;
 
-    let searchParams = {};
-
-    let search = window.location.search;
+    var url = pathname;
     if (search) {
-      searchParams = decodeSearchString(search);
+      url += `?${search}`;
     }
 
-    let params = Object.assign(urlParams, searchParams);
-    let decoded = this[_serializer].decode(params);
-
-    this.cacheParams(decoded);
-
-    return decoded;
+    this.decode(url);
   }
 
   cacheParams(params) {
@@ -200,7 +226,7 @@ export default class Url {
       throw new Error('available params for linkTo should be an array');
     }
 
-    let struct =  this.getStruct();
+    let struct = this.getStruct();
 
     for (let key of Object.struct(struct)) {
       if (params && params.indexOf(key) != -1) {
