@@ -37,8 +37,15 @@ and features form the box:
 ```js
 import Angular from 'valent/angular';
 
+const APP = 'your-application-name';
+
+// NOTE: in future versions manully module creation maybe will be removed
+angular.module(APP, [
+	'ngRoute'
+]);
+
 let framework = new Angular({
-  module: 'your-application-name'
+  module: APP
 });
 
 valent.bootstrap(framework);
