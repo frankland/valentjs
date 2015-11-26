@@ -68,7 +68,7 @@ export default class ValentController {
         let template = method(this);
 
         if (!isString(template)) {
-          throw new RuntimeException(name, 'result of Component.render() should be a string');
+          throw new RegisterException(name, 'result of Component.render() should be a string');
         }
 
         routeOptions.template = template;
