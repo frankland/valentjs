@@ -421,20 +421,20 @@ serializer.decode(...);
 ```
 
 Encode rules:
-Primitive| Origin | Encoded | Keys
------------- | -------------
-primitives.Num, primitives.MaybeNum | 1 | 1 |
-primitives.Str | 'a' | a |
-primitives.Bool | true | 1 |
-primitives.Bool | false | 0 |
-primitives.Dat | new Date() | 2015112 | options.date_format
-primitives.ListNum | [1, 2, 3] | 1~2~3 | options.list_delimiter
-primitives.ListStr | ['a', 'b', 'c'] | a~b~c | options.list_delimiter
-primitives.ListBool | [true, false] | 1~0 | options.list_delimiter
-primitives.ListDat | [new Date(), new Date()] | 2015112~2015112 | options.list_delimiter
-primitives.MatrixNum | [[1,2],[3,4]] | 1!2~3!4 | options.list_delimiter, options.matrix_delimiter
-primitives.MatrixStr | [['a','b'],['c','4']] | a!b~c!d | options.list_delimiter, options.matrix_delimiter
-primitives.MatrixBool | [[true, false],[false, true]] | 1!0~0!1 | options.list_delimiter, options.matrix_delimiter
+Primitive | Origin | Encoded 
+--------- | ------ | ------- 
+primitives.Num, primitives.MaybeNum | 1 | 1
+primitives.Str, primitives.MaybeStr | 'a' | a
+primitives.Bool, primitives.MaybeBool | true | 1
+primitives.Bool, primitives.MaybeBool | false | 0
+primitives.Dat, primitives.MaybeDat | new Date() | 2015112
+primitives.ListNum, primitives.MaybeListNum | [1, 2, 3] | 1~2~3
+primitives.ListStr, primitives.MaybeListStr | ['a', 'b', 'c'] | a~b~c
+primitives.ListBool, primitives.MaybeListBool | [true, false] | 1~0
+primitives.ListDat, primitives.MaybeListDat | [new Date(), new Date()] | 2015112~2015112
+primitives.MatrixNum, primitives.MaybeMatrixNum | [[1,2],[3,4]] | 1!2~3!4
+primitives.MatrixStr, primitives.MaybeMatrixStr | [['a','b'],['c','4']] | a!b~c!d
+primitives.MatrixBool, primitives.MaybeMatrixBool | [[true, false],[false, true]] | 1!0~0!1
 
 
 ## URL 
