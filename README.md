@@ -1,15 +1,14 @@
 # Valentjs
---------
+---
+[![Join the chat at https://gitter.im/frankland/valent](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/frankland/valent?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Valentjs provide easier way to register framework components (directives / routing / controllers) with features. Registered components could be transalted into different frameworks but right now only [AngularJS](https://github.com/angular/angular.js) available.
 
-----
 Valentjs - just the wrapper for frameworks and could be used together with default frameworks approach.
 
-----
-
 ## Valentjs + AngularJS
---------------------
--Vlanetjs provide methods to register and validate:
+
+Valentjs provide methods to register and validate:
 
  - directvies
  - controllers
@@ -27,8 +26,6 @@ and features form the box:
  - Debounced safe digest
  - No access to **$scope**
 
-
------
 
 ## AngularJS bootstrap
 
