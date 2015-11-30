@@ -10,7 +10,35 @@ export default class Events {
   on(event, fn) {
     let context = this[_context];
 
-    return Scope.get(context)
-      .then($scope =>  $scope.$on(event, fn));
+    let off = null;
+
+    Scope.get(context)
+      .then($scope => {
+        if (!off) {
+          off =$scope.$on(event, fn)
+        }
+      });
+
+    return () => {
+      if (off) {
+        off();
+      } else {
+        off = true;
+      }
+    };
+  }
+
+  broadcast(event, args) {
+    let context = this[_context];
+
+    Scope.get(context)
+      .then($scope => $scope.$broadcast(event, args));
+  }
+
+  emit(event, args) {
+    let context = this[_context];
+    
+    Scope.get(context)
+      .then($scope => $scope.$emit(event, args));
   }
 }
