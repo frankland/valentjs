@@ -44,7 +44,7 @@ export default class DirectiveParams {
 
     this[_watcher] = new Watcher($scope);
 
-    let pipes = component.getPipes();
+    let pipes = componentModel.getPipes();
 
     this[_pipes] = {};
     for (let key of Object.keys(pipes)) {
@@ -107,7 +107,6 @@ export default class DirectiveParams {
 
     let expression = $attrs[key];
     let evaluatingScope = null;
-    
     if (this[_isIsolated]) {
       evaluatingScope = $scope.$parent;
     } else {
