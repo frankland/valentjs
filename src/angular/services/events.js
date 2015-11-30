@@ -15,7 +15,7 @@ export default class Events {
     Scope.get(context)
       .then($scope => {
         if (!off) {
-          off =$scope.$on(event, fn)
+          off = $scope.$on(event, fn)
         }
       });
 
@@ -37,7 +37,7 @@ export default class Events {
 
   emit(event, args) {
     let context = this[_context];
-    
+
     Scope.get(context)
       .then($scope => $scope.$emit(event, args));
   }
