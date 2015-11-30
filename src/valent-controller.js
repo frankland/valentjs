@@ -40,7 +40,7 @@ export default class ValentController {
       let routeOptions = this.options.options || {};
 
       Object.assign(routeOptions, {
-        struct:  this.getStruct()
+        struct: this.getStruct()
       });
 
       let module = this.options.module;

@@ -99,7 +99,8 @@ class Valent {
 
   route(name, url, options) {
     if (this[_bootstrap]) {
-      throw new Error('route could no be registered after bootstrap');;
+      throw new Error('route could no be registered after bootstrap');
+      ;
     }
 
     this[_routes].add({

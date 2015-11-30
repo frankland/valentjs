@@ -87,7 +87,7 @@ export default class Angular {
     this[_urlManager] = new AngularUrlManager();
 
     if (options.dependencies) {
-     angular.module(app, options.dependencies);
+      angular.module(app, options.dependencies);
     }
   }
 

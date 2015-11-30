@@ -7,7 +7,7 @@ let validate = (component) => {
   let errors = [];
 
   let name = component.getName();
-  
+
   if (!name || name.indexOf(' ') != -1) {
     errors.push('component\'s name could not be empty or contain spaces');
   }
