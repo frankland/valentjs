@@ -37,15 +37,18 @@ and features form the box:
 ```js
 import Angular from 'valent/angular';
 
-const APP = 'your-application-name';
+let framework = new Angular('your-application-name', {
 
-// NOTE: in future versions manully module creation maybe will be removed
-angular.module(APP, [
-	'ngRoute'
-]);
-
-let framework = new Angular({
-  module: APP
+	/**
+	 * if dependencies are defined - angular module
+	 * will be created automatically
+     *
+     * Otherwise - you should register angular module
+     * manually
+	 */
+	dependencies: [
+		'ngRoute'
+	]
 });
 
 valent.bootstrap(framework);
@@ -99,8 +102,46 @@ List of config shorctus
 
  - exception.handler(handler) - setup exception handler that will available for framework's context and window.on('error')
 
-----
 
+## Angular configuration (config/run)
+```js
+import Angular from 'valent/angular';
+
+let framework = new Angular('your-application-name', {
+	dependencies: [
+		'ngRoute'
+	]
+});
+
+// app - angular module
+let app = framework.getAngularModule();
+
+// same as with native angular
+app.config(['$rootScope', $rootScope => {
+	// ...
+});
+
+// same as with native angular
+app.run(['$rootScope', $rootScope => {
+	// ...
+});
+```
+Or you can run config/run methods directly to angular.module
+
+```js
+import Angular from 'valent/angular';
+
+let framework = new Angular('your-application-name', {
+	dependencies: [
+		'ngRoute'
+	]
+});
+
+angular.module('your-application-name')
+	.config(['$rootScope', $rootScope => {
+	    // ...
+	});
+```
 ## Controllers
 
 Simple configuration
@@ -533,8 +574,13 @@ class HomeController {
 			// ...
 		});
 
-		//events.broadcast()
-		//events.emit()
+		events.broadcast('my.custom.event', {
+			greeting: 'Yo'
+		});
+
+		events.emit('my.custom.event', {
+			greeting: 'Yo'
+		});
 	}
 }
 ```
