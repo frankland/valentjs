@@ -17,8 +17,7 @@ import AngularRoute from './angular-route';
 import AngularUrl from './angular-url';
 import AngularUrlManager from './angular-url-manager';
 
-let _module = Symbol('angular-module');
-let _config = Symbol('valent-config');
+let _app = Symbol('angular-module');
 let _urlManager = Symbol('url-manager');
 
 export default class Angular {
@@ -35,7 +34,7 @@ export default class Angular {
         throw new TranslateException(name, 'component', error.message);
       }
 
-      let application = translated.module || this[_module];
+      let application = translated.module || this[_app];
 
       angular.module(application)
         .directive(translated.name, () => translated.configuration);
@@ -49,7 +48,7 @@ export default class Angular {
         throw new TranslateException(name, error.message);
       }
 
-      let application = translated.module || this[_module];
+      let application = translated.module || this[_app];
 
       angular.module(application)
         .controller(translated.name, translated.configuration);
@@ -67,7 +66,7 @@ export default class Angular {
       let urlManager = this[_urlManager];
       urlManager.set(name, translated.url);
 
-      let application = translated.module || this[_module];
+      let application = translated.module || this[_app];
 
       angular.module(application)
         .config(['$routeProvider', ($routeProvider) => {
@@ -79,13 +78,22 @@ export default class Angular {
     }
   };
 
-  constructor(options = {}) {
-    if (!options.module) {
-      throw new Error('Angular module should be defined');
+  constructor(app, options = {}) {
+    if (!app || !isString(app)) {
+      throw new Error('Angular module should be a string');
     }
 
-    this[_module] = options.module;
-    this[_urlManager] = new AngularUrlManager(options);
+    this[_app] = app;
+    this[_urlManager] = new AngularUrlManager();
+
+    if (options.dependencies) {
+     angular.module(app, options.dependencies);
+    }
+  }
+
+  getAngularModule() {
+    let app = this[_app];
+    return angular.module(app);
   }
 
   getUrlManager() {
@@ -93,7 +101,7 @@ export default class Angular {
   }
 
   bootstrap(config) {
-    let module = this[_module];
+    let module = this[_app];
 
     // initialize exception handler
     let exceptionHandler = config.exception.getHandler();
@@ -109,7 +117,8 @@ export default class Angular {
       }]);
     }
 
-    angular.module(module).config(['$locationProvider', '$routeProvider', ($locationProvider, $routeProvider) => {
+    let app = this.getAngularModule();
+    app.config(['$locationProvider', '$routeProvider', ($locationProvider, $routeProvider) => {
       $locationProvider.html5Mode({
         enabled: config.get('routing.html5Mode'),
         requireBase: config.get('routing.requireBase')
@@ -131,7 +140,7 @@ export default class Angular {
       }
     }]);
 
-    angular.module(module).run(['$injector', '$rootScope', '$location', ($injector, $rootScope, $location) => {
+    app.run(['$injector', '$rootScope', '$location', ($injector, $rootScope, $location) => {
       // initialize injector
       Injector.setInjector($injector);
 

@@ -5,8 +5,7 @@ let _map = Symbol('url-map');
 // Uncaught TypeError: Method Map.prototype.set called on incompatible receiver [object Object] :(
 // export default class UrlManager extends Map {
 export default class UrlManager {
-  constructor(options) {
-
+  constructor() {
     this[_map] = new Map();
   }
 

@@ -4,8 +4,8 @@ let _contexts = Symbol('controller-contexts');
 let _queue = Symbol('contexts-queue');
 
 export default class AngularUrlManager extends UrlManager {
-  constructor(options) {
-    super(options);
+  constructor() {
+    super();
     this[_contexts] = new WeakMap();
     this[_queue] = new Map();
   }
