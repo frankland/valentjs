@@ -94,4 +94,16 @@ export default class DirectiveParams {
 
     return this[_watcher].watch(key, cb);
   }
+
+  parse(key) {
+    let $scope = this[_scope];
+    let $attrs = this[_attrs];
+
+    if (!$attrs.hasOwnProperty(key)) {
+      throw new Error(`"${this[_name]}" - can not parse "${key}" because this params is not passed to attributes`);
+    }
+
+    let expression = $attrs[key];
+    return $scope.$eval(expression);
+  }
 }
