@@ -144,9 +144,12 @@ angular.module('your-application-name')
 Simple configuration
 ```js
 class HomeController {
- // ...
+	// ...
 }
 
+valent.controller('home', HomeController);
+
+// or with already attached route
 valent.controller('home', HomeController, {
 	url: '/home'
 });
@@ -177,49 +180,23 @@ Constructor takes 3 arguments
 
 `destructor` method is called when controller's **$scope** is destroyed ($destroy event).
 
-### Controller options 
+### Controller options
 
 #### url
-url for controller.   Could be a string:
-```js
-{
-	url: '/home'
-}
-```
-or array of strings (means that controller will be available by different routes)
-```js
-{
-	url: ['/home', '/my/home']
-}
-```
+Route url proxy
 
-#### resovle
-Local resolvers. Function that will be executed before controller's constructor. Support promises. Resolved results will be passed to controller's constructor. Local resolvers will be executed [after global resolvers](http://i.imgur.com/eO43UR5.png). 
-Here is [Angular documentation](https://docs.angularjs.org/api/ngRoute/provider/$routeProvider#when) about route resolvers.
-```js
-{
-	resolve: {
-		'schema': () => {
-			return Schema.load();
-		}
-	}
-}
-```
+#### resolve
+Route resolve proxy
+
+#### struct
+Route struct proxy
 
 #### template
-Template for controller
-```js
-{
-	template: '<div>Yo!</div>'
-}
-```
+Route template proxy
 
 #### templateUrl
-```js
-{
-	templateUrl: '/templates/home.html'
-}
-```
+Route templateUrl proxy
+
 #### Controller.render()
 If there is static function **render()** at controller's class - it's result will be used as template.
 
@@ -253,6 +230,62 @@ Template should be
  <h1>{{ _.greeting }}</h1>
 ```
 
+## Route
+
+```js
+valent.route('home', '/home', {
+	template: '<div>...</div>
+});
+```
+
+`valent.controller` takes 3 arguments
+
+- controller name
+- url
+- options
+
+### url
+url for controller.   Could be a string:
+```js
+{
+	url: '/home'
+}
+```
+or array of strings (means that controller will be available by different routes)
+```js
+{
+	url: ['/home', '/my/home']
+}
+```
+
+### Route options 
+
+#### resovle
+Local resolvers. Function that will be executed before controller's constructor. Support promises. Resolved results will be passed to controller's constructor. Local resolvers will be executed [after global resolvers](http://i.imgur.com/eO43UR5.png). 
+Here is [Angular documentation](https://docs.angularjs.org/api/ngRoute/provider/$routeProvider#when) about route resolvers.
+```js
+{
+	resolve: {
+		'schema': () => {
+			return Schema.load();
+		}
+	}
+}
+```
+
+#### template
+```js
+{
+	template: '<div>Yo!</div>'
+}
+```
+
+#### templateUrl
+```js
+{
+	templateUrl: '/templates/home.html'
+}
+```
 
 #### struct
 Structure for url.
@@ -406,6 +439,20 @@ Extends rename serializer and contain rules for encode/decode. Does not contains
 		tags: 'maybe.listOfStrings'
 	}
 
+Constructor takes 2 arguments
+
+ - struct (same as at rename serializer)
+ - encode/decode options
+
+Default options:
+```js
+{
+	list_delimiter: '~',
+	matrix_delimiter: '!',
+	date_format: 'YYYYMMDD'
+}
+```
+
 Example:
 ```js
 import primitives from 'valent/utils/primitives';
@@ -416,11 +463,19 @@ let serializer = new UrlSerializer({
 	tags: primitives.MaybeListStr	
 });
 
-serializer.encode(...);
-serializer.decode(...);
+let origin = {
+	id: 1,
+	tags: ['a', 'b', 'c']
+};
+
+let encoded = serializer.encode(origin);
+let decoded = serializer.decode(encoded);
+
+equals(origin, decoded);
 ```
 
 Encode rules:
+
 Primitive | Origin | Encoded 
 --------- | ------ | ------- 
 primitives.Num, primitives.MaybeNum | 1 | 1
@@ -444,16 +499,16 @@ import * as primitives from 'valent/utils/primitives';
 
 let url = new Url('/store/:id/:tags', {
 	id: primitives.Num,
-	search: ['q', primitives.MaybeListStr,
 	tags: primitives.MaybeListStr,
-	period: primitives.MaybeListDat
+	period: primitives.MaybeListDat,
+	search: ['q', primitives.MaybeListStr
 });
 ```
 
-Constructor takes 2 arguments:
+Uses URL serializer. Constructor takes 2 arguments:
 
  - pattern - url pattern with placeholders. 
- - struct - url params structure. Defined types. If struct value defined as array - first element - how this parameter will be renamed.
+ - struct - url params structure
 
 ```js 
 import Url from 'valent/angular/angular-url';
@@ -461,9 +516,9 @@ import * as primitives from 'valent/utils/primitives';
 
 let url = new Url('/store/:id/:tags', {
 	id: primitives.Num,
-	search: ['q', primitives.MaybeStr,
 	tags: primitives.MaybeListStr,
-	period: primitives.MaybeListDat
+	period: primitives.MaybeListDat,
+	search: ['q', primitives.MaybeStr
 });
 
 let route = url.stringify({
