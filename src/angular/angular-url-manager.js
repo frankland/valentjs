@@ -37,16 +37,18 @@ export default class AngularUrlManager extends UrlManager {
     this[_contexts].delete(context);
   }
 
-
   get(name) {
-    //if (!this[_queue].has(name)) {
-    //  throw new Error(`can not get url "${name}" because there is no attached scope`);
-    //}
-
     let url = super.get(name);
 
     if (!url.hasScope() && this[_queue].has(name)) {
       let $scope = this[_queue].get(name);
+
+      if (!$scope) {
+        // TODO: normalize error message
+        // NOTES: seems this case is impossible
+        throw new Error('there is not scope to attach to angular url');
+      }
+
       url.attachScope($scope);
 
       this[_queue].delete(name);

@@ -45,7 +45,7 @@ let validate = (component) => {
 };
 
 export default class ValentComponent {
-  constructor(name, Component, options) {
+  constructor(name, Component, options = {}) {
     this.name = name;
     this.options = options;
 

@@ -12,11 +12,22 @@ let initController = ($scope, controllerModel, valentResolve) => {
   let name = controllerModel.getName();
   let logger = Logger.create(name);
 
-  // attach scope to AngularUrl to allow use watch() method
-  let url = valent.url.get(name);
-  url.attachScope($scope);
+  let args = [];
+  if (valentResolve) {
+    args.push(valentResolve);
+  }
 
-  let controller = new Controller(valentResolve, url, logger);
+  if (valent.url.has(name)) {
+    // attach scope to AngularUrl to allow use watch() method
+    let url = valent.url.get(name);
+    url.attachScope($scope);
+
+    args.push(url);
+  }
+
+  args.push(logger);
+
+  let controller = new Controller(...args);
   Scope.attach(controller, $scope);
 
   let namespace = controllerModel.getNamespace();
@@ -44,7 +55,12 @@ export default (controllerModel, config) => {
   let name = controllerModel.getName();
   let module = controllerModel.getModule();
 
-  let configuration = ['$scope', 'valentResolve', ($scope, valentResolve) => {
+  let dependencies = ['$scope'];
+  if (controllerModel.hasUrl() && controllerModel.hasResolvers()) {
+    dependencies.push('valent.resolve');
+  }
+
+  let configuration = [...dependencies, ($scope, valentResolve) => {
     $scope.$valent = getValentInfo(controllerModel);
 
     try {

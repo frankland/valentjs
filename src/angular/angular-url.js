@@ -20,6 +20,7 @@ export default class AngularUrl extends Url {
     this[_scope] = null;
   }
 
+  // $scope is using for url.watch() method
   attachScope($scope) {
     this[_scope] = $scope;
   }

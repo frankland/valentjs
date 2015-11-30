@@ -26,7 +26,7 @@ let validate = (controller) => {
 export default class ValentController {
   route = null;
 
-  constructor(name, Controller, options) {
+  constructor(name, Controller, options = {}) {
     this.name = name;
     this.options = options;
     this.Controller = Controller;
@@ -37,10 +37,9 @@ export default class ValentController {
     }
 
     if (this.options.url) {
-      let routeOptions = this.options.routeOptions || {};
+      let routeOptions = this.options.options || {};
 
-      Object.assign(routeOptions,{
-        url:  this.getUrl(),
+      Object.assign(routeOptions, {
         struct:  this.getStruct()
       });
 
@@ -68,13 +67,15 @@ export default class ValentController {
         let template = method(this);
 
         if (!isString(template)) {
-          throw new RegisterException(name, 'result of Component.render() should be a string');
+          // TODO: display controller name
+          throw new RegisterException(name, 'result of Controller.render() should be a string');
         }
 
         routeOptions.template = template;
       }
 
-      valent.route(this.name, this.options.url, routeOptions);
+      let url = this.getUrl();
+      valent.route(this.name, url, routeOptions);
     }
   }
 
@@ -115,7 +116,7 @@ export default class ValentController {
   }
 
   hasUrl() {
-    return !!this.options.url || !!this.options.url.length;
+    return isArray(this.options.url) ? !!this.options.url.length : !!this.options.url;
   }
 
   getUrl() {

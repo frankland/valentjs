@@ -49,9 +49,13 @@ export default class RenameSerializer extends Serializer {
     return normalized;
   }
 
+  hasRenameOption(key) {
+    return this.renameOptions[key] !== key;
+  }
+
   getOriginalName(renamed) {
     if (!isString(renamed)) {
-      throw new Error('renamed must be a string');
+      throw new Error('"rename" key must be a string');
     }
 
     let original = null;
@@ -68,12 +72,21 @@ export default class RenameSerializer extends Serializer {
 
   decode(params) {
     let normalized = {};
+    let struct = this.getStruct();
 
     for (let key of Object.keys(params)) {
       let value = params[key];
       let original = this.getOriginalName(key);
+
       if (!original) {
-        throw new Error(`Can not find origin name for "${key}"`);
+        // TODO: normalize exceptions
+        if (!struct.hasOwnProperty(key)) {
+          throw new Error(`Url param "${key}" is not described at struct`);
+        } else {
+
+          // NOTE: Seems this case is impossible
+          throw new Error(`Can not find origin name for "${key}"`);
+        }
       }
 
       if (original) {

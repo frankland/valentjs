@@ -50,7 +50,7 @@ let validate = (route) => {
 };
 
 export default class ValentController {
-  constructor(name, url, options) {
+  constructor(name, url, options = {}) {
     this.name = name;
     this.url = url;
     this.options = options;
@@ -90,7 +90,11 @@ export default class ValentController {
   }
 
   getUrl() {
-    return this.options.url;
+    return this.url;
+  }
+
+  hasResolvers() {
+    return this.options.resolve && !!Object.keys(this.options.resolve).length;
   }
 
   getResolvers() {

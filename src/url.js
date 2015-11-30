@@ -47,7 +47,9 @@ export default class Url {
   cache = {};
 
   constructor(pattern, struct) {
-    this[_serializer] = new UrlSerializer(struct);
+    let serializer = new UrlSerializer(struct);
+    this[_serializer] = serializer;
+
     let urlPattern = new UrlPattern(pattern);
 
     this[_pattern] = pattern;
@@ -61,12 +63,17 @@ export default class Url {
     for (let key of Object.keys(struct)) {
       if (urlParams.indexOf(key) === -1) {
         searchParams.push(key);
+      } else {
+        if (serializer.hasRenameOption(key)) {
+          throw new Error('url params with placeholders cant have rename config');
+        }
       }
     }
 
     this[_searchParamsKeys] = searchParams;
     this[_urlParamsKeys] = urlParams;
     this[_links] = {};
+
   }
 
   getSerializer() {
@@ -168,8 +175,6 @@ export default class Url {
 
   parse() {
     /**
-     * TODO: use cached params
-     *
      * if there is no cached params - parse url. Otherwise - return cached params
      *
      * if (!Object.keys(this.cache)) {
@@ -177,8 +182,6 @@ export default class Url {
      * }
      * @type {string}
      */
-
-
     var pathname = window.location.pathname;
     var search = window.location.search;
 
@@ -187,11 +190,15 @@ export default class Url {
       url += `?${search}`;
     }
 
-    this.decode(url);
+    return this.decode(url);
   }
 
   cacheParams(params) {
     this.cache = params;
+  }
+
+  getCachedParams() {
+    return this.cache;
   }
 
   clearCachedParams() {

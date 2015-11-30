@@ -2,9 +2,8 @@ import isFunction from 'lodash/lang/isFunction';
 
 let _map = Symbol('url-map');
 
-//export default class UrlManager extends Map {
 // Uncaught TypeError: Method Map.prototype.set called on incompatible receiver [object Object] :(
-
+// export default class UrlManager extends Map {
 export default class UrlManager {
   constructor(options) {
 
@@ -13,6 +12,10 @@ export default class UrlManager {
 
   set(name, url) {
     this[_map].set(name, url);
+  }
+
+  has(name) {
+    return this[_map].has(name);
   }
 
   get(name) {
