@@ -6,14 +6,13 @@
 /temp
 
 /angular
-/components
-/controller
-/directive
-/factory
-/route
+/exceptions
+/serializers
 /utils
-/controller.js
-/directive.js
-/factory.js
-/route.js
-/index.js
+/application-config.js
+/url.js
+/url-manager.js
+/valent.js
+/valent-component.js
+/valent-controller.js
+/valent-route.js
