@@ -1,8 +1,8 @@
 # Valentjs
-
+---
 [![Join the chat at https://gitter.im/frankland/valent](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/frankland/valent?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-Valentjs provide easier way to register framework components (directives / routing / controllers) with features. Registered components could be transalted into different frameworks but right now only [AngularJS](https://github.com/angular/angular.js) available.
+Valentjs provide easier way to register framework components (directives / routing / controllers) with features. Registered components could be transalted into different frameworks but right now only [AngularJS](https://github.com/angular/angular.js) available. 
 
 Valentjs - just the wrapper for frameworks and could be used together with default frameworks approach.
 
@@ -18,7 +18,7 @@ and features form the box:
 
  - Writing code using ES6
  - Easier application configuration
- - URL manager
+ - URL manager 
  - Configured URL serializer/unserizlier
  - Multiple routing for one controller
  - Enchanted tcomb structures
@@ -27,19 +27,19 @@ and features form the box:
  - No access to **$scope**
 
 
-## AngularJS bootstrap
+## AngularJS bootstrap 
 
-**valent** - same as **angular** - variable at the global namespace.
+**valent** - same as **angular** - variable at the global namespace. 
 
 ```js
 import Angular from 'valent/angular';
 
 let framework = new Angular('your-application-name', {
 
-	/**
-	 * if dependencies are defined - angular module
+	/** 
+	 * if dependencies are defined - angular module 
 	 * will be created automatically
-     *
+     * 
      * Otherwise - you should register angular module
      * manually
 	 */
@@ -62,9 +62,9 @@ valent.bootstrap(framework);
 valent.config.set('routing.otherwise', '/home');
 valent.config.set('routing.html5', true);
 
-valent.config.get('routing');
+valent.config.get('routing'); 
 // {otherwise: '/home', 'html5': true}
-valent.config.get('routing.otherwise') // '/home'
+valent.config.get('routing.otherwise') // '/home' 
 ```
 
 And there are number of shortctus
@@ -163,21 +163,21 @@ valent.controller('home', HomeController, {
 class HomeController {
 	constructor(resolvers, url, logger) {
 	}
-
+	
 	destructor() {
 	}
 }
 ```
 
-Constructor takes 3 arguments
+Constructor takes 3 arguments 
 
  - resolvers
- - url
+ - url 
  - logger - configured logger. Always add colored controller's name to logs
 
 `destructor` method is called when controller's **$scope** is destroyed ($destroy event).
 
-### Controller options
+### Controller options 
 
 #### url
 url for controller.   Could be a string:
@@ -194,7 +194,7 @@ or array of strings (means that controller will be available by different routes
 ```
 
 #### resovle
-Local resolvers. Function that will be executed before controller's constructor. Support promises. Resolved results will be passed to controller's constructor. Local resolvers will be executed [after global resolvers](http://i.imgur.com/eO43UR5.png).
+Local resolvers. Function that will be executed before controller's constructor. Support promises. Resolved results will be passed to controller's constructor. Local resolvers will be executed [after global resolvers](http://i.imgur.com/eO43UR5.png). 
 Here is [Angular documentation](https://docs.angularjs.org/api/ngRoute/provider/$routeProvider#when) about route resolvers.
 ```js
 {
@@ -228,14 +228,14 @@ class HomeController {
 	constructor() {
 		// ...
 	}
-
+	
 	static render() {
 		return '<div>Yo!</div>'
 	}
 }
 ```
 
-#### as
+#### as 
  An identifier name for a reference to the controller. By default - **controller**.
 
 ```html
@@ -290,7 +290,7 @@ import * as primitives from 'valent/utils/primitives';
 
 There 3 serializers
 
- - base serializer
+ - base serializer 
  - rename serializer
  - url serializer - extends rename serializer with already added rules for all struc that defined in primitives (valent/utils/primitives)
 
@@ -300,15 +300,37 @@ import RenameSerializer from 'valent/serializers/rename-serializer';
 import UrlSerializer from 'valent/serializers/url-serializer';
 ```
 
-#### Base serializer
-Constructor takes 1 argument - params structure. Does not contain any encode/decode rules
+### Base serializer
+Constructor takes 1 argument - params structure. Does **NOT** contain any encode/decode rules.
 
  - encode(decoded)
  - decode(encoded)
 
-##### RenameSerialzier
+Struct example
+```js
+import primitives from 'valent/utils/primitives';
 
-#### Custom serializer
+let struct = {
+	id: primitives.Num
+	tags: primitives.MaybeListStr
+};
+```
+
+### RenameSerialzier
+Extends custom serializer but support attributes renaming encode and returns the, original names during decode. Does **NOT** contain any encode/decode rules. Constructor takes 1 argument - params structure.
+
+Struct example
+```js
+import primitives from 'valent/utils/primitives';
+
+let struct = {
+	// "id" key will encoded into "i"
+	id: ['i', primitives.Num]
+	tags: primitives.MaybeListStr
+};
+```
+
+### Custom serializer
 
 Extends custom serializers from base or rename serializer and add rule for encode/decode.
 
@@ -326,7 +348,7 @@ class UserSerializer extends Serializer {
 		super({
 			user: User
 		});
-
+		
 		this.addRule(User, {
 			encode: (user) => `${user.id}:${user.name}`,
 			decode: raw => {
@@ -335,19 +357,19 @@ class UserSerializer extends Serializer {
 					id: splitted[0],
 					name: splitted[1]
 				});
-			}
+			}		
 		});
 	},
-
+	
 	/**
-	 *  We should override encode/decode methods
+	 *  We should override encode/decode methods 
 	 *  because by default encode method takes object
 	 *  same as struct that is defined in constructor
 	 */
 	encode(user) {
 		return super.encode({user});
 	}
-
+	
 	decode(raw) {
 		let decoded = super.decode(raw);
 		return decoded.user;
@@ -362,7 +384,7 @@ let user = new User({
 });
 
 // encode
-let encoded = serializer.encode(user);
+let encoded = serializer.encode(user); 
 equal(encoded, '1:Lorem');
 
 // decode
@@ -373,7 +395,49 @@ equal(decided, new User({
 }));
 ```
 
-## URL
+### URL serializer
+Extends rename serializer and contain rules for encode/decode. Does not contains URL instance. Rules will work only if struct attributes are references to primitives.
+
+	NOTE: Serializers contains WeakMap of encode/decode rules. And keys - are objects from "primitives.js" module. Thats you need to make references to primitives. Primitives works with tcomb - so it also works as type validator.
+
+	TODO: map strings to primitive's objects?
+	{
+		id: 'number',
+		tags: 'maybe.listOfStrings'
+	}
+
+Example:
+```js
+import primitives from 'valent/utils/primitives';
+import UrlSerializer from 'valent/serializers/url-serializer';
+
+let serializer = new UrlSerializer({
+	id: ['i', primitives.Num]
+	tags: primitives.MaybeListStr	
+});
+
+serializer.encode(...);
+serializer.decode(...);
+```
+
+Encode rules:
+Primitive| Origin | Encoded | Keys
+------------ | -------------
+primitives.Num, primitives.MaybeNum | 1 | 1 |
+primitives.Str | 'a' | a |
+primitives.Bool | true | 1 |
+primitives.Bool | false | 0 |
+primitives.Dat | new Date() | 2015112 | options.date_format
+primitives.ListNum | [1, 2, 3] | 1~2~3 | options.list_delimiter
+primitives.ListStr | ['a', 'b', 'c'] | a~b~c | options.list_delimiter
+primitives.ListBool | [true, false] | 1~0 | options.list_delimiter
+primitives.ListDat | [new Date(), new Date()] | 2015112~2015112 | options.list_delimiter
+primitives.MatrixNum | [[1,2],[3,4]] | 1!2~3!4 | options.list_delimiter, options.matrix_delimiter
+primitives.MatrixStr | [['a','b'],['c','4']] | a!b~c!d | options.list_delimiter, options.matrix_delimiter
+primitives.MatrixBool | [[true, false],[false, true]] | 1!0~0!1 | options.list_delimiter, options.matrix_delimiter
+
+
+## URL 
 ```js
 import Url from 'valent/angular/angular-url';
 import * as primitives from 'valent/utils/primitives';
@@ -388,10 +452,10 @@ let url = new Url('/store/:id/:tags', {
 
 Constructor takes 2 arguments:
 
- - pattern - url pattern with placeholders.
+ - pattern - url pattern with placeholders. 
  - struct - url params structure. Defined types. If struct value defined as array - first element - how this parameter will be renamed.
 
-```js
+```js 
 import Url from 'valent/angular/angular-url';
 import * as primitives from 'valent/utils/primitives';
 
@@ -410,7 +474,7 @@ let route = url.stringify({
 
 equal(route, '/store/1/yellow-large?q=Hello');
 
-// And if current url is
+// And if current url is 
 // '/store/1/yellow-large?q=Hello?period=20151110-20151120'
 
 let params = url.parse();
@@ -418,7 +482,7 @@ equal(parms, {
 	id: 1,
 	search: 'Hello',
 	tags: ['yellow', 'large'],
-	period: [
+	period: [ 
 	// date objects. btw - not sure about correct timezones...
 		Wed Nov 10 2015 00:00:00 GMT+0200 (EET),
 		Wed Nov 20 2015 00:00:00 GMT+0200 (EET)
@@ -435,8 +499,8 @@ Available methods:
  - stringify(params) - return url according to passed params
  - redirect(params) - same as **go()** but with page reloading
  - parse - parse current url and return decoded params
- - watch(callback) - listen url changes (\$scope event **\$routeUpdate**) and execute callback. Callback arguments - params, diff, options.
-	 - params - current url params.
+ - watch(callback) - listen url changes (\$scope event **\$routeUpdate**) and execute callback. Callback arguments - params, diff, options.  
+	 - params - current url params. 
 	 - diff - difference between previous url update.
 	 - options - event options that were passed to **go()** method
  - isEmpty - return true if there are no params in current url
@@ -451,29 +515,29 @@ import Url from 'valent/angular/angular-url';
 
 class HomeController {
 	filters = {};
-
+	
 	constructor(resovled, url) {
 		/**
-		 *  url params "search", "tags"
-		 *  will be linked this this.filters object
+		 *  url params "search", "tags" 
+		 *  will be linked this this.filters object	
 		 */
 		url.linkTo(this.filters, [
 			'tags',
 			'search'
 		]);
-
+		
 		// add link for "id" param
 		url.link('id', id => {
 			this.id = id;
 		});
-
+		
 		url.link('search', search => {
 			this.filters.search = search;
 		});
-
+	
 		url.watch((params, diff, options) => {
 			/**
-			 * We can not run apply automatically
+			 * We can not run apply automatically 
 			 * on route update because there are
 			 * a lot of cases when developers should
 			 * call apply() manually
@@ -531,7 +595,7 @@ class HomeController {
 ```js
 import Watcher from 'valent/angular/services/watcher';
 ```
-Service is using to create [watchers](https://docs.angularjs.org/api/ng/type/$rootScope.Scope#$watch). watchGroup, watchCollection and deep watch - are not available.
+Service is using to create [watchers](https://docs.angularjs.org/api/ng/type/$rootScope.Scope#$watch). watchGroup, watchCollection and deep watch - are not available. 
 
 	NOTE: We highly recommend NOT to use watchers. No matter how watchers are created - using this service or native $scope methods.
 
@@ -540,7 +604,7 @@ import Watcher from 'valent/angular/services/watcher';
 
 class HomeController {
 	title = 'Hello World!';
-
+	
 	constructor() {
 		let watcher = new Watcher(this);
 		watcher.watch('controller.title', title => {
@@ -574,7 +638,7 @@ class HomeController {
 		events.broadcast('my.custom.event', {
 			greeting: 'Yo'
 		});
-
+		
 		events.emit('my.custom.event', {
 			greeting: 'Yo'
 		});
