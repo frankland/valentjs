@@ -2,8 +2,8 @@ import isObject from 'lodash/lang/isPlainObject';
 import camelCase from 'lodash/string/camelCase';
 import Watcher from './watcher';
 
-let getAvailableParams = (component) => {
-  let params = component.getParams();
+let getAvailableParams = (componentModel) => {
+  let params = componentModel.getParams();
   let keys = [];
 
   if (isObject(params)) {
@@ -11,10 +11,10 @@ let getAvailableParams = (component) => {
   }
 
   // TODO: only if restrict == A?
-  let name = component.getName();
+  let name = componentModel.getName();
   keys.push(name);
 
-  let pipes = component.getPipes();
+  let pipes = componentModel.getPipes();
   for (let key of Object.keys(pipes)) {
     let translatedKey = camelCase(key);
     keys.push(translatedKey);
@@ -25,6 +25,7 @@ let getAvailableParams = (component) => {
 
 let _scope = Symbol('$scope');
 let _attrs = Symbol('$attrs');
+let _isIsolated = Symbol('is-scope-isolated');
 let _definitions = Symbol('definitions');
 let _watcher = Symbol('$watcher');
 let _name = Symbol('name');
@@ -34,11 +35,12 @@ let _pipes = Symbol('pipes');
  * TODO: redevelop component
  */
 export default class DirectiveParams {
-  constructor($scope, $attrs, component) {
+  constructor($scope, $attrs, componentModel) {
     this[_scope] = $scope;
     this[_attrs] = $attrs;
-    this[_name] = component.getName();
-    this[_definitions] = getAvailableParams(component);
+    this[_name] = componentModel.getName();
+    this[_isIsolated] = componentModel.isIsolated();
+    this[_definitions] = getAvailableParams(componentModel);
 
     this[_watcher] = new Watcher($scope);
 
@@ -104,6 +106,14 @@ export default class DirectiveParams {
     }
 
     let expression = $attrs[key];
-    return $scope.$eval(expression);
+    let evaluatingScope = null;
+    
+    if (this[_isIsolated]) {
+      evaluatingScope = $scope.$parent;
+    } else {
+      evaluatingScope = $scope;
+    }
+
+    return evaluatingScope.$eval(expression);
   }
 }
