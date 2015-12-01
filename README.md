@@ -903,7 +903,8 @@ equal(decided, new User({
 ## Url serializer
 Extends rename serializer and contain rules for encode/decode. Does not contains URL instance. Rules will work only if struct attributes are references to primitives.
 
-    NOTE: Serializers contains WeakMap of encode/decode rules. And keys - are objects from "primitives.js" module. Thats you need to make references to primitives. Primitives works with tcomb - so it also works as type validator.
+    NOTE: Serializers contains WeakMap of encode/decode rules. And keys - are objects from "primitives.js" module. 
+    Thats you need to make references to primitives. Primitives works with tcomb - so it also works as type validator.
 
     TODO: map strings to primitive's objects?
     {
@@ -1153,7 +1154,8 @@ import Watcher from 'valent/angular/services/watcher';
 ```
 Service is using to create [watchers](https://docs.angularjs.org/api/ng/type/$rootScope.Scope#$watch). watchGroup, watchCollection and deep watch - are not available. 
 
-    NOTE: We highly recommend NOT to use watchers. No matter how watchers are created - using this service or native $scope methods.
+    NOTE: We highly recommend NOT to use watchers. No matter how watchers are created
+    using this service or native $scope methods.
 
 ```js
 import Watcher from 'valent/angular/services/watcher';
