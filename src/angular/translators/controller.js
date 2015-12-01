@@ -58,7 +58,7 @@ export default (controllerModel, config) => {
   let dependencies = ['$scope'];
 
   let globalResolvers = config.route.getResolvers();
-  if (!!Object.keys(globalResolvers).length || (controllerModel.hasUrl() && controllerModel.hasResolvers())) {
+  if (controllerModel.hasUrl()  && (!!Object.keys(globalResolvers).length || controllerModel.hasResolvers())) {
     dependencies.push('valent.resolve');
   }
 
