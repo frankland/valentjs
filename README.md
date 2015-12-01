@@ -6,8 +6,7 @@ Valentjs provide easier way to register framework components (directives / routi
 
 Valentjs - just the wrapper for frameworks and could be used together with default frameworks approach.
 
-- [Valentjs](#valentjs)
-  - [# Valentjs](#-valentjs)
+- [Valentjs](#-valentjs)
 - [Valentjs + AngularJS](#valentjs--angularjs)
 - [AngularJS bootstrap](#angularjs-bootstrap)
 - [Configuration](#configuration)
