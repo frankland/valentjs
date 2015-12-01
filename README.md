@@ -243,11 +243,11 @@ class HomeController {
 }
 ```
 
-Constructor takes 3 arguments 
+Constructor could take up to 3 arguments: 
 
- - resolvers
- - url 
- - logger - configured logger. Always add colored controller's name to logs
+ - `resolvers` -  if there any local or global resolver
+ - `url` - if three is attached route 
+ - `logger` - configured logger. Always add colored controller's name to logs
 
 `destructor` method is called when controller's **$scope** is destroyed ($destroy event).
 
@@ -506,6 +506,22 @@ Uses for [directive communications](https://docs.angularjs.org/guide/directive#c
 }
 More details at official angular [doc](https://docs.angularjs.org/api/ng/service/$compile#-require-).
 ```
+
+Relate controllers will be passed to `require(controllers)` method.
+
+```js
+class GreetMeController {
+     constructor(params, logger) {
+     
+     }	
+     
+     require(controllers) {
+        this.ngModel = controllers.ngModel;
+        this.plFilterBar = controllers.plFilterBar;
+     }
+ }
+```
+
 ### directive.option.params
 Same as angular directive's options [scope](https://docs.angularjs.org/api/ng/service/$compile#-scope-).
 
@@ -1232,6 +1248,7 @@ import BaseComponentController from 'valent/angular/base/component-controller';
     TODO: add docs :)
 
 # TODO
+- [ ] Use [tcomb](https://github.com/gcanti/tcomb) for controller/route/component validation!
 - [ ] Boilerplate
 - [ ] Examples
 - [ ] valentjs vs angularjs. Configuration diffs
