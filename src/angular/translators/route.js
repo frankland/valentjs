@@ -8,10 +8,16 @@ let getValentResolver = (config, routeModel) => ({
     let globalResolvers = config.route.getResolvers();
     let globalDependencies = Object.keys(globalResolvers);
 
+    let name = routeModel.getName();
+    let params = routeModel.getParams();
+
+    let resolverArguments = [name, params];
+
     let globalTasks = [];
     for (let key of Object.keys(globalResolvers)) {
       let resolver = globalResolvers[key];
-      let task = resolver(routeModel);
+
+      let task = resolver(...resolverArguments);
 
       globalTasks.push(task);
     }
@@ -33,7 +39,8 @@ let getValentResolver = (config, routeModel) => ({
       let localTasks = [];
       for (let key of Object.keys(localResolvers)) {
         let resolver = localResolvers[key];
-        let task = resolver(routeModel);
+
+        let task = resolver(...resolverArguments);
 
         localTasks.push(task);
       }
@@ -60,8 +67,11 @@ export default (routeModel, config) => {
 
 
   let params = routeModel.getParams();
-  let configuration = Object.assign(params, {
-    reloadOnSearch: false,
+  let defaultRouteParams = {
+    reloadOnSearch: false
+  };
+
+  let configuration = Object.assign(defaultRouteParams, params, {
     controller: name
   });
 

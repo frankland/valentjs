@@ -37,29 +37,29 @@ export default class ValentController {
     }
 
     if (this.options.url) {
-      let routeOptions = this.options.options || {};
+      let routeParams = this.options.params || {};
 
-      Object.assign(routeOptions, {
+      Object.assign(routeParams, {
         struct: this.getStruct()
       });
 
       let module = this.options.module;
       if (module) {
-        routeOptions.module = module;
+        routeParams.module = module;
       }
 
       if (this.hasResolvers()) {
-        routeOptions.resolve = this.getResolvers();
+        routeParams.resolve = this.getResolvers();
       }
 
       if (this.hasTemplate()) {
 
         // set template
-        routeOptions.template = this.getTemplate();
+        routeParams.template = this.getTemplate();
       } else if (this.hasTemplateUrl()) {
 
         // set templateUrl
-        routeOptions.templateUrl = this.getTemplateUrl();
+        routeParams.templateUrl = this.getTemplateUrl();
       } else if (this.hasTemplateMethod()) {
 
         // set template using Components method
@@ -71,11 +71,11 @@ export default class ValentController {
           throw new RegisterException(name, 'result of Controller.render() should be a string');
         }
 
-        routeOptions.template = template;
+        routeParams.template = template;
       }
 
       let url = this.getUrl();
-      valent.route(this.name, url, routeOptions);
+      valent.route(this.name, url, routeParams);
     }
   }
 

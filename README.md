@@ -6,7 +6,8 @@ Valentjs provide easier way to register framework components (directives / routi
 
 Valentjs - just the wrapper for frameworks and could be used together with default frameworks approach.
 
-- [Valentjs](#-valentjs)
+
+- [Valentjs](#valentjs)
 - [Valentjs + AngularJS](#valentjs--angularjs)
 - [AngularJS bootstrap](#angularjs-bootstrap)
 - [Configuration](#configuration)
@@ -16,41 +17,43 @@ Valentjs - just the wrapper for frameworks and could be used together with defau
 - [Controllers](#controllers)
   - [Controller class](#controller-class)
   - [Controller options](#controller-options)
-    - [url](#url)
-    - [resolve](#resolve)
-    - [struct](#struct)
-    - [template](#template)
-    - [templateUrl](#templateurl)
+    - [controller.option.as](#controlleroptionas)
+    - [controller.option.url](#controlleroptionurl)
+    - [controller.option.params](#controlleroptionparams)
+    - [controller.option.resolve](#controlleroptionresolve)
+    - [controller.option.struct](#controlleroptionstruct)
+    - [controller.option.template](#controlleroptiontemplate)
+    - [controller.option.templateUrl](#controlleroptiontemplateurl)
     - [Controller.render()](#controllerrender)
-    - [as](#as)
 - [Route](#route)
-  - [url](#url-1)
+  - [url](#url)
   - [Route options](#route-options)
-    - [resovle](#resovle)
-    - [template](#template-1)
-    - [templateUrl](#templateurl-1)
-    - [struct](#struct-1)
+    - [route.option.params](#routeoptionparams)
+    - [route.option.resolve](#routeoptionresolve)
+    - [route.option.template](#routeoptiontemplate)
+    - [route.option.templateUrl](#routeoptiontemplateurl)
+    - [route.option.struct](#routeoptionstruct)
 - [Directive](#directive)
   - [Directive Controller class](#directive-controller-class)
   - [Directive options](#directive-options)
-    - [as](#as-1)
-    - [template](#template-2)
-    - [templateUrl](#templateurl-2)
-    - [restrict](#restrict)
-    - [require](#require)
-    - [params](#params)
-    - [interfaces](#interfaces)
-    - [options](#options)
-    - [pipes](#pipes)
+    - [directive.option.as](#directiveoptionas)
+    - [directive.option.template](#directiveoptiontemplate)
+    - [directive.option.templateUrl](#directiveoptiontemplateurl)
+    - [directive.option.restrict](#directiveoptionrestrict)
+    - [directive.option.require](#directiveoptionrequire)
+    - [directive.option.params](#directiveoptionparams)
+    - [directive.option.interfaces](#directiveoptioninterfaces)
+    - [directive.option.options (rename)](#directiveoptionoptions-rename)
+    - [directive.option.pipes](#directiveoptionpipes)
   - [Directive Params](#directive-params)
 - [Defined structures](#defined-structures)
 - [Serializers](#serializers)
   - [Base serializer](#base-serializer)
   - [Rename serializer](#rename-serializer)
   - [Custom serializer](#custom-serializer)
-  - [URL serializer](#url-serializer)
-- [URL](#url)
-- [URL Manager](#url-manager)
+  - [Url serializer](#url-serializer)
+- [Url](#url)
+- [Url Manager](#url-manager)
 - [Services](#services)
   - [Digest](#digest)
   - [Injector](#injector)
@@ -60,6 +63,7 @@ Valentjs - just the wrapper for frameworks and could be used together with defau
 - [Base Components](#base-components)
 - [Contributing](#contributing)
 - [TODO](#todo)
+
 
 TOC was generated using [doctoc](https://github.com/thlorenz/doctoc).
 
@@ -76,9 +80,10 @@ and features form the box:
  - Writing code using ES6
  - Easier application configuration
  - URL manager 
- - Configured URL serializer/unserizlier
+ - Configured URL serializer/unserializer
+ - Custom serializers
  - Multiple routing for one controller
- - Enchanted tcomb structures
+ - Enchanted [tcomb](https://github.com/gcanti/tcomb) structures
  - Interfaces / pipes for directives
  - Debounced safe digest
  - No access to **$scope**
@@ -99,16 +104,16 @@ import Angular from 'valent/angular';
 
 let framework = new Angular('your-application-name', {
 
-	/** 
-	 * if dependencies are defined - angular module 
-	 * will be created automatically
+    /** 
+     * if dependencies are defined - angular module 
+     * will be created automatically
      * 
      * Otherwise - you should register angular module
      * manually
-	 */
-	dependencies: [
-		'ngRoute'
-	]
+     */
+    dependencies: [
+        'ngRoute'
+    ]
 });
 
 valent.bootstrap(framework);
@@ -136,15 +141,15 @@ And there are number of shortctus
 valent.config.route.otherwise('/home');
 
 valent.config.route.onChangeStart(route => {
-	// ...
+    // ...
 });
 
 valent.config.route.addResolver('schema', () => {
-	// ...
+    // ...
 });
 
 valent.config.exception.handler((error, causedBy) => {
-	// ...
+    // ...
 });
 ```
 List of config shorctus
@@ -153,12 +158,13 @@ List of config shorctus
  - route.otherwise(url) - setup url for redirect if route does not exist
  - route.onChangeStart(callback) - add  hook for event **$routeChangeStart**
  - route.onChangeError(callback) - add hook for event **$routeChangeError**
- - route.addResolver(key, resolver) - add global resolver that will be applied for each route
+ - route.addResolver(key, resolver) - add [global resolver](http://i.imgur.com/eO43UR5.png) that will be applied for each route
+    - resolver(name, params) - same as [local resolver](#routeoptionresolve). Takes 2 arguments - route name, route params.
  - route.enableHistoryApi() - enable html5 routing. By default - html5 routing is enabled
  - route.disableHistoryApi() - disable html5 routing
  - routing.requireBase(isBaseRequired) - is base tag requierd for application
 
-## Exceptins
+## Exceptions
 
  - exception.handler(handler) - setup exception handler that will available for framework's context and window.on('error')
 
@@ -168,9 +174,9 @@ List of config shorctus
 import Angular from 'valent/angular';
 
 let framework = new Angular('your-application-name', {
-	dependencies: [
-		'ngRoute'
-	]
+    dependencies: [
+        'ngRoute'
+    ]
 });
 
 // app - angular module
@@ -178,12 +184,12 @@ let app = framework.getAngularModule();
 
 // same as with native angular
 app.config(['$rootScope', $rootScope => {
-	// ...
+    // ...
 });
 
 // same as with native angular
 app.run(['$rootScope', $rootScope => {
-	// ...
+    // ...
 });
 ```
 Or you can run config/run methods directly to angular.module
@@ -192,29 +198,29 @@ Or you can run config/run methods directly to angular.module
 import Angular from 'valent/angular';
 
 let framework = new Angular('your-application-name', {
-	dependencies: [
-		'ngRoute'
-	]
+    dependencies: [
+        'ngRoute'
+    ]
 });
 
 angular.module('your-application-name')
-	.config(['$rootScope', $rootScope => {
-	    // ...
-	});
+    .config(['$rootScope', $rootScope => {
+        // ...
+    });
 ```
 # Controllers
 
 Simple configuration
 ```js
 class HomeController {
-	// ...
-}
+    // ...
+} 
 
 valent.controller('home', HomeController);
 
 // or with already attached route
 valent.controller('home', HomeController, {
-	url: '/home'
+    url: '/home'
 });
 ```
 `valent.controller` takes 3 arguments
@@ -227,13 +233,13 @@ valent.controller('home', HomeController, {
 
 ```js
 class HomeController {
-	constructor(resolvers, url, logger) {
-		// ...
-	}
-	
-	destructor() {
-		// ...
-	}
+    constructor(resolvers, url, logger) {
+        // ...
+    }
+    
+    destructor() {
+        // ...
+    }
 }
 ```
 
@@ -257,7 +263,7 @@ Constructor takes 3 arguments
 If **as** defined:
 ```js
 {
-	as: '_'
+    as: '_'
 }
 ```
 Template should be
@@ -266,32 +272,35 @@ Template should be
 ```
 
 ### controller.option.url
-Route [url proxy](https://github.com/frankland/valentjs#url-1)
+Route [url proxy](#url)
+
+### controller.option.params
+Route [url proxy](#routeoptionparams)
 
 ### controller.option.resolve
-Route [resolve proxy](https://github.com/frankland/valentjs#resovle)
+Route [resolve proxy](#routeoptionresolve)
 
 ### controller.option.struct
-Route [struct proxy](https://github.com/frankland/valentjs#struct-1)
+Route [struct proxy](#routeoptionstruct)
 
 ### controller.option.template
-Route [template proxy](https://github.com/frankland/valentjs#template-1)
+Route [template proxy](#routeoptiontemplate)
 
 ### controller.option.templateUrl
-Route [templateUrl proxy](https://github.com/frankland/valentjs#templateurl-1)
+Route [templateUrl proxy](#routeoptiontemplateurl)
 
 ### Controller.render()
 If there is static function **render()** at controller's class - it's result will be used as template.
 
 ```js
 class HomeController {
-	constructor() {
-		// ...
-	}
-	
-	static render() {
-		return '<div>Yo!</div>'
-	}
+    constructor() {
+        // ...
+    }
+    
+    static render() {
+        return '<div>Yo!</div>'
+    }
 }
 ```
 
@@ -299,7 +308,7 @@ class HomeController {
 
 ```js
 valent.route('home', '/home', {
-	template: '<div>...</div>'
+    template: '<div>...</div>'
 });
 ```
 
@@ -313,42 +322,63 @@ valent.route('home', '/home', {
 url for controller.   Could be a string:
 ```js
 {
-	url: '/home'
+    url: '/home'
 }
 ```
 or array of strings (means that controller will be available by different routes)
 ```js
 {
-	url: ['/home', '/my/home']
+    url: ['/home', '/my/home']
 }
 ```
 
 ## Route options 
 
+### route.option.params
+Any params that will be passed to angular route config. Also route params are available in resolvers (local and global) as second argument.
+
+```js
+valent.route('home', '/home', {
+    params: {
+        guest: true
+    }
+});
+```
+
 ### route.option.resolve
 Local resolvers. Function that will be executed before controller's constructor. Support promises. Resolved results will be passed to controller's constructor. Local resolvers will be executed [after global resolvers](http://i.imgur.com/eO43UR5.png). 
 Here is [Angular documentation](https://docs.angularjs.org/api/ngRoute/provider/$routeProvider#when) about route resolvers.
+Each resolver take 2 arguments:
+    
+- `name`  - resolving route name
+- `params` - resolving [route params](#routeoptionparams)
+    
 ```js
 {
-	resolve: {
-		'schema': () => {
-			return Schema.load();
-		}
-	}
+    resolve: {
+        'permission': (name, params) => {
+            return Users.me().catch(() => {
+            
+                return params.guest 
+                    ? Promise.resolve('Allowed as guest') 
+                    : Promise.reject('Denied for guests');
+            });
+        }
+    }
 }
 ```
 
 ### route.option.template
 ```js
 {
-	template: '<div>Yo!</div>'
+    template: '<div>Yo!</div>'
 }
 ```
 
 ### route.option.templateUrl
 ```js
 {
-	templateUrl: '/templates/home.html'
+    templateUrl: '/templates/home.html'
 }
 ```
 
@@ -358,23 +388,23 @@ Structure for url.
 import * as primitives from 'valent/utils/primitives';
 
 class HomeController {
-	// ...
+    // ...
 }
 
 valent.controller(home, HomeController, {
-	url: '/home',
-	struct: {
-		id: primitives.Num,
-		tags: primitives.MaybeListStr,
-		period: primitives.MaybeListDat
-	}
+    url: '/home',
+    struct: {
+        id: primitives.Num,
+        tags: primitives.MaybeListStr,
+        period: primitives.MaybeListDat
+    }
 });
 ```
 
 # Directive
 ```js
 class GreetMeController {
-	// ...
+    // ...
 }
 
 valent.component('greet-me', GreetMeController, {
@@ -387,39 +417,39 @@ Full list of auto called methods. They are **NOT** required.
 
 ```js
 class GreetMeController {
-	constructor(params, logger) {
-	
-	}	
-	
-	destructor() {
-	
-	}
-	
-	link(element, compileResult) {
-	
-	}
-	
-	require(controllers) {
-	
-	}
-	
-	static compile(element) {
-		return {};
-	}
-	
-	static render() {
-		return '<div>....</div>';
-	}
+    constructor(params, logger) {
+    
+    }	
+    
+    destructor() {
+    
+    }
+    
+    link(element, compileResult) {
+    
+    }
+    
+    require(controllers) {
+    
+    }
+    
+    static compile(element) {
+        return {};
+    }
+    
+    static render() {
+        return '<div>....</div>';
+    }
 }
 ```
 Constructor arguments are depends on options. By default constructor takes 2 arguments
 
-- [directive params](https://github.com/frankland/valentjs#directive-params)
+- [directive params](#directive-params)
 - logger - configured logger. Always add colored controller's name to logs
 
 if `interfaces` or `optionals (options)` are defined - they will passed before.
 
-	TODO: Find better naming for this features. High prio :)
+    TODO: Find better naming for this features. High prio :)
 
 - `destructor` method is called when controller's \$scope is destroyed (\$destroy event).
 
@@ -434,32 +464,32 @@ if `interfaces` or `optionals (options)` are defined - they will passed before.
 For example in this case "Applications" will be used for multi-select label.
 ```html
 <pl-multiselect items="controller.items">
-	Applications
+    Applications
 </pl-multiselect>
 ```
 
 For example in this case - cell templates are defined as a content of `grid` directive.  In `static compile(element)` method this could be parsed and passed to directive controller. 
 ```html
 <grid>
-	<column id="network">
-		<network-icon id="cell.value"></network-icon>
-	</column>
-	<column id="date">
-		{{ cell.value | date:"MM/dd/yyyy" }}
-	</column>
+    <column id="network">
+        <network-icon id="cell.value"></network-icon>
+    </column>
+    <column id="date">
+        {{ cell.value | date:"MM/dd/yyyy" }}
+    </column>
 </grid>
 ```
 
 ## Directive options
 
 ### directive.option.as
-Same as valent.controller [as option](https://github.com/frankland/valentjs#as)
+Same as valent.controller [as option](#controlleroptionas)
 
 ### directive.option.template
-Same as valent.controller [template option](https://github.com/frankland/valentjs#template) but not proxy no route.
+Same as valent.controller [template option](#controlleroptiontemplate) but not proxy no route.
 
 ### directive.option.templateUrl
-Same as valent.controller [templateUrl option](https://github.com/frankland/valentjs#templateurl) but not proxy no route.
+Same as valent.controller [templateUrl option](#controlleroptiontemplateurl) but not proxy no route.
 
 ### directive.option.restrict
 Same as angular directive's options [restrict](https://docs.angularjs.org/guide/directive#template-expanding-directive).
@@ -472,7 +502,7 @@ Recomment to use only
 Uses for [directive communications](https://docs.angularjs.org/guide/directive#creating-directives-that-communicate).
 ```js
 {
-	require: ['ngModel', '^^plFilterBar']
+    require: ['ngModel', '^^plFilterBar']
 }
 More details at official angular [doc](https://docs.angularjs.org/api/ng/service/$compile#-require-).
 ```
@@ -483,17 +513,17 @@ Same as angular directive's options [scope](https://docs.angularjs.org/api/ng/se
 ```js
 // app-connector.js
 class AppConnector {
-	host = valent.config.get('app.server.host');
-	
-	constructor(port) {
-		//...
-	}
+    host = valent.config.get('app.server.host');
+    
+    constructor(port) {
+        //...
+    }
 
-	connect() {
-		
-	}
+    connect() {
+        
+    }
 
-	// ...
+    // ...
 }
 ```
 ```js
@@ -501,21 +531,21 @@ class AppConnector {
 import AppConnector from './app-connector';
 
 class ServerStatusController {
-	constructor(connector) {
-		connector.connect().then(status => {
-			this.status = status;
-		});
-	}
+    constructor(connector) {
+        connector.connect().then(status => {
+            this.status = status;
+        });
+    }
 
-	static render() {
-		return '<div>{{ _.status }}</div>'
-	}
+    static render() {
+        return '<div>{{ _.status }}</div>'
+    }
 }
 
 valent.component('server-status', ServerStatusController, {
-	interfaces: {
-		connector: AppConnector
-	}
+    interfaces: {
+        connector: AppConnector
+    }
 });
 ```
 
@@ -524,15 +554,15 @@ valent.component('server-status', ServerStatusController, {
 import AppConnector from './app-connector';
 
 class HomeController {
-	connector = new AppConnector(9001);
-	
-	constructor() {
-		this.connector.notify();
-	}
+    connector = new AppConnector(9001);
+    
+    constructor() {
+        this.connector.notify();
+    }
 
-	static render() {
-		return `<server-status connector="controller.connector"></server-status>`;
-	}
+    static render() {
+        return `<server-status connector="controller.connector"></server-status>`;
+    }
 }
 
 valent.controller('home', HomeController);
@@ -549,12 +579,12 @@ Bonuses:
 ### directive.option.options (rename)
 ```js
 valent.component('server-status', ServerStatusController, {
-	interfaces: {
-		connector: AppConnector
-	},
-	option: {
-		validator: AppValidator
-	}
+    interfaces: {
+        connector: AppConnector
+    },
+    option: {
+        validator: AppValidator
+    }
 });
 ```
 Same as interfaces but options are **NOT** required. 
@@ -564,9 +594,9 @@ If option's attribute is defined at directive - option instance will be passed t
 ```
 ```js
 class ServerStatusController {
-	constructor(connector, validator) {
-		//
-	}
+    constructor(connector, validator) {
+        //
+    }
 }
 ```
 
@@ -576,9 +606,9 @@ If option's attribute is **NOT** defined - null will be passed to directive's co
 ```
 ```js
 class ServerStatusController {
-	constructor(connector, validator) {
-		equals(validator, null);
-	}
+    constructor(connector, validator) {
+        equals(validator, null);
+    }
 }
 ```
 
@@ -588,21 +618,21 @@ If defined and not passed to directive - will be created automatically. Availabl
 ```js
 // toggler.js
 class Toggler extends Events {
-	isVisible = false;
-	
-	open() {
-		if (!this.isVisible) {
-			this.isVisible = true;
-			this.emit('open');
-		}
-	}
-	
-	close() {
-		if (this.isVisible) {
-			this.isVisible = false;
-			this.emit('close');
-		}
-	}
+    isVisible = false;
+    
+    open() {
+        if (!this.isVisible) {
+            this.isVisible = true;
+            this.emit('open');
+        }
+    }
+    
+    close() {
+        if (this.isVisible) {
+            this.isVisible = false;
+            this.emit('close');
+        }
+    }
 }
 ```
 
@@ -611,30 +641,30 @@ class Toggler extends Events {
 import Toggler from './toggler';
 
 class DropDownController {
-	constructor(params) {
-		this.toggler = params.get('toggler');
-	}
+    constructor(params) {
+        this.toggler = params.get('toggler');
+    }
 
-	static render() {
-		return `
-			<button
-				ng-click="controller.toggler.open()">
-				Open
-			</button>
-			<button 
-				ng-click="controller.toggler.close()">
-				Close
-			</button>
-			<div ng-if="controller.toggler.isVisible">
-				...
-			</div>`;
-	}	
+    static render() {
+        return `
+            <button
+                ng-click="controller.toggler.open()">
+                Open
+            </button>
+            <button 
+                ng-click="controller.toggler.close()">
+                Close
+            </button>
+            <div ng-if="controller.toggler.isVisible">
+                ...
+            </div>`;
+    }	
 }
 
 valent.component('drop-down', DropDownController, {
-	pipes: {
-		toggler: Toggler
-	}
+    pipes: {
+        toggler: Toggler
+    }
 });
 ```
 
@@ -643,22 +673,22 @@ valent.component('drop-down', DropDownController, {
 import Toggler from './toggler';
 
 class HomeController {
-	toggler = new Toggler();
-	
-	constructor() {
-		this.toggler.open();
-		this.toggler.on('open', () => {
-			console.log('opened :)');
-		});
-	}
+    toggler = new Toggler();
+    
+    constructor() {
+        this.toggler.open();
+        this.toggler.on('open', () => {
+            console.log('opened :)');
+        });
+    }
 }
 
 valent.controller('home', HomeController);
 ```
 ```html
 <div ng-controller="home">
-	<drop-down></drop-down>
-	<drop-down toggler="controller.toggler></drop-down>
+    <drop-down></drop-down>
+    <drop-down toggler="controller.toggler></drop-down>
 </div>
 ```
 
@@ -673,22 +703,22 @@ Both cases will work.  If you not pass toggler from parent controller - it will 
 
 ```js
 class GreetMeController {
-	constructor(params) {
-		this.name = params.get('name');
-		params.watch('name', name => {
-			// ...
-		});
-	}
-	
-	static render() {
-		return '<div>{{ controller.name }} </div>'
-	}
+    constructor(params) {
+        this.name = params.get('name');
+        params.watch('name', name => {
+            // ...
+        });
+    }
+    
+    static render() {
+        return '<div>{{ controller.name }} </div>'
+    }
 }
 
 valent.component('greet-me', GreetMeController, {
-	params: {
-		name: '='
-	}
+    params: {
+        name: '='
+    }
 });
 ```
 Available methods:
@@ -702,17 +732,17 @@ If try to `get()` or `watch()` for keys that are not defined at component's para
 `parse()` example:
 ```js
 class GreetMeController {
-	constructor(params) {
-		this.name = params.parse('name');
-	}
-	
-	static render() {
-		return '<div>{{ controller.name }} </div>'
-	}
+    constructor(params) {
+        this.name = params.parse('name');
+    }
+    
+    static render() {
+        return '<div>{{ controller.name }} </div>'
+    }
 }
 
 valent.component('greet-me', GreetMeController, {
-	params: {}
+    params: {}
 });
 ```
 
@@ -786,8 +816,8 @@ Struct example
 import primitives from 'valent/utils/primitives';
 
 let struct = {
-	id: primitives.Num
-	tags: primitives.MaybeListStr
+    id: primitives.Num
+    tags: primitives.MaybeListStr
 };
 ```
 
@@ -799,9 +829,9 @@ Struct example
 import primitives from 'valent/utils/primitives';
 
 let struct = {
-	// "id" key will encoded into "i"
-	id: ['i', primitives.Num]
-	tags: primitives.MaybeListStr
+    // "id" key will encoded into "i"
+    id: ['i', primitives.Num]
+    tags: primitives.MaybeListStr
 };
 ```
 
@@ -814,48 +844,48 @@ import tcomb from 'tcomb';
 import Serializer from 'valent/serializers/serializer';
 
 let User = tcomb.struct({
-	id: tcomb.Num,
-	name: tcomb.Str
+    id: tcomb.Num,
+    name: tcomb.Str
 });
 
 class UserSerializer extends Serializer {
-	constructor() {
-		super({
-			user: User
-		});
-		
-		this.addRule(User, {
-			encode: (user) => `${user.id}:${user.name}`,
-			decode: raw => {
-				let splitted = raw.split(':');
-				return new UserStruct({
-					id: splitted[0],
-					name: splitted[1]
-				});
-			}		
-		});
-	},
-	
-	/**
-	 *  We should override encode/decode methods 
-	 *  because by default encode method takes object
-	 *  same as struct that is defined in constructor
-	 */
-	encode(user) {
-		return super.encode({user});
-	}
-	
-	decode(raw) {
-		let decoded = super.decode(raw);
-		return decoded.user;
-	}
+    constructor() {
+        super({
+            user: User
+        });
+        
+        this.addRule(User, {
+            encode: (user) => `${user.id}:${user.name}`,
+            decode: raw => {
+                let splitted = raw.split(':');
+                return new UserStruct({
+                    id: splitted[0],
+                    name: splitted[1]
+                });
+            }		
+        });
+    },
+    
+    /**
+     *  We should override encode/decode methods 
+     *  because by default encode method takes object
+     *  same as struct that is defined in constructor
+     */
+    encode(user) {
+        return super.encode({user});
+    }
+    
+    decode(raw) {
+        let decoded = super.decode(raw);
+        return decoded.user;
+    }
 }
 
 let serializer = new UserSerializer();
 
 let user = new User({
-	id: 1,
-	name: 'Lorem'
+    id: 1,
+    name: 'Lorem'
 });
 
 // encode
@@ -865,21 +895,21 @@ equal(encoded, '1:Lorem');
 // decode
 let decoded = serializer.decode('2:Ipsum');
 equal(decided, new User({
-	id: 2,
-	name: Ipsum
+    id: 2,
+    name: Ipsum
 }));
 ```
 
 ## Url serializer
 Extends rename serializer and contain rules for encode/decode. Does not contains URL instance. Rules will work only if struct attributes are references to primitives.
 
-	NOTE: Serializers contains WeakMap of encode/decode rules. And keys - are objects from "primitives.js" module. Thats you need to make references to primitives. Primitives works with tcomb - so it also works as type validator.
+    NOTE: Serializers contains WeakMap of encode/decode rules. And keys - are objects from "primitives.js" module. Thats you need to make references to primitives. Primitives works with tcomb - so it also works as type validator.
 
-	TODO: map strings to primitive's objects?
-	{
-		id: 'number',
-		tags: 'maybe.listOfStrings'
-	}
+    TODO: map strings to primitive's objects?
+    {
+        id: 'number',
+        tags: 'maybe.listOfStrings'
+    }
 
 Constructor takes 2 arguments
 
@@ -889,9 +919,9 @@ Constructor takes 2 arguments
 Default options:
 ```js
 {
-	list_delimiter: '~',
-	matrix_delimiter: '!',
-	date_format: 'YYYYMMDD'
+    list_delimiter: '~',
+    matrix_delimiter: '!',
+    date_format: 'YYYYMMDD'
 }
 ```
 
@@ -901,13 +931,13 @@ import primitives from 'valent/utils/primitives';
 import UrlSerializer from 'valent/serializers/url-serializer';
 
 let serializer = new UrlSerializer({
-	id: ['i', primitives.Num]
-	tags: primitives.MaybeListStr	
+    id: ['i', primitives.Num]
+    tags: primitives.MaybeListStr	
 });
 
 let origin = {
-	id: 1,
-	tags: ['a', 'b', 'c']
+    id: 1,
+    tags: ['a', 'b', 'c']
 };
 
 let encoded = serializer.encode(origin);
@@ -944,10 +974,10 @@ import Url from 'valent/angular/angular-url';
 import * as primitives from 'valent/utils/primitives';
 
 let url = new Url('/store/:id/:tags', {
-	id: primitives.Num,
-	tags: primitives.MaybeListStr,
-	period: primitives.MaybeListDat,
-	search: ['q', primitives.MaybeListStr
+    id: primitives.Num,
+    tags: primitives.MaybeListStr,
+    period: primitives.MaybeListDat,
+    search: ['q', primitives.MaybeListStr
 });
 ```
 
@@ -961,16 +991,16 @@ import Url from 'valent/angular/angular-url';
 import * as primitives from 'valent/utils/primitives';
 
 let url = new Url('/store/:id/:tags', {
-	id: primitives.Num,
-	tags: primitives.MaybeListStr,
-	period: primitives.MaybeListDat,
-	search: ['q', primitives.MaybeStr
+    id: primitives.Num,
+    tags: primitives.MaybeListStr,
+    period: primitives.MaybeListDat,
+    search: ['q', primitives.MaybeStr
 });
 
 let route = url.stringify({
-	id: 1,
-	search: 'Hello',
-	tags: ['yellow', 'large']
+    id: 1,
+    search: 'Hello',
+    tags: ['yellow', 'large']
 });
 
 equal(route, '/store/1/yellow-large?q=Hello');
@@ -980,14 +1010,14 @@ equal(route, '/store/1/yellow-large?q=Hello');
 
 let params = url.parse();
 equal(parms, {
-	id: 1,
-	search: 'Hello',
-	tags: ['yellow', 'large'],
-	period: [ 
-	// date objects. btw - not sure about correct timezones...
-		Wed Nov 10 2015 00:00:00 GMT+0200 (EET),
-		Wed Nov 20 2015 00:00:00 GMT+0200 (EET)
-	]
+    id: 1,
+    search: 'Hello',
+    tags: ['yellow', 'large'],
+    period: [ 
+    // date objects. btw - not sure about correct timezones...
+        Wed Nov 10 2015 00:00:00 GMT+0200 (EET),
+        Wed Nov 20 2015 00:00:00 GMT+0200 (EET)
+    ]
 });
 ```
 
@@ -1004,9 +1034,9 @@ Provide helpful methods to work with url. Available methods:
  - `parse()` - parse current url and return decoded params
 
  - `watch(callback)` - listen url changes (\$scope event **\$routeUpdate**) and execute callback. Callback arguments - params, diff, options.  
-	 - params - current url params. 
-	 - diff - difference between previous url update.
-	 - options - event options that were passed to **go()** method
+     - params - current url params. 
+     - diff - difference between previous url update.
+     - options - event options that were passed to **go()** method
 
  - `isEmpty()` - return true if there are no params in current url
 
@@ -1022,46 +1052,46 @@ Url link and apply example. If url is changed (no matter how - back/forward brow
 import Url from 'valent/angular/angular-url';
 
 class HomeController {
-	filters = {};
-	
-	constructor(resovled, url) {
-		/**
-		 *  url params "search", "tags" 
-		 *  will be linked this this.filters object	
-		 */
-		url.linkTo(this.filters, [
-			'tags',
-			'search'
-		]);
-		
-		// add link for "id" param
-		url.link('id', id => {
-			this.id = id;
-		});
-		
-		url.link('search', search => {
-			this.filters.search = search;
-		});
-	
-		url.watch((params, diff, options) => {
-			/**
-			 * We can not run apply automatically 
-			 * on route update because there are
-			 * a lot of cases when developers should
-			 * call apply() manually
-			 */
-			url.apply();
-		});
-	}
+    filters = {};
+    
+    constructor(resovled, url) {
+        /**
+         *  url params "search", "tags" 
+         *  will be linked this this.filters object	
+         */
+        url.linkTo(this.filters, [
+            'tags',
+            'search'
+        ]);
+        
+        // add link for "id" param
+        url.link('id', id => {
+            this.id = id;
+        });
+        
+        url.link('search', search => {
+            this.filters.search = search;
+        });
+    
+        url.watch((params, diff, options) => {
+            /**
+             * We can not run apply automatically 
+             * on route update because there are
+             * a lot of cases when developers should
+             * call apply() manually
+             */
+            url.apply();
+        });
+    }
 }
 
 valent.controller('store', StoreController, {
-	url: '/store/:id/:tags',
-	struct: {
-		id: primitives.Num,
-		search: ['q', primitives.MaybeStr,
-		tags: primitives.MaybeListStr,
-	}
+    url: '/store/:id/:tags',
+    struct: {
+        id: primitives.Num,
+        search: ['q', primitives.MaybeStr,
+        tags: primitives.MaybeListStr,
+    }
 });
 ```
 # Url Manager
@@ -1084,9 +1114,9 @@ For controller with attached url `valent.url.set(...)` will be called automatica
 import digest from 'valent/angular/services/digest';
 
 class HomeController {
-	constructor() {
-		digest(this);
-	}
+    constructor() {
+        digest(this);
+    }
 }
 ```
 
@@ -1111,9 +1141,9 @@ AngularJS [\$injector](https://docs.angularjs.org/api/auto/service/$injector) se
 import Injector from 'valent/angular/services/injector';
 
 class HomeController {
-	constructor() {
-		let $parse = Injector.get('$parse');
-	}
+    constructor() {
+        let $parse = Injector.get('$parse');
+    }
 }
 ```
 
@@ -1123,20 +1153,20 @@ import Watcher from 'valent/angular/services/watcher';
 ```
 Service is using to create [watchers](https://docs.angularjs.org/api/ng/type/$rootScope.Scope#$watch). watchGroup, watchCollection and deep watch - are not available. 
 
-	NOTE: We highly recommend NOT to use watchers. No matter how watchers are created - using this service or native $scope methods.
+    NOTE: We highly recommend NOT to use watchers. No matter how watchers are created - using this service or native $scope methods.
 
 ```js
 import Watcher from 'valent/angular/services/watcher';
 
 class HomeController {
-	title = 'Hello World!';
-	
-	constructor() {
-		let watcher = new Watcher(this);
-		watcher.watch('controller.title', title => {
-			// ...
-		});
-	}
+    title = 'Hello World!';
+    
+    constructor() {
+        let watcher = new Watcher(this);
+        watcher.watch('controller.title', title => {
+            // ...
+        });
+    }
 }
 ```
 
@@ -1155,20 +1185,20 @@ Provide access to [$scope events](https://docs.angularjs.org/guide/scope#scope-e
 import Events from 'valent/angular/services/events';
 
 class HomeController {
-	constructor() {
-		let events = new Events(this);
-		events.on('$routeChangeStart', () => {
-			// ...
-		});
+    constructor() {
+        let events = new Events(this);
+        events.on('$routeChangeStart', () => {
+            // ...
+        });
 
-		events.broadcast('my.custom.event', {
-			greeting: 'Yo'
-		});
-		
-		events.emit('my.custom.event', {
-			greeting: 'Yo'
-		});
-	}
+        events.broadcast('my.custom.event', {
+            greeting: 'Yo'
+        });
+        
+        events.emit('my.custom.event', {
+            greeting: 'Yo'
+        });
+    }
 }
 ```
 
@@ -1176,7 +1206,7 @@ class HomeController {
 
 From [PR#10](https://github.com/frankland/valentjs/pull/10).
 
-	TODO: implement and add docs :)
+    TODO: implement and add docs :)
 
 ```js
 import { Template, Url } from 'valent/decorators';
@@ -1184,10 +1214,10 @@ import { Template, Url } from 'valent/decorators';
 @Template('home.html');
 @Url('/home', '/index');
 class HomeController {
-	// ...
+    // ...
 }
 ```
-	
+    
 # Base Components
 ```js
 import BaseScreenController from 'valent/angular/base/screen-controller';
@@ -1195,13 +1225,17 @@ import BaseScreenController from 'valent/angular/base/screen-controller';
 import BaseComponentController from 'valent/angular/base/component-controller';
 ```
 
-	TODO: implement and add docs :)
-	
+    TODO: implement and add docs :)
+    
 # Contributing
 
-	TODO: add docs :)
+    TODO: add docs :)
 
 # TODO
+- [ ] Boilerplate
+- [ ] Examples
+- [ ] valentjs vs angularjs. Configuration diffs
+- [ ] implement TODO application using valent
 - [ ] Fix old and add new test
 - [ ] redevelop angular-url. Kick extra dependencies (url-pattern)
 - [ ] rename directive options - interfaces / optionals / pipes
