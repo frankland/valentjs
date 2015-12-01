@@ -1198,6 +1198,10 @@ import BaseComponentController from 'valent/angular/base/component-controller';
 	TODO: add docs :)
 
 # TODO
+- [ ] Boilerplate
+- [ ] Examples
+- [ ] valentjs vs angualrjs. Configuration diffs
+- [ ] implement TODO application using valent
 - [ ] Fix old and add new test
 - [ ] redevelop angular-url. Kick extra dependencies (url-pattern)
 - [ ] rename directive options - interfaces / optionals / pipes
