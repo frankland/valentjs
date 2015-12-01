@@ -23,8 +23,6 @@ Valentjs - just the wrapper for frameworks and could be used together with defau
     - [templateUrl](#templateurl)
     - [Controller.render()](#controllerrender)
     - [as](#as)
-- [{{ controller.greeting }}](#-controllergreeting-)
-- [{{ _.greeting }}](#-_greeting-)
 - [Route](#route)
   - [url](#url-1)
   - [Route options](#route-options)
