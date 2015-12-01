@@ -168,7 +168,8 @@ export default (componentModel) => {
             }
 
             let key = configuredRequire[index];
-            requiredControllers[key] = requiredController;
+            let normalized = key.replace(/\?|\^/, '');
+            requiredControllers[normalized] = requiredController;
 
           }
 
