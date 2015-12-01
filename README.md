@@ -46,7 +46,7 @@ Valentjs - just the wrapper for frameworks and could be used together with defau
 - [Defined structures](#defined-structures)
 - [Serializers](#serializers)
   - [Base serializer](#base-serializer)
-  - [RenameSerialzier](#renameserialzier)
+  - [Rename serializer](#rename-serializer)
   - [Custom serializer](#custom-serializer)
   - [URL serializer](#url-serializer)
 - [URL](#url)
@@ -791,7 +791,7 @@ let struct = {
 };
 ```
 
-## RenameSerialzier
+## Rename serializer
 Extends custom serializer but support attributes renaming encode and returns the, original names during decode. Does **NOT** contain any encode/decode rules. Constructor takes 1 argument - params structure.
 
 Struct example
