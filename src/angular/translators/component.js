@@ -7,6 +7,7 @@ import isArray from 'lodash/lang/isArray';
 import uniq from 'lodash/array/uniq';
 
 import Logger from '../../utils/logger';
+import Injector from '../services/injector';
 
 import RuntimeException from '../../exceptions/runtime';
 import DirectiveParams from '../services/directive-params';
@@ -148,7 +149,15 @@ export default (componentModel) => {
 
   let link = (params, $scope, element, attrs, require) => {
     if (controller.link) {
-      controller.link(element, params, $scope);
+
+      let compile = (template) => {
+        let $compile = Injector.get('$compile');
+        let compileTemplate = $compile(template);
+
+        return compileTemplate($scope);
+      };
+
+      controller.link(element, attrs, params, compile, $scope);
     }
 
     if (isArray(require)) {
