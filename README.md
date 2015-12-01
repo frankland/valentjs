@@ -415,14 +415,15 @@ if `interfaces` or `optionals (options)` are defined - they will passed before.
 
 	TODO: Find better naming for this features. High prio :)
 
-`destructor` method is called when controller's \$scope is destroyed (\$destroy event).
+- `destructor` method is called when controller's \$scope is destroyed (\$destroy event).
 
-`link(element, compileResult)` method - same as default angular's link function but do not take \$scope.  `static compile()` result will be passed as second argument.
+- `link(element, compileResult)` method - same as [default angular's link](https://docs.angularjs.org/api/ng/service/$compile#-link-) function but do not take \$scope.  `static compile()` result will be passed as second argument.
 
-`require(controllers)` method - takes all required controllers. Returned content will be passed as second argument to `link()` method.
+- `require(controllers)` method - takes all required controllers. Returned content will be passed as second argument to `link()` method.
 
-`static compile(element)` method could be used for template compilation.
-Very useful if directive's templates are used as configuration. In this way - directive's template should **NOT** be defined.
+- `static render()` - result of this method could be used as directive's template.
+
+- `static compile(element)` method could be used for template compilation. Same as [default angular's compile](https://docs.angularjs.org/api/ng/service/$compile#-compile-). Very useful if directive's templates are used as configuration. In this way - directive's template should **NOT** be defined.
 
 For example in this case "Applications" will be used for multi-select label.
 ```html
@@ -442,8 +443,6 @@ For example in this case - cell templates are defined as a content of `grid` dir
 	</column>
 </grid>
 ```
-
-`static render()` - result of this method could be used as directive's template.
 
 ## Directive options
 
@@ -990,18 +989,26 @@ Structures with **Maybe** prefix - means that this parameters are not required. 
 
 Provide helpful methods to work with url. Available methods:
 
- - go(params, options) - replace current url with generating according to passed params. Works in angular context - all route events will be fired. **options** - event options that will be available at url watchers.
- - stringify(params) - return url according to passed params
- - redirect(params) - same as **go()** but with page reloading
- - parse - parse current url and return decoded params
- - watch(callback) - listen url changes (\$scope event **\$routeUpdate**) and execute callback. Callback arguments - params, diff, options.  
+ - `go(params, options)` - replace current url with generating according to passed params. Works in angular context - all route events will be fired. **options** - event options that will be available at url watchers.
+ 
+ - `stringify(params)` - return url according to passed params
+
+ - `redirect(params)` - same as **go()** but with page reloading
+
+ - `parse()` - parse current url and return decoded params
+
+ - `watch(callback)` - listen url changes (\$scope event **\$routeUpdate**) and execute callback. Callback arguments - params, diff, options.  
 	 - params - current url params. 
 	 - diff - difference between previous url update.
 	 - options - event options that were passed to **go()** method
- - isEmpty - return true if there are no params in current url
- - link(key, fn) - describe setter for url param.
- - linkTo(store) - automatically link all structure params to store object
- - apply - execute all added **link()** functions
+
+ - `isEmpty()` - return true if there are no params in current url
+
+ - `link(key, fn)` - describe setter for url param.
+
+ - `linkTo(store)` - automatically link all structure params to store object
+
+ - `apply()` - execute all added **link()** functions
 
 Url link and apply example. If url is changed (no matter how - back/forward browser buttons, url.go(params) method,  page reload etc.) - each **link** function will be executed and take current value of binded param.
 
