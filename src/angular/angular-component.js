@@ -23,7 +23,7 @@ let validate = (component) => {
   }
 
   // TODO: use tcomb validation
-  if (!isString(component.options.require) && !isArray(component.options.require)) {
+  if (component.options.require && !isString(component.options.require) && !isArray(component.options.require)) {
     errors.push('require options should be array of strings of string');
   }
 
