@@ -1,6 +1,7 @@
-export default class RuntimeException extends Error {
+import Exception from './exception';
+
+export default class RuntimeException extends Exception {
   constructor(name, type, error) {
-    super();
-    this.message = `runtime error with "${name}" ${type} - ${error}`;
+    super(`runtime error with "${name}" ${type} - ${error}`);
   }
 }

@@ -2,7 +2,9 @@ import camelCase from 'lodash/string/camelCase';
 
 import isObject from 'lodash/lang/isPlainObject';
 import isBoolean from 'lodash/lang/isBoolean';
+import isString from 'lodash/lang/isString';
 import isFunction from 'lodash/lang/isFunction';
+import isArray from 'lodash/lang/isArray';
 
 import RegisterException from '../exceptions/register';
 import ValentComponent from '../valent-component';
@@ -18,6 +20,11 @@ let validate = (component) => {
 
   if (!component.isIsolated() && (component.hasInterfaces() || component.hasOptions())) {
     errors.push('It is not available to setup interfaces of optional params if params are defined as boolean (not isolated scope)');
+  }
+
+  // TODO: use tcomb validation
+  if (!isString(component.options.require) && !isArray(component.options.require)) {
+    errors.push('require options should be array of strings of string');
   }
 
   return errors;
@@ -57,6 +64,14 @@ export default class AngularComponent extends ValentComponent {
   }
 
   getRequire() {
-    return this.options.require || {};
+    let require = null;
+
+    if (isArray(this.options.require)) {
+      require = this.options.require;
+    } else {
+      require = [this.options.require];
+    }
+
+    return require;
   }
 }

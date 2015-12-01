@@ -55,14 +55,7 @@ export default (controllerModel, config) => {
   let name = controllerModel.getName();
   let module = controllerModel.getModule();
 
-  let dependencies = ['$scope'];
-
-  let globalResolvers = config.route.getResolvers();
-  if (controllerModel.hasUrl()  && (!!Object.keys(globalResolvers).length || controllerModel.hasResolvers())) {
-    dependencies.push('valent.resolve');
-  }
-
-  let configuration = [...dependencies, ($scope, valentResolve) => {
+  let configuration = ['$scope', 'valent.resolve', ($scope, valentResolve) => {
     $scope.$valent = getValentInfo(controllerModel);
 
     try {

@@ -118,6 +118,15 @@ export default class Angular {
     }
 
     let app = this.getAngularModule();
+
+    /**
+     * NOTE: used for controllers if there is no global or local resolver.
+     * If remove this factory will be exception
+     * "Unknown provider: valent.resolveProvider <- valent.resolve <- root"
+     */
+    app.factory('valent.resolve', () => null);
+
+
     app.config(['$locationProvider', '$routeProvider', ($locationProvider, $routeProvider) => {
       $locationProvider.html5Mode({
         enabled: config.get('routing.html5Mode'),

@@ -1,13 +1,16 @@
-export default class RegisterException extends Error {
-  constructor(name, type, errors) {
-    super();
+import Exception from './exception';
 
-    this.message = `Could not register ${type} - "${name}".`;
+export default class RegisterException extends Exception {
+  constructor(name, type, errors) {
+    let message = `Could not register ${type} - "${name}".`;
 
     for (let error of errors) {
-      this.message += "\n - " + error;
+      message += "\n - " + error;
     }
 
-    this.message += "\n";
+    message += "\n";
+
+    super(message);
   }
 }
+

@@ -75,7 +75,9 @@ export default (routeModel, config) => {
     controller: name
   });
 
-  if (routeModel.hasResolvers()) {
+  let globalResolvers = config.route.getResolvers();
+
+  if (!!Object.keys(globalResolvers).length || routeModel.hasResolvers()) {
     configuration.resolve = getValentResolver(config, routeModel);
   }
 

@@ -153,22 +153,32 @@ export default (componentModel) => {
 
     if (isArray(require)) {
       if (isFunction(controller.require)) {
-        let requiredControllers = [];
+        let configuredRequire = componentModel.getRequire();
+
+        let requiredControllers = {};
+        let index = 0;
 
         for (let required of require) {
-          let requiredController = required;
-          if (required.hasOwnProperty('$valent')) {
-            let namespace = required.$value.namespace;
-            requiredController = required[namespace];
+          if (required) {
+            let requiredController = required;
+
+            if (required.hasOwnProperty('$valent')) {
+              let namespace = required.$valent.namespace;
+              requiredController = required[namespace];
+            }
+
+            let key = configuredRequire[index];
+            requiredControllers[key] = requiredController;
+
           }
 
-          requiredControllers.push(requiredController);
+          index++;
         }
 
-        controller.require(...requiredControllers);
-
+        controller.require(requiredControllers);
       } else {
-        throw new Error('Require option is configured but controller does not has "require" method');
+        let name = componentModel.getName();
+        throw new Error(`directive "${name}" - Require option is configured but controller does not has "require" method`);
       }
     }
 
