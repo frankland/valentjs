@@ -64,14 +64,17 @@ export default class AngularComponent extends ValentComponent {
   }
 
   getRequire() {
-    let require = null;
+    let normalized = null;
+    let require = this.options.require;
 
-    if (isArray(this.options.require)) {
-      require = this.options.require;
-    } else {
-      require = [this.options.require];
+    if (require) {
+      if (isArray(require)) {
+        normalized = require;
+      } else {
+        normalized = [require];
+      }
     }
 
-    return require;
+    return normalized;
   }
 }
