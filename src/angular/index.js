@@ -133,7 +133,7 @@ export default class Angular {
           otherwiseConfig.redirectTo = otherwise;
         } else {
           // TODO: lol
-          throw new Error('That is really lol but this case is not implemented ("othwerwise" is not a string)');
+          throw new Error('That is really lol but this case is not implemented ("otherwise" is not a string)');
         }
 
         $routeProvider.otherwise(otherwiseConfig);

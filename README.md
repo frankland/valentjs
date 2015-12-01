@@ -6,8 +6,7 @@ Valentjs provide easier way to register framework components (directives / routi
 
 Valentjs - just the wrapper for frameworks and could be used together with default frameworks approach.
 
-
-- [Valentjs](#valentjs)
+- [Valentjs](#-valentjs)
 - [Valentjs + AngularJS](#valentjs--angularjs)
 - [AngularJS bootstrap](#angularjs-bootstrap)
 - [Configuration](#configuration)
@@ -17,41 +16,41 @@ Valentjs - just the wrapper for frameworks and could be used together with defau
 - [Controllers](#controllers)
   - [Controller class](#controller-class)
   - [Controller options](#controller-options)
-    - [controller.option.as](#controlleroptionas)
-    - [controller.option.url](#controlleroptionurl)
-    - [controller.option.resolve](#controlleroptionresolve)
-    - [controller.option.struct](#controlleroptionstruct)
-    - [controller.option.template](#controlleroptiontemplate)
-    - [controller.option.templateUrl](#controlleroptiontemplateurl)
+    - [url](#url)
+    - [resolve](#resolve)
+    - [struct](#struct)
+    - [template](#template)
+    - [templateUrl](#templateurl)
     - [Controller.render()](#controllerrender)
+    - [as](#as)
 - [Route](#route)
-  - [url](#url)
+  - [url](#url-1)
   - [Route options](#route-options)
-    - [route.option.resolve](#routeoptionresolve)
-    - [route.option.template](#routeoptiontemplate)
-    - [route.option.templateUrl](#routeoptiontemplateurl)
-    - [route.option.struct](#routeoptionstruct)
+    - [resovle](#resovle)
+    - [template](#template-1)
+    - [templateUrl](#templateurl-1)
+    - [struct](#struct-1)
 - [Directive](#directive)
   - [Directive Controller class](#directive-controller-class)
   - [Directive options](#directive-options)
-    - [directive.option.as](#directiveoptionas)
-    - [directive.option.template](#directiveoptiontemplate)
-    - [directive.option.templateUrl](#directiveoptiontemplateurl)
-    - [directive.option.restrict](#directiveoptionrestrict)
-    - [directive.option.require](#directiveoptionrequire)
-    - [directive.option.params](#directiveoptionparams)
-    - [directive.option.interfaces](#directiveoptioninterfaces)
-    - [directive.option.options (rename)](#directiveoptionoptions-rename)
-    - [directive.option.pipes](#directiveoptionpipes)
+    - [as](#as-1)
+    - [template](#template-2)
+    - [templateUrl](#templateurl-2)
+    - [restrict](#restrict)
+    - [require](#require)
+    - [params](#params)
+    - [interfaces](#interfaces)
+    - [options](#options)
+    - [pipes](#pipes)
   - [Directive Params](#directive-params)
 - [Defined structures](#defined-structures)
 - [Serializers](#serializers)
   - [Base serializer](#base-serializer)
   - [RenameSerialzier](#renameserialzier)
   - [Custom serializer](#custom-serializer)
-  - [Url serializer](#url-serializer)
-- [Url](#url)
-- [Url Manager](#url-manager)
+  - [URL serializer](#url-serializer)
+- [URL](#url)
+- [URL Manager](#url-manager)
 - [Services](#services)
   - [Digest](#digest)
   - [Injector](#injector)
@@ -61,7 +60,6 @@ Valentjs - just the wrapper for frameworks and could be used together with defau
 - [Base Components](#base-components)
 - [Contributing](#contributing)
 - [TODO](#todo)
-
 
 TOC was generated using [doctoc](https://github.com/thlorenz/doctoc).
 
@@ -85,6 +83,12 @@ and features form the box:
  - Debounced safe digest
  - No access to **$scope**
 
+Simple examples (valentjs / angularjs)
+
+- [controller](https://gist.github.com/tuchk4/eed3b6e58d52dac1d51e)
+- [directive](https://gist.github.com/tuchk4/6c25e0fc25cb5eb5d31d)
+- [route](https://gist.github.com/tuchk4/12683667be66b562794c)
+- [configuration](https://gist.github.com/tuchk4/7ad1707ee0aed2df673a)
 
 # AngularJS bootstrap 
 
@@ -1198,10 +1202,6 @@ import BaseComponentController from 'valent/angular/base/component-controller';
 	TODO: add docs :)
 
 # TODO
-- [ ] Boilerplate
-- [ ] Examples
-- [ ] valentjs vs angualrjs. Configuration diffs
-- [ ] implement TODO application using valent
 - [ ] Fix old and add new test
 - [ ] redevelop angular-url. Kick extra dependencies (url-pattern)
 - [ ] rename directive options - interfaces / optionals / pipes
@@ -1209,4 +1209,4 @@ import BaseComponentController from 'valent/angular/base/component-controller';
 - [ ] replace pathes -  `/valent/..`. into `/valentjs/....`
 - [ ] redevelop exception system. Right now RuntimeException and RegisterException are not comfortable for debugging.
 - [ ] add more useful primitives
-- [ ] do not register component's interfaces / options / pipes as angualr directive option - **scope**. This is extra watchers. Use `DirectiveParams.parse()` method to get them.
+- [ ] do not register component's interfaces / options / pipes as angular directive option - **scope**. This is extra watchers. Use `DirectiveParams.parse()` method to get them.
