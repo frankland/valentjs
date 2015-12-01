@@ -165,9 +165,11 @@ valent.controller('home', HomeController, {
 ```js
 class HomeController {
 	constructor(resolvers, url, logger) {
+		// ...
 	}
 	
 	destructor() {
+		// ...
 	}
 }
 ```
@@ -307,16 +309,389 @@ valent.controller(home, HomeController, {
 ```
 
 ## Directive
+```js
+class GreetMeController {
+	// ...
+}
 
-### Interfaces
+valent.component('greet-me', GreetMeController, {
 
-### Options
+});
+```
 
-### Pipes
+### Directive Controller class
+Full list of auto called methods. They are **NOT** required.
+
+```js
+class GreetMeController {
+	constructor(params, logger) {
+	
+	}	
+	
+	destructor() {
+	
+	}
+	
+	link(element, compileResult) {
+	
+	}
+	
+	require(controllers) {
+	
+	}
+	
+	static compile(element) {
+		return {};
+	}
+	
+	static render() {
+		return '<div>....</div>';
+	}
+}
+```
+Constructor arguments are depends on options. By default constructor takes 2 arguments
+
+- directive params
+- logger - configured logger. Always add colored controller's name to logs
+
+if `interfaces` or `optionals (options)` are defined - they will passed before.
+
+	TODO: Find better naming for this features. High prio :)
+
+`destructor` method is called when controller's \$scope is destroyed (\$destroy event).
+
+`link(element, compileResult)` method - same as default angular's link function but do not take \$scope.  `static compile()` result will be passed as second argument.
+
+`require(controllers)` method - takes all required controllers. Returned content will be passed as second argument to `link()` method.
+
+`static compile(element)` method could be used for template compilation.
+Very useful if directive's templates are used as configuration. In this way - directive's template should **NOT** be defined.
+
+For example in this case "Applications" will be used for multi-select label.
+```html
+<pl-multiselect items="controller.items">
+	Applications
+</pl-multiselect>
+```
+
+For example in this case - cell templates are defined as a content of `grid` directive.  In `static compile(element)` method this could be parsed and passed to directive controller. 
+```html
+<grid>
+	<column id="network">
+		<network-icon id="cell.value"></network-icon>
+	</column>
+	<column id="date">
+		{{ cell.value | date:"MM/dd/yyyy" }}
+	</column>
+</grid>
+```
+
+`static render()` - result of this method could be used as directive's template.
+
+### Directive options
+
+#### as
+Same as valent.controller `as` option
+
+#### template
+Same as valent.controller `template` option
+
+#### templateUrl
+Same as valent.controller `templateUrl` option
+
+#### restrict
+
+#### require
+Uses for [directive communications](https://docs.angularjs.org/guide/directive#creating-directives-that-communicate).
+```js
+{
+	require: ['ngModel', '^^plFilterBar']
+}
+More details at official angular [doc](https://docs.angularjs.org/api/ng/service/$compile#-require-).
+```
+#### params
+Same as angular directive's options [scope](https://docs.angularjs.org/api/ng/service/$compile#-scope-).
+
+#### interfaces
+```js
+// app-connector.js
+class AppConnector {
+	host = valent.config.get('app.server.host');
+	
+	constructor(port) {
+		//...
+	}
+
+	connect() {
+		
+	}
+
+	// ...
+}
+```
+```js
+// server-status-component.js
+import AppConnector from './app-connector';
+
+class ServerStatusController {
+	constructor(connector) {
+		connector.connect().then(status => {
+			this.status = status;
+		});
+	}
+
+	static render() {
+		return '<div>{{ _.status }}</div>
+	}
+}
+
+valent.component('server-status', ServerStatusController, {
+	interfaces: {
+		connector: AppConnector
+	}
+});
+```
+
+```js
+// home-screen.js
+import AppConnector from './app-connector';
+
+class HomeController {
+	connector = new AppConnector(9001);
+	
+	constructor() {
+		this.connector.notify();
+	}
+
+	static render() {
+		return `<server-status connector="controller.connector"></server-status>';
+	}
+}
+
+valent.controller('home', HomeController);
+```
+
+So we defined for directive `<server-status>`interface **connector** with specific class - **AppConnector**. So already created instance of this class should be passed to directive as attribute. If not - Exception. If wrong class - Exception.
+Bonuses:
+
+ - Have control over same object in directive and in parent controller (no matter if it is screen's controller or another directive's controller). Could be useful to create relation between app components.
+ - Interfaces are passed as first arguments to directitve's constructor
+ - Inside directive you are sure that instance (or its parents) has correct class (type).
+ - Useful for complex directives that works with **charts**, **grids**, **forms** etc.
+
+#### options
+```js
+valent.component('server-status', ServerStatusController, {
+	interfaces: {
+		connector: AppConnector
+	},
+	option: {
+		validator: AppValidator
+	}
+});
+```
+Same as interfaces but options are **NOT** required. 
+If option's attribute is defined at directive - option instance will be passed to directive's constructor.
+```html
+<server-status connector="controller.connector" validator="controller.connector"></server-status>
+```
+```js
+class ServerStatusController {
+	constructor(connector, validator) {
+		//
+	}
+}
+```
+
+If option's attribute is **NOT** defined - null will be passed to directive's constructor.
+```html
+<server-status  connector="controller.connector"></server-status>
+```
+```js
+class ServerStatusController {
+	constructor(connector, validator) {
+		equals(validator, null);
+	}
+}
+```
+
+#### pipes
+If defined and not passed to directive - will be created automatically. Available throw `DirectiveParams.get()`.
+
+```js
+// toggler.js
+class Toggler extends Events {
+	isVisible = false;
+	
+	open() {
+		if (!this.isVisible) {
+			this.isVisible = true;
+			this.emit('open');
+		}
+	}
+	
+	close() {
+		if (this.isVisible) {
+			this.isVisible = false;
+			this.emit('close');
+		}
+	}
+}
+```
+
+```js
+// drop-down-component.js
+import Toggler from './toggler';
+
+class DropDownController {
+	constructor(params) {
+		this.toggler = params.get('toggler');
+	}
+
+	static render() {
+		return `
+			<button
+				ng-click="controller.toggler.open()">
+				Open
+			</button>
+			<button 
+				ng-click="controller.toggler.close()">
+				Close
+			</button>
+			<div ng-if="controller.toggler.isVisible">
+				...
+			</div>`;
+	}	
+}
+
+valent.component('drop-down', DropDownController, {
+	pipes: {
+		toggler: Toggler
+	}
+});
+```
+
+```js
+// home-screen.js
+import Toggler from './toggler';
+
+class HomeController {
+	toggler = new Toggler();
+	
+	constructor() {
+		this.toggler.open();
+		this.toggler.on('open', () => {
+			console.log('opened :)');
+		});
+	}
+}
+
+valent.controller('home', HomeController);
+```
+```html
+<div ng-controller="home">
+	<drop-down></drop-down>
+	<drop-down toggler="controller.toggler></drop-down>
+</div>
+```
+
+Both cases will work.  If you not pass toggler from parent controller - it will be created automatically (only if `params.get('toggler')` was called). For first `<drop-down>` component - initial state is `controller.toggler.isVisible == false`. For second - `controller.toggler.isVisible == true`.  And HomeController listens to `open` event. 
+
+- In HomeController we have control over directive.
+- Toggler instance incapsulate all logic - open/close methods, events etc. 
+- Toggler Could be used **multiple** times.
+- Do not need to implement open/close logic inside directitve
+
+### Directive Params
+
+```js
+class GreetMeController {
+	constructor(params) {
+		this.name = params.get('name');
+		params.watch('name', name => {
+			// ...
+		});
+	}
+	
+	static render() {
+		return '<div>{{ controller.name }} </div>'
+	}
+}
+
+valent.component('greet-me', GreetMeController, {
+	params: {
+		name: '='
+	}
+});
+```
+Available methods:
+
+- get(key) - available only we defined params (component options.params). Returns passed value.
+- watch(key, callback) -available only we defined params (component options.params). Create watcher for this key. Callback takes actual param's value.
+- parse(key) - available for all passed attributes. Uses `$scope.$parse(attr)` to get value. Do not create extra watchers. Useful for large applications.
+
+If try to `get()` or `watch()` for keys that are not defined at component's params or not equal component's name (for params with restrict 'A')  - will be Exception.
+
+`parse()` example:
+```js
+class GreetMeController {
+	constructor(params) {
+		this.name = params.parse('name');
+	}
+	
+	static render() {
+		return '<div>{{ controller.name }} </div>'
+	}
+}
+
+valent.component('greet-me', GreetMeController, {
+	params: {}
+});
+```
+
 
 ## Defined structures
 ```js
 import * as primitives from 'valent/utils/primitives';
+```
+Use [tcomb](https://github.com/gcanti/tcomb) and define structures. Exported structures.
+```js
+export const ListNum = list(Num, 'ListNum');
+export const ListInt = list(Int, 'ListInt');
+export const ListStr = list(Str, 'ListStr');
+export const ListBool = list(Bool, 'ListBool');
+export const ListDat = list(Dat, 'ListDat');
+
+
+export const MaybeNum = maybe(Num, 'MaybeNum');
+export const MaybeInt = maybe(Int, 'MaybeInt');
+export const MaybeStr = maybe(Str, 'MaybeStr');
+export const MaybeBool = maybe(Bool, 'MaybeBool');
+export const MaybeDat = maybe(Dat, 'MaybeDat');
+
+
+export const MaybeListNum = maybe(ListNum, 'MaybeListNum');
+export const MaybeListInt = maybe(ListInt, 'MaybeListInt');
+export const MaybeListStr = maybe(ListStr, 'MaybeListStr');
+export const MaybeListBool = maybe(ListBool, 'MaybeListBool');
+export const MaybeListDat = maybe(ListDat, 'MaybeListDat');
+
+
+// [[1,..n],[1..m]...k]
+export const MatrixNum = list(ListNum, 'MatrixNum');
+// [[1, undefined, ..n],[1 undefined,..m]...k]
+export const MatrixMaybeNum = list(MaybeListNum, 'MatrixMaybeNum');
+
+// [['a',..n],['a'..m]...k]
+export const MatrixStr = list(ListStr, 'MatrixStr');
+// [['a', undefined, .n],['a' undefined,..m]...k]
+export const MatrixMaybeStr = list(MaybeListStr, 'MatrixMaybeStr');
+
+export const MatrixDate = list(ListDat, 'MatrixDate');
+export const MatrixMaybeDate = list(MaybeListDat, 'MatrixMaybeDate');
+
+export const MatrixBool = list(ListBool, 'MatrixBool');
+export const MatrixMaybeBool = list(MaybeListBool, 'MatrixMaybeBool');
 ```
 
 ## Serializers
@@ -484,12 +859,15 @@ primitives.Bool, primitives.MaybeBool | true | 1
 primitives.Bool, primitives.MaybeBool | false | 0
 primitives.Dat, primitives.MaybeDat | new Date() | 2015112
 primitives.ListNum, primitives.MaybeListNum | [1, 2, 3] | 1~2~3
+primitives.ListMaybeNum | [1, null, 2, 3] | 1~~2,3
 primitives.ListStr, primitives.MaybeListStr | ['a', 'b', 'c'] | a~b~c
+primitives.ListMaybeStr | ['a', null, 'b', 'c'] | a~~b~c
 primitives.ListBool, primitives.MaybeListBool | [true, false] | 1~0
 primitives.ListDat, primitives.MaybeListDat | [new Date(), new Date()] | 2015112~2015112
-primitives.MatrixNum, primitives.MaybeMatrixNum | [[1,2],[3,4]] | 1!2~3!4
-primitives.MatrixStr, primitives.MaybeMatrixStr | [['a','b'],['c','4']] | a!b~c!d
-primitives.MatrixBool, primitives.MaybeMatrixBool | [[true, false],[false, true]] | 1!0~0!1
+primitives.MatrixNum, primitives.MaybeMatrixNum | [[1,2],[3,4]] | 1~2!3~4
+primitives.MatrixMaybeNum | [[1,2,null,3],[4,null,5]] | 1~2~~3!4~~5
+primitives.MatrixStr, primitives.MaybeMatrixStr | [['a','b'],['c','4']] | a~b!c~d
+primitives.MatrixBool, primitives.MaybeMatrixBool | [[true, false],[false, true]] | 1~0!0~1
 
 
 ## URL 
@@ -700,3 +1078,42 @@ class HomeController {
 	}
 }
 ```
+
+## Decorators
+
+From [PR#10](https://github.com/frankland/valentjs/pull/10).
+
+	TODO: implement and add docs :)
+
+```js
+import { Template, Url } from 'valent/decorators';
+
+@Template('home.html');
+@Url('/home', '/index');
+class HomeController {
+	// ...
+}
+```
+	
+## Base Components
+```js
+import BaseScreenController from 'valent/angular/base/screen-controller';
+
+import BaseComponentController from 'valent/angular/base/component-controller';
+```
+
+	TODO: implement and add docs :)
+	
+## Contributing
+
+	TODO: add docs :)
+
+## TODO
+- [ ] Fix old and add new test
+- [ ] redevelop angular-url. Kick extra dependencies (url-pattern)
+- [ ] rename directive options - interfaces / optionals / pipes
+- [ ] rename DirecitveParams into ComponentParams
+- [ ] replace pathes -  `/valent/..`. into `/valentjs/....`
+- [ ] redevelop exception system. Right now RuntimeException and RegisterException are not comfortable for debugging.
+- [ ] add more useful primitives
+- [ ] do not register component's interfaces / options / pipes as angualr directive option - **scope**. This is extra watchers. Use `DirectiveParams.parse()` method to get them.
