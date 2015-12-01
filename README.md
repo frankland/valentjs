@@ -61,6 +61,8 @@ Valentjs - just the wrapper for frameworks and could be used together with defau
 - [Contributing](#contributing)
 - [TODO](#todo)
 
+TOC was generated using [doctoc](https://github.com/thlorenz/doctoc).
+
 # Valentjs + AngularJS
 
 Valentjs provide methods to register and validate:
@@ -240,19 +242,19 @@ Constructor takes 3 arguments
 ## Controller options
 
 ### url
-Route url proxy
+Route [url proxy](https://github.com/frankland/valentjs#url-1)
 
 ### resolve
-Route resolve proxy
+Route [resolve proxy](https://github.com/frankland/valentjs#resovle)
 
 ### struct
-Route struct proxy
+Route [struct proxy](https://github.com/frankland/valentjs#struct-1)
 
 ### template
-Route template proxy
+Route [template proxy](https://github.com/frankland/valentjs#template-1)
 
 ### templateUrl
-Route templateUrl proxy
+Route [templateUrl proxy](https://github.com/frankland/valentjs#templateurl-1)
 
 ### Controller.render()
 If there is static function **render()** at controller's class - it's result will be used as template.
@@ -406,7 +408,7 @@ class GreetMeController {
 ```
 Constructor arguments are depends on options. By default constructor takes 2 arguments
 
-- directive params
+- [directive params](https://github.com/frankland/valentjs#directive-params)
 - logger - configured logger. Always add colored controller's name to logs
 
 if `interfaces` or `optionals (options)` are defined - they will passed before.
@@ -446,13 +448,13 @@ For example in this case - cell templates are defined as a content of `grid` dir
 ## Directive options
 
 ### as
-Same as valent.controller `as` option
+Same as valent.controller [as option](https://github.com/frankland/valentjs#as)
 
 ### template
-Same as valent.controller `template` option
+Same as valent.controller [template option](https://github.com/frankland/valentjs#template) but not proxy no route.
 
 ### templateUrl
-Same as valent.controller `templateUrl` option
+Same as valent.controller [templateUrl option](https://github.com/frankland/valentjs#templateurl) but not proxy no route.
 
 ### restrict
 Same as angular directive's options [restrict](https://docs.angularjs.org/guide/directive#template-expanding-directive).
@@ -524,7 +526,7 @@ class HomeController {
 	}
 
 	static render() {
-		return `<server-status connector="controller.connector"></server-status>';
+		return `<server-status connector="controller.connector"></server-status>`;
 	}
 }
 
