@@ -19,13 +19,19 @@ export default class Watcher {
     this[_queue] = new Set();
 
     if (context) {
-      Scope.get(context).then($scope => {
-        this[_scope] = $scope;
 
-        for (let task of this[_queue]) {
-          task.off = this.watch(...task.arguments);
-        }
-      });
+      // TODO: remove context dep. Work only with valid scopes
+      if (isValidScope(context)) {
+        this[_scope] = context;
+      } else {
+        Scope.get(context).then($scope => {
+          this[_scope] = $scope;
+
+          for (let task of this[_queue]) {
+            task.off = this.watch(...task.arguments);
+          }
+        });
+      }
     } else {
       this[_scope] = Injector.get('$rootScope');
     }
