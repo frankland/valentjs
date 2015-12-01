@@ -6,7 +6,8 @@ Valentjs provide easier way to register framework components (directives / routi
 
 Valentjs - just the wrapper for frameworks and could be used together with default frameworks approach.
 
-- [Valentjs](#-valentjs)
+
+- [Valentjs](#valentjs)
 - [Valentjs + AngularJS](#valentjs--angularjs)
 - [AngularJS bootstrap](#angularjs-bootstrap)
 - [Configuration](#configuration)
@@ -16,41 +17,41 @@ Valentjs - just the wrapper for frameworks and could be used together with defau
 - [Controllers](#controllers)
   - [Controller class](#controller-class)
   - [Controller options](#controller-options)
-    - [url](#url)
-    - [resolve](#resolve)
-    - [struct](#struct)
-    - [template](#template)
-    - [templateUrl](#templateurl)
+    - [controller.option.as](#controlleroptionas)
+    - [controller.option.url](#controlleroptionurl)
+    - [controller.option.resolve](#controlleroptionresolve)
+    - [controller.option.struct](#controlleroptionstruct)
+    - [controller.option.template](#controlleroptiontemplate)
+    - [controller.option.templateUrl](#controlleroptiontemplateurl)
     - [Controller.render()](#controllerrender)
-    - [as](#as)
 - [Route](#route)
-  - [url](#url-1)
+  - [url](#url)
   - [Route options](#route-options)
-    - [resovle](#resovle)
-    - [template](#template-1)
-    - [templateUrl](#templateurl-1)
-    - [struct](#struct-1)
+    - [route.option.resolve](#routeoptionresolve)
+    - [route.option.template](#routeoptiontemplate)
+    - [route.option.templateUrl](#routeoptiontemplateurl)
+    - [route.option.struct](#routeoptionstruct)
 - [Directive](#directive)
   - [Directive Controller class](#directive-controller-class)
   - [Directive options](#directive-options)
-    - [as](#as-1)
-    - [template](#template-2)
-    - [templateUrl](#templateurl-2)
-    - [restrict](#restrict)
-    - [require](#require)
-    - [params](#params)
-    - [interfaces](#interfaces)
-    - [options](#options)
-    - [pipes](#pipes)
+    - [directive.option.as](#directiveoptionas)
+    - [directive.option.template](#directiveoptiontemplate)
+    - [directive.option.templateUrl](#directiveoptiontemplateurl)
+    - [directive.option.restrict](#directiveoptionrestrict)
+    - [directive.option.require](#directiveoptionrequire)
+    - [directive.option.params](#directiveoptionparams)
+    - [directive.option.interfaces](#directiveoptioninterfaces)
+    - [directive.option.options (rename)](#directiveoptionoptions-rename)
+    - [directive.option.pipes](#directiveoptionpipes)
   - [Directive Params](#directive-params)
 - [Defined structures](#defined-structures)
 - [Serializers](#serializers)
   - [Base serializer](#base-serializer)
   - [RenameSerialzier](#renameserialzier)
   - [Custom serializer](#custom-serializer)
-  - [URL serializer](#url-serializer)
-- [URL](#url)
-- [URL Manager](#url-manager)
+  - [Url serializer](#url-serializer)
+- [Url](#url)
+- [Url Manager](#url-manager)
 - [Services](#services)
   - [Digest](#digest)
   - [Injector](#injector)
@@ -60,6 +61,7 @@ Valentjs - just the wrapper for frameworks and could be used together with defau
 - [Base Components](#base-components)
 - [Contributing](#contributing)
 - [TODO](#todo)
+
 
 TOC was generated using [doctoc](https://github.com/thlorenz/doctoc).
 
@@ -241,37 +243,7 @@ Constructor takes 3 arguments
 
 ## Controller options
 
-### url
-Route [url proxy](https://github.com/frankland/valentjs#url-1)
-
-### resolve
-Route [resolve proxy](https://github.com/frankland/valentjs#resovle)
-
-### struct
-Route [struct proxy](https://github.com/frankland/valentjs#struct-1)
-
-### template
-Route [template proxy](https://github.com/frankland/valentjs#template-1)
-
-### templateUrl
-Route [templateUrl proxy](https://github.com/frankland/valentjs#templateurl-1)
-
-### Controller.render()
-If there is static function **render()** at controller's class - it's result will be used as template.
-
-```js
-class HomeController {
-	constructor() {
-		// ...
-	}
-	
-	static render() {
-		return '<div>Yo!</div>'
-	}
-}
-```
-
-### as 
+### controller.option.as 
  An identifier name for a reference to the controller. By default - **controller**.
 
 ```html
@@ -287,6 +259,36 @@ If **as** defined:
 Template should be
 ```html
  <h1>{{ _.greeting }}</h1>
+```
+
+### controller.option.url
+Route [url proxy](https://github.com/frankland/valentjs#url-1)
+
+### controller.option.resolve
+Route [resolve proxy](https://github.com/frankland/valentjs#resovle)
+
+### controller.option.struct
+Route [struct proxy](https://github.com/frankland/valentjs#struct-1)
+
+### controller.option.template
+Route [template proxy](https://github.com/frankland/valentjs#template-1)
+
+### controller.option.templateUrl
+Route [templateUrl proxy](https://github.com/frankland/valentjs#templateurl-1)
+
+### Controller.render()
+If there is static function **render()** at controller's class - it's result will be used as template.
+
+```js
+class HomeController {
+	constructor() {
+		// ...
+	}
+	
+	static render() {
+		return '<div>Yo!</div>'
+	}
+}
 ```
 
 # Route
@@ -319,7 +321,7 @@ or array of strings (means that controller will be available by different routes
 
 ## Route options 
 
-### resovle
+### route.option.resolve
 Local resolvers. Function that will be executed before controller's constructor. Support promises. Resolved results will be passed to controller's constructor. Local resolvers will be executed [after global resolvers](http://i.imgur.com/eO43UR5.png). 
 Here is [Angular documentation](https://docs.angularjs.org/api/ngRoute/provider/$routeProvider#when) about route resolvers.
 ```js
@@ -332,21 +334,21 @@ Here is [Angular documentation](https://docs.angularjs.org/api/ngRoute/provider/
 }
 ```
 
-### template
+### route.option.template
 ```js
 {
 	template: '<div>Yo!</div>'
 }
 ```
 
-### templateUrl
+### route.option.templateUrl
 ```js
 {
 	templateUrl: '/templates/home.html'
 }
 ```
 
-### struct
+### route.option.struct
 Structure for url.
 ```js
 import * as primitives from 'valent/utils/primitives';
@@ -446,23 +448,23 @@ For example in this case - cell templates are defined as a content of `grid` dir
 
 ## Directive options
 
-### as
+### directive.option.as
 Same as valent.controller [as option](https://github.com/frankland/valentjs#as)
 
-### template
+### directive.option.template
 Same as valent.controller [template option](https://github.com/frankland/valentjs#template) but not proxy no route.
 
-### templateUrl
+### directive.option.templateUrl
 Same as valent.controller [templateUrl option](https://github.com/frankland/valentjs#templateurl) but not proxy no route.
 
-### restrict
+### directive.option.restrict
 Same as angular directive's options [restrict](https://docs.angularjs.org/guide/directive#template-expanding-directive).
 
 Recomment to use only
 - A - only matches attribute name
 - E - only matches element name
 
-### require
+### directive.option.require
 Uses for [directive communications](https://docs.angularjs.org/guide/directive#creating-directives-that-communicate).
 ```js
 {
@@ -470,10 +472,10 @@ Uses for [directive communications](https://docs.angularjs.org/guide/directive#c
 }
 More details at official angular [doc](https://docs.angularjs.org/api/ng/service/$compile#-require-).
 ```
-### params
+### directive.option.params
 Same as angular directive's options [scope](https://docs.angularjs.org/api/ng/service/$compile#-scope-).
 
-### interfaces
+### directive.option.interfaces
 ```js
 // app-connector.js
 class AppConnector {
@@ -540,7 +542,7 @@ Bonuses:
  - Inside directive you are sure that instance (or its parents) has correct class (type).
  - Useful for complex directives that works with **charts**, **grids**, **forms** etc.
 
-### options
+### directive.option.options (rename)
 ```js
 valent.component('server-status', ServerStatusController, {
 	interfaces: {
@@ -576,7 +578,7 @@ class ServerStatusController {
 }
 ```
 
-### pipes
+### directive.option.pipes
 If defined and not passed to directive - will be created automatically. Available throw `DirectiveParams.get()`.
 
 ```js
@@ -864,7 +866,7 @@ equal(decided, new User({
 }));
 ```
 
-## URL serializer
+## Url serializer
 Extends rename serializer and contain rules for encode/decode. Does not contains URL instance. Rules will work only if struct attributes are references to primitives.
 
 	NOTE: Serializers contains WeakMap of encode/decode rules. And keys - are objects from "primitives.js" module. Thats you need to make references to primitives. Primitives works with tcomb - so it also works as type validator.
@@ -931,7 +933,7 @@ primitives.MatrixStr, primitives.MaybeMatrixStr | [['a','b'],['c','4']] | a~b!c~
 primitives.MatrixBool, primitives.MaybeMatrixBool | [[true, false],[false, true]] | 1~0!0~1
 
 
-# URL 
+# Url 
 If route is defined for controller url instance will be passed to controller's constructor. Also url instance could be created manually.
 ```js
 import Url from 'valent/angular/angular-url';
@@ -1058,7 +1060,7 @@ valent.controller('store', StoreController, {
 	}
 });
 ```
-# URL Manager
+# Url Manager
 ```js
 let homeUrl = valent.url.get('home');
 homeUrl.go(params);
@@ -1075,18 +1077,24 @@ For controller with attached url `valent.url.set(...)` will be called automatica
 
 ## Digest
 ```js
-import Digest from 'valent/angular/services/digest';
-```
-Wrapper for AngularJS
-
-```js
-import Digest from 'valent/angular/services/digest';
+import digest from 'valent/angular/services/digest';
 
 class HomeController {
 	constructor() {
 		digest(this);
 	}
 }
+```
+
+Already [debounce](https://lodash.com/docs#debounce) digest (trailing = true, timeout = 50). Configurable. 
+Global configuration:
+```js
+valent.config.set('angular.digest.timeout', 100); 
+```
+Local configuration:
+```js
+import digest from 'valent/angular/services/digest';
+let configured = digest.configure(100);
 ```
 
 ## Injector
