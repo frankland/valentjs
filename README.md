@@ -236,7 +236,7 @@ Template should be
 
 ```js
 valent.route('home', '/home', {
-	template: '<div>...</div>
+	template: '<div>...</div>'
 });
 ```
 
@@ -441,7 +441,7 @@ class ServerStatusController {
 	}
 
 	static render() {
-		return '<div>{{ _.status }}</div>
+		return '<div>{{ _.status }}</div>'
 	}
 }
 
