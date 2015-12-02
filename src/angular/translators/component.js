@@ -201,7 +201,7 @@ export default (componentModel) => {
     restrict: translateRestrict(componentModel),
     scope: translateParams(componentModel),
     require: componentModel.getRequire(),
-    controller: ['$scope', '$attrs', ($scope, $attrs) => {
+    controller: ['$scope', '$attrs', function($scope, $attrs) {
       $scope.$valent = getValentInfo(componentModel);
 
       // for correct work directive's require
