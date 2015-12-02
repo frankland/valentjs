@@ -37,9 +37,8 @@ export default class ValentController {
     }
 
     if (this.options.url) {
-      let routeParams = this.options.params || {};
-
-      Object.assign(routeParams, {
+      var routeParams = Object.assign({}, {
+        params: this.options.params || {},
         struct: this.getStruct()
       });
 
