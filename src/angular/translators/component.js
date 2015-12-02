@@ -204,6 +204,9 @@ export default (componentModel) => {
     controller: ['$scope', '$attrs', ($scope, $attrs) => {
       $scope.$valent = getValentInfo(componentModel);
 
+      // for correct work directive's require
+      this.$valent = getValentInfo(componentModel);
+
       let name = componentModel.getName();
       try {
         controller = initController($scope, $attrs, componentModel);
