@@ -8,6 +8,7 @@ import uniq from 'lodash/array/uniq';
 
 import Logger from '../../utils/logger';
 import Injector from '../services/injector';
+import Compiler from '../services/compiler';
 
 import RuntimeException from '../../exceptions/runtime';
 import DirectiveParams from '../services/directive-params';
@@ -102,10 +103,10 @@ let translateRestrict = (componentModel) => {
 
 let translateParams = (componentModel) => {
   let params = componentModel.getParams();
-  let translatedParams = null;
+  let angularScope = null;
 
   if (componentModel.isIsolated()) {
-    translatedParams = Object.assign({}, params);
+    angularScope = Object.assign({}, params);
 
     let interfaces = componentModel.getInterfaces();
     let options = componentModel.getOptions();
@@ -124,23 +125,23 @@ let translateParams = (componentModel) => {
 
     for (let key of Object.keys(interfaces)) {
       let interfaceKey = camelCase(key);
-      translatedParams[interfaceKey] = '=';
+      angularScope[interfaceKey] = '=';
     }
 
     for (let key of Object.keys(options)) {
       let optionKey = camelCase(key);
-      translatedParams[optionKey] = '=';
+      angularScope[optionKey] = '=';
     }
 
     for (let key of Object.keys(pipes)) {
       let pipeKey = camelCase(key);
-      translatedParams[pipeKey] = '=';
+      angularScope[pipeKey] = '=';
     }
   } else {
-    translatedParams = !!params;
+    angularScope = false;
   }
 
-  return translatedParams;
+  return angularScope;
 };
 
 export default (componentModel) => {
@@ -148,18 +149,7 @@ export default (componentModel) => {
   let controller = null;
 
   let link = (params, $scope, element, attrs, require) => {
-    if (controller.link) {
-
-      let compile = (template) => {
-        let $compile = Injector.get('$compile');
-        let compileTemplate = $compile(template);
-
-        return compileTemplate($scope);
-      };
-
-      controller.link(element, attrs, params, compile, $scope);
-    }
-
+    // Execute require function
     if (isArray(require)) {
       if (isFunction(controller.require)) {
         let configuredRequire = componentModel.getRequire();
@@ -181,7 +171,6 @@ export default (componentModel) => {
             requiredControllers[normalized] = requiredController;
 
           }
-
           index++;
         }
 
@@ -192,12 +181,19 @@ export default (componentModel) => {
       }
     }
 
+    // Execute link function
+    if (controller.link) {
+      let compile = Compiler($scope);
+      controller.link(element, attrs, params, compile, $scope);
+    }
+
     // GC
     controller = null;
   };
 
   let configuration = {
     replace: false,
+    transclude: componentModel.getTransclude(),
     restrict: translateRestrict(componentModel),
     scope: translateParams(componentModel),
     require: componentModel.getRequire(),
@@ -206,10 +202,12 @@ export default (componentModel) => {
 
       // for correct work directive's require
       this.$valent = getValentInfo(componentModel);
+      let namespace = this.$valent.namespace;
 
       let name = componentModel.getName();
       try {
         controller = initController($scope, $attrs, componentModel);
+        this[namespace] = controller;
       } catch (error) {
         throw new RuntimeException(name, 'component', error.message);
       }

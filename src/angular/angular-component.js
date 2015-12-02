@@ -14,8 +14,8 @@ let validate = (component) => {
   let params = component.getParams();
 
   // https://docs.angularjs.org/api/ng/service/$compile
-  if (!isBoolean(params) && !isObject(params)) {
-    errors.push('components params should be an object or boolean');
+  if (params && !isObject(params)) {
+    errors.push('components params should be an object');
   }
 
   if (!component.isIsolated() && (component.hasInterfaces() || component.hasOptions())) {
@@ -56,11 +56,11 @@ export default class AngularComponent extends ValentComponent {
 
   isIsolated() {
     let params = this.getParams();
-    return isObject(params) || params === true;
+    return isObject(params);
   }
 
-  getParams() {
-    return this.options.hasOwnProperty('params') ? this.options.params : {};
+  getTransclude() {
+    return this.options.transclude || false;
   }
 
   getRequire() {
