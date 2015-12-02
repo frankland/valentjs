@@ -97,6 +97,11 @@ export default class DirectiveParams {
     return this[_watcher].watch(key, cb);
   }
 
+  attr(key) {
+    let $attrs = this[_attrs];
+    return $attrs[key];
+  }
+
   parse(key) {
     let $scope = this[_scope];
     let $attrs = this[_attrs];
