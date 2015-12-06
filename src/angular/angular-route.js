@@ -1,5 +1,5 @@
 import ValentRoute from '../valent-route';
-import * as validation from './angular-validation/structures';
+import * as validation from './validation/structures';
 
 export default class AngularRoute extends ValentRoute {
   constructor(name, url, options) {

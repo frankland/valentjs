@@ -9,7 +9,7 @@ import isArray from 'lodash/lang/isArray';
 import RegisterException from '../exceptions/register';
 import ValentComponent from '../valent-component';
 
-import * as validation from './angular-validation/structures';
+import * as validation from './validation/structures';
 
 
 let normalize = options => {

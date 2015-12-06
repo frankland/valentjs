@@ -65,13 +65,13 @@ export const isValidOptions = options => isValidInterfaces(options);
  * Do not recommend to use classes as components's restricts
  * @param restrict
  */
-export const isValidRestrict = restrict => validate(restrict, t.maybe(t.enums.of(['A', 'E'])));
+export const isValidRestrict = restrict => validate(restrict, t.maybe(t.enums.of(['A', 'E']))).isValid();
 
 /**
  * Static controller's method
  * @param compile
  */
-export const isValidCompileMethod = compile => validate(compile, t.maybe(t.Function));
+export const isValidCompileMethod = compile => validate(compile, t.maybe(t.Function)).isValid();
 
 
 
@@ -79,8 +79,8 @@ export const isValidCompileMethod = compile => validate(compile, t.maybe(t.Funct
  * String or array of strings
  * @param url
  */
-export const isValidUrl = url => validate(url, t.union([t.list(t.Str), t.Str]));
+export const isValidUrl = url => validate(url, t.union([t.list(t.Str), t.Str])).isValid();
 
-export const isValidStruct = struct => validate(struct, t.maybe(t.dict(t.Str, t.Function)));
+export const isValidStruct = struct => validate(struct, t.maybe(t.dict(t.Str, t.Function))).isValid();
 
-export const isValidResolvers = resolvers => validate(resolvers, t.maybe(t.dict(t.Str, t.Function)));
+export const isValidResolvers = resolvers => validate(resolvers, t.maybe(t.dict(t.Str, t.Function))).isValid();
