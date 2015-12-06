@@ -1,61 +1,105 @@
 import isString from 'lodash/lang/isString';
 import isFunction from 'lodash/lang/isFunction';
+import uniq from 'lodash/array/uniq';
 
-import RegisterException from './exceptions/register';
+import * as validation from './validation/structures';
 
-let validate = (component) => {
-  let errors = [];
 
-  let name = component.getName();
+let normalize = (ComponentClass, options) => {
+  let renderMethod = ComponentClass.render;
+  let normalized = Object.assign({}, options);
 
-  if (!name || name.indexOf(' ') != -1) {
-    errors.push('component\'s name could not be empty or contain spaces');
+  if (isFunction(renderMethod)) {
+    normalized.template = renderMethod;
   }
 
-  // --- VALIDATE COMPONENT CONSTRUCTOR -----
-  let Controller = component.getController();
-  if (!isFunction(Controller)) {
-    errors.push('controller should be a constructor');
-  }
-
-  // ----- VALIDATE TEMPLATES -----
-  let template = component.getTemplate();
-  let templateUrl = component.getTemplateUrl();
-
-  if (component.withoutTemplate()) {
-    if (!component.hasCompileMethod()) {
-      // TODO: means that component with restrict "A"?
-      // errors.push('One of config options - template / templateUrl or components\'s class static function "render()" or "compile()" should be defined');
-      console.log('devnotes: check');
-    }
-  } else if (template) {
-
-    if (!isString(template) && !isFunction(template)) {
-      errors.push('template should be string or function');
-    }
-
-  } else if (templateUrl) {
-
-    if (!isString(templateUrl)) {
-      errors.push('templateUrl should be string');
-    }
-  }
-
-  return errors;
+  return normalized;
 };
 
 export default class ValentComponent {
-  constructor(name, Component, options = {}) {
+  constructor(name, ComponentClass, options) {
     this.name = name;
-    this.options = options;
+    this.options = normalize(ComponentClass, options);
+    this.ComponentClass = ComponentClass;
+  }
 
-    // TODO: rename! at angular-controller - another naming
-    this.Component = Component;
+  static validate(name, ComponentClass, options) {
+    let isValidName = validation.isValidName(name);
+    let isValidController = validation.isValidConstructor(ComponentClass);
+    let isValidTemplate = validation.isValidTemplate(options.template);
+    let isValidTemplateUrl = validation.isValidTemplateUrl(options.templateUrl);
+    let isValidRenderMethod = validation.isValidRenderMethod(ComponentClass.render);
+    let isValidParams = validation.isValidParams(options.params);
 
-    let errors = validate(this);
-    if (errors.length) {
-      throw new RegisterException(name, 'valent-component', errors);
+    let isValidInterfaces = validation.isValidInterfaces(options.interfaces);
+    let isValidPipes = validation.isValidPipes(options.pipes);
+    let isValidOptions = validation.isValidOptions(options.options);
+
+    let isValidRestrict = validation.isValidRestrict(options.restrict);
+    //let isValidCompileMethod = validation.isValidCompileMethod(ComponentClass.compile);
+
+    let errors = [];
+
+    if (!isValidName) {
+      errors.push('Component\'s name could not be empty or with spaces');
     }
+
+    if (!isValidController) {
+      errors.push('Component\'s class should be a constructor');
+    }
+
+    // if al least two template options are defined
+    if (isValidTemplate == isValidTemplateUrl ? isValidTemplate : isValidRenderMethod) {
+      errors.push('Should have only one - template, templateUrl or static render() option');
+    }
+
+    if (options.restrict == 'A' && (isValidTemplate || isValidTemplateUrl || isValidRenderMethod)) {
+      errors.push('Attribute directives should be without template');
+    }
+
+    let keys = [];
+    if (!isValidParams) {
+      errors.push('If params are defined - it should be an object');
+    } else if (options.params) {
+      let paramsKeys = Object.keys(options.params);
+      keys.concat(paramsKeys);
+    }
+
+    if (!isValidInterfaces) {
+      errors.push('Interfaces should be an object with constructors at values');
+    } else if (options.interfaces) {
+      let interfacesKeys = Object.keys(options.interfaces);
+      keys.concat(interfacesKeys);
+    }
+
+    if (!isValidPipes) {
+      errors.push('Pipes should be an object with constructors at values');
+    } else if (options.pipes) {
+      let pipesKeys = Object.keys(options.pipes);
+      keys.concat(pipesKeys);
+    }
+
+    if (!isValidOptions) {
+      errors.push('Options should be an object with constructors at values');
+    } else if (options.options) {
+      let optionsKeys = Object.keys(options.options);
+      keys.concat(optionsKeys);
+    }
+
+
+    if (keys.length) {
+      let uniqueKeys = uniq(keys);
+
+      if (uniqueKeys.length == keys.length) {
+        errors.push('Interfaces, options and pipes keys should not cross');
+      }
+    }
+
+    if (!isValidRestrict) {
+      errors.push('Restrict should be any of "E" or "A"');
+    }
+
+    return errors;
   }
 
   getName() {
@@ -63,7 +107,7 @@ export default class ValentComponent {
   }
 
   getController() {
-    return this.Component;
+    return this.ComponentClass;
   }
 
   hasTemplate() {
@@ -82,20 +126,16 @@ export default class ValentComponent {
     return this.options.templateUrl;
   }
 
-  hasTemplateMethod() {
-    return isFunction(this.Component.render);
-  }
-
-  getTemplateMethod() {
-    return this.Component.render;
-  }
-
   withoutTemplate() {
-    return !this.hasTemplate() && !this.hasTemplateUrl() && !this.hasTemplateMethod();
+    return !this.hasTemplate() && !this.hasTemplateUrl(); // && !this.hasRenderMethod();
   }
 
   hasCompileMethod() {
-    return isFunction(this.Component.compile);
+    return isFunction(this.ComponentClass.compile);
+  }
+
+  getCompileMethod() {
+    return this.ComponentClass.compile;
   }
 
   getParams() {
@@ -103,33 +143,35 @@ export default class ValentComponent {
   }
 
   hasInterfaces() {
-    let interfaces = this.getInterfaces();
-    return !!Object.keys(interfaces).length;
+    return !!this.getInterfaces();
   }
 
   getInterfaces() {
-    return this.options.interfaces || {};
+    return this.options.interfaces;
   }
 
   hasOptions() {
-    let options = this.getOptions();
-    return !!Object.keys(options).length;
+    return !!this.getOptions();
   }
 
   getOptions() {
-    return this.options.options || {};
+    return this.options.options;
   }
 
   hasPipes() {
-    let pipes = this.options.pipes;
-    return !!Object.keys(pipes).length;
+    return !!this.getPipes();
   }
 
   getPipes() {
-    return this.options.pipes || {};
+    return this.options.pipes;
   }
 
   getRestrict() {
     return this.options.restrict;
+  }
+
+  isAttributeComponent() {
+    let restrict = this.getRestrict();
+    return restrict === 'A';
   }
 }

@@ -9,36 +9,58 @@ import isArray from 'lodash/lang/isArray';
 import RegisterException from '../exceptions/register';
 import ValentComponent from '../valent-component';
 
-let validate = (component) => {
-  let errors = [];
-  let params = component.getParams();
+import * as validation from './angular-validation/structures';
 
-  // https://docs.angularjs.org/api/ng/service/$compile
-  if (params && !isObject(params)) {
-    errors.push('components params should be an object');
+
+let normalize = options => {
+  let require = options.require;
+
+  let normalizedRequire = null;
+  if (require) {
+    if (isArray(require)) {
+      normalizedRequire = require;
+    } else {
+      normalizedRequire = [require];
+    }
   }
 
-  if (!component.isIsolated() && (component.hasInterfaces() || component.hasOptions())) {
-    errors.push('It is not available to setup interfaces of optional params if params are defined as boolean (not isolated scope)');
-  }
-
-  // TODO: use tcomb validation
-  if (component.options.require && !isString(component.options.require) && !isArray(component.options.require)) {
-    errors.push('require options should be array of strings of string');
-  }
-
-  return errors;
+  return Object.assign({}, options, {
+    require: normalizedRequire
+  });
 };
 
 export default class AngularComponent extends ValentComponent {
-  constructor(name, Controller, options) {
-    super(name, Controller, options);
+  constructor(name, ComponentClass, options) {
+    let normalized = normalize(options);
+    super(name, ComponentClass, normalized);
+  }
 
-    let errors = validate(this);
+  static validate(name, ComponentClass, options) {
+    let errors = super.validate(name, ComponentClass, options);
 
-    if (errors.length) {
-      throw new RegisterException(name, 'angular-component', errors);
+    let isValidRequire = validation.isValidRequire(options.require);
+    let isValidTransclude = validation.isValidTransclude(options.transclude);
+    let isValidModule = validation.isValidModule(options.module);
+    let isValidNamespace = validation.isValidNamespace(options.as);
+
+
+    if (!isValidRequire) {
+      errors.push('require should string of array of strings');
     }
+
+    if (!isValidTransclude) {
+      errors.push('transclude should be boolean value (or "element")');
+    }
+
+    if (!isValidModule) {
+      errors.push('Module name should be a string');
+    }
+
+    if (!isValidNamespace) {
+      errors.push('Namespace should be a string');
+    }
+
+    return errors;
   }
 
   getDirectiveName() {
@@ -60,21 +82,10 @@ export default class AngularComponent extends ValentComponent {
   }
 
   getTransclude() {
-    return this.options.transclude || false;
+    return !!this.options.transclude;
   }
 
   getRequire() {
-    let normalized = null;
-    let require = this.options.require;
-
-    if (require) {
-      if (isArray(require)) {
-        normalized = require;
-      } else {
-        normalized = [require];
-      }
-    }
-
-    return normalized;
+    return this.options.require;
   }
 }

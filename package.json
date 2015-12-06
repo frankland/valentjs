@@ -21,6 +21,7 @@
     "lodash": "^3.8.0",
     "moment": "^2.10.3",
     "tcomb": "^2.0.0-beta",
+    "tcomb-validation": "^2.2.0",
     "url-pattern": "^0.10.0"
   },
   "devDependencies": {

@@ -10,14 +10,17 @@ let getAvailableParams = (componentModel) => {
     keys = Object.keys(params);
   }
 
-  // TODO: only if restrict == A?
-  let name = componentModel.getName();
-  keys.push(name);
+  if (componentModel.isAttributeComponent()) {
+    let name = componentModel.getName();
+    keys.push(name);
+  }
 
-  let pipes = componentModel.getPipes();
-  for (let key of Object.keys(pipes)) {
-    let translatedKey = camelCase(key);
-    keys.push(translatedKey);
+  if (componentModel.hasPipes()) {
+    let pipes = componentModel.getPipes();
+    for (let key of Object.keys(pipes)) {
+      let translatedKey = camelCase(key);
+      keys.push(translatedKey);
+    }
   }
 
   return keys;
@@ -41,19 +44,21 @@ export default class DirectiveParams {
     this[_name] = componentModel.getName();
     this[_isIsolated] = componentModel.isIsolated();
     this[_definitions] = getAvailableParams(componentModel);
-
     this[_watcher] = new Watcher($scope);
 
-    let pipes = componentModel.getPipes();
-
     this[_pipes] = {};
-    for (let key of Object.keys(pipes)) {
-      let translatedKey = camelCase(key);
 
-      this[_pipes][translatedKey] = {
-        pipe: pipes[key],
-        value: null
-      };
+    if (componentModel.hasPipes()) {
+      let pipes = componentModel.getPipes();
+
+      for (let key of Object.keys(pipes)) {
+        let translatedKey = camelCase(key);
+
+        this[_pipes][translatedKey] = {
+          pipe: pipes[key],
+          value: null
+        };
+      }
     }
   }
 
@@ -111,13 +116,13 @@ export default class DirectiveParams {
     }
 
     let expression = $attrs[key];
-    let evaluatingScope = null;
-    if (this[_isIsolated]) {
-      evaluatingScope = $scope.$parent;
-    } else {
-      evaluatingScope = $scope;
-    }
+    //let evaluatingScope = null;
+    //if (this[_isIsolated]) {
+    //  evaluatingScope = $scope.$parent;
+    //} else {
+    //  evaluatingScope = $scope;
+    //}
 
-    return evaluatingScope.$eval(expression);
+    return $scope.$eval(expression);
   }
 }

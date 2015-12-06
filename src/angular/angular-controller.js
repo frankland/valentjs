@@ -1,19 +1,23 @@
-import RegisterException from '../exceptions/register';
 import ValentController from '../valent-controller';
 
-let validate = (controller) => {
-  return [];
-};
+import * as validation from './angular-validation/structures';
+
 
 export default class AngularController extends ValentController {
-  constructor(name, Controller, options) {
-    super(name, Controller, options);
+  constructor(name, ControllerClass, options) {
+    super(name, ControllerClass, options);
+  }
 
-    let errors = validate(this);
+  static validate(name, ControllerClass, options) {
+    let errors = super.validate(name, ControllerClass, options);
 
-    if (errors.length) {
-      throw new RegisterException(name, 'angular-component', errors);
+    let isValidNamespace = validation.isValidNamespace(options.as);
+
+    if (!isValidNamespace) {
+      errors.push('Namespace should be a string');
     }
+
+    return errors;
   }
 
   getModule() {

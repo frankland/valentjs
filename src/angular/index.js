@@ -8,8 +8,6 @@ import componentTranslator from './translators/component';
 import controllerTranslator from './translators/controller';
 import routeTranslator from './translators/route';
 
-import TranslateException from '../exceptions/translate';
-
 import AngularComponent from './angular-component';
 import AngularController from './angular-controller';
 import AngularRoute from './angular-route';
@@ -27,13 +25,7 @@ export default class Angular {
 
   translate = {
     component: (component, config) => {
-      try {
-        var translated = componentTranslator(component, config);
-      } catch (error) {
-        let name = component.getName();
-        throw new TranslateException(name, 'component', error.message);
-      }
-
+      let translated = componentTranslator(component, config);
       let application = translated.module || this[_app];
 
       angular.module(application)
@@ -41,13 +33,7 @@ export default class Angular {
     },
 
     controller: (controller, config) => {
-      try {
-        var translated = controllerTranslator(controller, config);
-      } catch (error) {
-        let name = controller.getName();
-        throw new TranslateException(name, error.message);
-      }
-
+      let translated = controllerTranslator(controller, config);
       let application = translated.module || this[_app];
 
       angular.module(application)
@@ -56,12 +42,7 @@ export default class Angular {
 
     route: (route, config) => {
       let name = route.getName();
-
-      try {
-        var translated = routeTranslator(route, config);
-      } catch (error) {
-        throw new TranslateException(name, 'route', error.message);
-      }
+      let translated = routeTranslator(route, config);
 
       let urlManager = this[_urlManager];
       urlManager.set(name, translated.url);

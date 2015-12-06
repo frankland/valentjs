@@ -29,6 +29,10 @@ export default class ApplicationConfig {
       return this.get('routing.resolvers', {});
     },
 
+    hasResolvers:() => {
+      return !!this.get('routing.resolvers');
+    },
+
     requireBase: (requireBase) => {
       this.set('routing.requireBase', requireBase);
     },

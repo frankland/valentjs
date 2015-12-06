@@ -1,81 +1,46 @@
 import isFunction from 'lodash/lang/isFunction';
-import isArray from 'lodash/lang/isArray';
-import isObject from 'lodash/lang/isObject';
-import isString from 'lodash/lang/isString';
 
-import RegisterException from './exceptions/register';
+import * as validation from './validation/structures';
 
-let validate = (controller) => {
-  let errors = [];
+let normalize = (ControllerClass, options) => {
+  let renderMethod = ControllerClass.render;
+  let normalized = Object.assign({}, options);
 
-  // --- VALIDATE NAME -----
-  let name = controller.getName();
-  if (!name || name.indexOf(' ') != -1) {
-    errors.push('controller\'s name could not be empty or contain spaces');
+  if (isFunction(renderMethod)) {
+    normalized.template = renderMethod;
   }
 
-  // --- VALIDATE CONTROLLER CONSTRUCTOR -----
-  let Controller = controller.getController(); // :(
-  if (!isFunction(Controller)) {
-    errors.push('controller should be a constructor');
-  }
-
-  return errors;
+  return normalized;
 };
 
 export default class ValentController {
-  route = null;
-
-  constructor(name, Controller, options = {}) {
+  constructor(name, ControllerClass, options) {
     this.name = name;
-    this.options = options;
-    this.Controller = Controller;
+    this.options = normalize(ControllerClass, options);
+    this.ControllerClass = ControllerClass;
 
-    let errors = validate(this);
-    if (errors.length) {
-      throw new RegisterException(name, 'valent-controller', errors);
+    let url = this.options.url;
+
+    if (url) {
+      valent.route(this.name, url, this.options);
+    }
+  }
+
+  static validate(name, ControllerClass) {
+    let isValidName = validation.isValidName(name);
+    let isValidController = validation.isValidConstructor(ControllerClass);
+
+    let errors = [];
+
+    if (!isValidName) {
+      errors.push('Controller\'s name could not be empty or with spaces');
     }
 
-    if (this.options.url) {
-      var routeParams = Object.assign({}, {
-        params: this.options.params || {},
-        struct: this.getStruct()
-      });
-
-      let module = this.options.module;
-      if (module) {
-        routeParams.module = module;
-      }
-
-      if (this.hasResolvers()) {
-        routeParams.resolve = this.getResolvers();
-      }
-
-      if (this.hasTemplate()) {
-
-        // set template
-        routeParams.template = this.getTemplate();
-      } else if (this.hasTemplateUrl()) {
-
-        // set templateUrl
-        routeParams.templateUrl = this.getTemplateUrl();
-      } else if (this.hasTemplateMethod()) {
-
-        // set template using Components method
-        let method = this.getTemplateMethod();
-        let template = method(this);
-
-        if (!isString(template)) {
-          // TODO: display controller name
-          throw new RegisterException(name, 'result of Controller.render() should be a string');
-        }
-
-        routeParams.template = template;
-      }
-
-      let url = this.getUrl();
-      valent.route(this.name, url, routeParams);
+    if (!isValidController) {
+      errors.push('Controller\'s class should be a constructor');
     }
+
+    return errors;
   }
 
   getName() {
@@ -83,54 +48,6 @@ export default class ValentController {
   }
 
   getController() {
-    return this.Controller;
-  }
-
-  hasTemplate() {
-    return !!this.options.template;
-  }
-
-  getTemplate() {
-    return this.options.template;
-  }
-
-  hasTemplateUrl() {
-    return !!this.options.templateUrl;
-  }
-
-  getTemplateUrl() {
-    return this.options.templateUrl;
-  }
-
-  hasTemplateMethod() {
-    return isFunction(this.Controller.render);
-  }
-
-  getTemplateMethod() {
-    return this.Controller.render;
-  }
-
-  withoutTemplate() {
-    return !this.hasTemplate() && !this.hasTemplateUrl() && !this.hasTemplateMethod();
-  }
-
-  hasUrl() {
-    return isArray(this.options.url) ? !!this.options.url.length : !!this.options.url;
-  }
-
-  getUrl() {
-    return this.options.url;
-  }
-
-  getStruct() {
-    return this.options.struct || {};
-  }
-
-  hasResolvers() {
-    return this.options.resolve && !!Object.keys(this.options.resolve).length;
-  }
-
-  getResolvers() {
-    return this.options.resolve;
+    return this.ControllerClass;
   }
 }

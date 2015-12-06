@@ -1,5 +1,5 @@
-import RegisterException from './exceptions/register';
 import ApplicationConfig from './application-config';
+import RegisterException from './exceptions/register';
 
 
 let _controllers = Symbol('controllers');
@@ -12,7 +12,13 @@ class Valent {
   version = '0.1.0';
 
   config = new ApplicationConfig({
-    version: this.version
+    valent: {
+      version: this.version,
+      environment: {
+        dev: true,
+        debug: false
+      }
+    }
   });
 
   constructor() {
@@ -27,53 +33,75 @@ class Valent {
     this[_framework] = framework;
     this.url = this[_framework].getUrlManager();
 
-    /**
-     * NOTE: add organized validation for all components, controllers and routes before translation?
-     */
+    let isDevEnvironment = this.config.get('valent.environment.dev', true);
 
     // --- TRANSLATE COMPONENTS(DIRECTIVES)
-    try {
-      let FrameworkComponentClass = this[_framework].component;
 
-      for (let component of this[_components]) {
-        let frameworkComponent = new FrameworkComponentClass(component.name, component.controller, component.options);
-        this[_framework].translate.component(frameworkComponent, this.config);
+    let FrameworkComponentClass = this[_framework].component;
+
+    for (let component of this[_components]) {
+      let args = [component.name, component.controller, component.options];
+
+      if (isDevEnvironment) {
+        let errors = FrameworkComponentClass.validate(...args);
+
+        if (errors.length) {
+          throw new RegisterException(component.name, 'valent-component', errors);
+        }
       }
-    } catch (error) {
-      throw new Error(`could not register components. ${error.message}`);
-    }
 
+      let frameworkComponent = new FrameworkComponentClass(...args);
+      this[_framework].translate.component(frameworkComponent, this.config);
+    }
 
     // --- TRANSLATE CONTROLLERS
-    try {
-      let FrameworkControllerClass = this[_framework].controller;
 
-      for (let controller of this[_controllers]) {
-        let frameworkController = new FrameworkControllerClass(controller.name, controller.controller, controller.options);
-        this[_framework].translate.controller(frameworkController, this.config);
+    let FrameworkControllerClass = this[_framework].controller;
+
+    for (let controller of this[_controllers]) {
+      let args = [controller.name, controller.controller, controller.options];
+
+      let frameworkController = new FrameworkControllerClass(...args);
+
+      if (isDevEnvironment) {
+        let errors = FrameworkControllerClass.validate(...args);
+
+        if (errors.length) {
+          throw new RegisterException(controller.name, 'valent-controller', errors);
+        }
       }
-    } catch (error) {
-      throw new Error(`could not register controllers. ${error.message}`);
+
+      this[_framework].translate.controller(frameworkController, this.config);
     }
+
 
     // --- TRANSLATE ROUTING
-    try {
-      let FrameworkRouteClass = this[_framework].route;
+    let FrameworkRouteClass = this[_framework].route;
 
-      for (let route of this[_routes]) {
-        let frameworkRoute = new FrameworkRouteClass(route.name, route.url, route.options);
-        this[_framework].translate.route(frameworkRoute, this.config);
+    for (let route of this[_routes]) {
+      let args = [route.name, route.url, route.options];
+
+      let frameworkRoute = new FrameworkRouteClass(...args);
+
+      if (isDevEnvironment) {
+        let errors = FrameworkRouteClass.validate(...args);
+
+        if (errors.length) {
+          throw new RegisterException(route.name, 'valent-route', errors);
+        }
       }
-    } catch (error) {
-      throw new Error(`could not register routes. ${error.message}`);
+
+
+      this[_framework].translate.route(frameworkRoute, this.config);
     }
+
 
     this[_framework].bootstrap(this.config);
 
     this[_bootstrap] = true;
   }
 
-  component(name, Component, options) {
+  component(name, Component, options = {}) {
     if (this[_bootstrap]) {
       throw new Error('component could no be registered after bootstrap');
     }
@@ -85,7 +113,7 @@ class Valent {
     });
   }
 
-  controller(name, Controller, options) {
+  controller(name, Controller, options = {}) {
     if (this[_bootstrap]) {
       throw new Error('controller could no be registered after bootstrap');
     }
@@ -97,10 +125,9 @@ class Valent {
     });
   }
 
-  route(name, url, options) {
+  route(name, url, options = {}) {
     if (this[_bootstrap]) {
       throw new Error('route could no be registered after bootstrap');
-      ;
     }
 
     this[_routes].add({

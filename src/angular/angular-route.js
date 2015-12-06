@@ -1,26 +1,24 @@
-import RegisterException from '../exceptions/register';
 import ValentRoute from '../valent-route';
-
-let validate = (route) => {
-  return [];
-};
+import * as validation from './angular-validation/structures';
 
 export default class AngularRoute extends ValentRoute {
-  constructor(name, Route, options) {
-    super(name, Route, options);
+  constructor(name, url, options) {
+    super(name, url, options);
+  }
 
-    let errors = validate(this);
+  static validate(name, url, options) {
+    let errors = super.validate(name, url, options);
 
-    if (errors.length) {
-      throw new RegisterException(name, 'angular-route', errors);
+    let isValidModule = validation.isValidModule(options.module);
+
+    if (!isValidModule) {
+      errors.push('Module name should be a string');
     }
+
+    return errors;
   }
 
   getModule() {
     return this.options.module || null;
-  }
-
-  getNamespace() {
-    return this.options.as || 'controller';
   }
 }

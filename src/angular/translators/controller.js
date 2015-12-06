@@ -3,7 +3,6 @@ import isFunction from 'lodash/lang/isFunction';
 import Logger from '../../utils/logger';
 import Scope from '../services/scope';
 
-import RuntimeException from '../../exceptions/runtime';
 
 let initController = ($scope, controllerModel, valentResolve) => {
 
@@ -58,11 +57,7 @@ export default (controllerModel, config) => {
   let configuration = ['$scope', 'valent.resolve', ($scope, valentResolve) => {
     $scope.$valent = getValentInfo(controllerModel);
 
-    try {
-      initController($scope, controllerModel, valentResolve);
-    } catch (error) {
-      throw new RuntimeException(name, 'controller', error.message);
-    }
+    initController($scope, controllerModel, valentResolve);
 
     // attach $scope to url. needs for url.watch and get url by context. useful at parent classes
     valent.url.attach($scope);

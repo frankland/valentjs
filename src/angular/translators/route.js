@@ -3,61 +3,59 @@ import isFunction from 'lodash/lang/isFunction';
 
 import AngularUrl from '../angular-url';
 
+
+let resolve = (resolvers, args = {}) => {
+  let dependencies = Object.keys(resolvers);
+
+  let tasks = [];
+  for (let key of Object.keys(resolvers)) {
+    let resolver = resolvers[key];
+
+    let task = resolver(...args);
+
+    tasks.push(task);
+  }
+
+  return Promise.all(tasks).then(resolved => {
+    let results = {};
+    let index = 0;
+
+    for (let resolverResult of resolved) {
+      let key = dependencies[index];
+      results[key] = resolverResult;
+
+      index++;
+    }
+
+    return results;
+  });
+};
+
 let getValentResolver = (config, routeModel) => ({
   'valent.resolve': () => {
     let globalResolvers = config.route.getResolvers();
-    let globalDependencies = Object.keys(globalResolvers);
 
     let name = routeModel.getName();
     let params = routeModel.getParams();
 
     let resolverArguments = [name, params];
 
-    let globalTasks = [];
-    for (let key of Object.keys(globalResolvers)) {
-      let resolver = globalResolvers[key];
+    let result = null;
 
-      let task = resolver(...resolverArguments);
+    if (config.route.hasResolvers()) {
+      result = resolve(globalResolvers, resolverArguments).then(globalResult => {
+        let localResolvers = routeModel.getResolvers();
 
-      globalTasks.push(task);
+        return resolve(localResolvers, resolverArguments).then(localResult => {
+          return Object.assign(globalResult, localResult);
+        });
+      });
+    } else if (routeModel.hasResolvers()) {
+      let localResolvers = routeModel.getResolvers();
+      result = resolve(localResolvers, resolverArguments);
     }
 
-    return Promise.all(globalTasks).then((resolved) => {
-      let results = {};
-      let index = 0;
-
-      for (let resolverResult of resolved) {
-        let key = globalDependencies[index];
-        results[key] = resolverResult;
-
-        index++;
-      }
-
-      let localResolvers = routeModel.getResolvers();
-      let localDependencies = Object.keys(localResolvers);
-
-      let localTasks = [];
-      for (let key of Object.keys(localResolvers)) {
-        let resolver = localResolvers[key];
-
-        let task = resolver(...resolverArguments);
-
-        localTasks.push(task);
-      }
-
-      return Promise.all(localTasks).then((resolved) => {
-        let index = 0;
-
-        for (let resolverResult of resolved) {
-          let key = localDependencies[index];
-          results[key] = resolverResult;
-
-          index++;
-        }
-
-        return results;
-      });
-    });
+    return result;
   }
 });
 
@@ -102,11 +100,11 @@ export default (routeModel, config) => {
   }
 
   // create URL
-  let struct = routeModel.getStruct();
+  let structure = routeModel.getStructure();
   let pattern = routes[0];
 
-  let url = () => {
-    return new AngularUrl(pattern, struct);
+  let url = () => { // ?
+    return new AngularUrl(pattern, structure);
   };
 
   return {

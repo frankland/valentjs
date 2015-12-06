@@ -4,13 +4,10 @@ import isString from 'lodash/lang/isString';
 import isFunction from 'lodash/lang/isFunction';
 import isArray from 'lodash/lang/isArray';
 
-import uniq from 'lodash/array/uniq';
-
 import Logger from '../../utils/logger';
 import Injector from '../services/injector';
 import Compiler from '../services/compiler';
 
-import RuntimeException from '../../exceptions/runtime';
 import DirectiveParams from '../services/directive-params';
 import Scope from '../services/scope';
 
@@ -18,44 +15,49 @@ import Scope from '../services/scope';
 let initController = ($scope, $attrs, componentModel) => {
   let instances = [];
 
-  // gather interfaces
-  let interfaces = componentModel.getInterfaces();
+  if (componentModel.hasInterfaces()) {
+    // gather interfaces
+    let interfaces = componentModel.getInterfaces();
 
-  for (let key of Object.keys(interfaces)) {
-    let instance = $scope[key];
+    for (let key of Object.keys(interfaces)) {
+      let instance = $scope[key];
 
-    if (!instance) {
-      throw Error(`directive should implements interface "${key}"`);
-    }
+      if (!instance) {
+        throw Error(`directive should implements interface "${key}"`);
+      }
 
-    let InterfaceClass = interfaces[key];
+      let InterfaceClass = interfaces[key];
 
-    if (!(instance instanceof InterfaceClass)) {
-      throw Error(`interface "${key}" has wrong class`);
-    }
-
-    instances.push(instance);
-  }
-
-  // gather options
-  let options = componentModel.getOptions();
-
-  for (let key of Object.keys(options)) {
-    let interfaceInstance = $scope[key];
-
-    let instance = null;
-    if (interfaceInstance) {
-
-      let InterfaceClass = options[key];
-
-      if (!(interfaceInstance instanceof InterfaceClass)) {
+      if (!(instance instanceof InterfaceClass)) {
         throw Error(`interface "${key}" has wrong class`);
       }
 
-      instance = $scope[key];
+      instances.push(instance);
     }
+  }
 
-    instances.push(instance);
+
+  if (componentModel.hasOptions()) {
+    // gather options
+    let options = componentModel.getOptions();
+
+    for (let key of Object.keys(options)) {
+      let interfaceInstance = $scope[key];
+
+      let instance = null;
+      if (interfaceInstance) {
+
+        let InterfaceClass = options[key];
+
+        if (!(interfaceInstance instanceof InterfaceClass)) {
+          throw Error(`interface "${key}" has wrong class`);
+        }
+
+        instance = $scope[key];
+      }
+
+      instances.push(instance);
+    }
   }
 
   let Controller = componentModel.getController();
@@ -108,34 +110,28 @@ let translateParams = (componentModel) => {
   if (componentModel.isIsolated()) {
     angularScope = Object.assign({}, params);
 
-    let interfaces = componentModel.getInterfaces();
-    let options = componentModel.getOptions();
-    let pipes = componentModel.getPipes();
+    if (componentModel.hasInterfaces()) {
+      let interfaces = componentModel.getInterfaces();
 
-    let interfaceKeys = Object.keys(interfaces);
-    let optionsKeys = Object.keys(options);
-    let pipesKeys = Object.keys(pipes);
-
-    let keys = interfaceKeys.concat(optionsKeys).concat(pipesKeys);
-    let uniqKeys = uniq(keys);
-
-    if (keys.length != uniqKeys.length) {
-      throw new Error('options / interfaces / pipes could not have same keys');
+      for (let key of Object.keys(interfaces)) {
+        angularScope[key] = '=';
+      }
     }
 
-    for (let key of Object.keys(interfaces)) {
-      let interfaceKey = camelCase(key);
-      angularScope[interfaceKey] = '=';
+    if (componentModel.hasOptions()) {
+      let options = componentModel.getOptions();
+
+      for (let key of Object.keys(options)) {
+        angularScope[key] = '=';
+      }
     }
 
-    for (let key of Object.keys(options)) {
-      let optionKey = camelCase(key);
-      angularScope[optionKey] = '=';
-    }
+    if (componentModel.hasPipes()) {
+      let pipes = componentModel.getPipes();
 
-    for (let key of Object.keys(pipes)) {
-      let pipeKey = camelCase(key);
-      angularScope[pipeKey] = '=';
+      for (let key of Object.keys(pipes)) {
+        angularScope[key] = '=';
+      }
     }
   } else {
     angularScope = false;
@@ -198,19 +194,18 @@ export default (componentModel) => {
     scope: translateParams(componentModel),
     require: componentModel.getRequire(),
     controller: ['$scope', '$attrs', function($scope, $attrs) {
-      $scope.$valent = getValentInfo(componentModel);
+      let valentInfo = getValentInfo(componentModel);
+      let namespace = valentInfo.namespace;
+
+      $scope.$valent = valentInfo;
+
+
+      // controller - closed var.
+      controller = initController($scope, $attrs, componentModel);
 
       // for correct work directive's require
+      this[namespace] = controller;
       this.$valent = getValentInfo(componentModel);
-      let namespace = this.$valent.namespace;
-
-      let name = componentModel.getName();
-      try {
-        controller = initController($scope, $attrs, componentModel);
-        this[namespace] = controller;
-      } catch (error) {
-        throw new RuntimeException(name, 'component', error.message);
-      }
     }],
 
     link: ($scope, element, attrs, require) => {
@@ -238,21 +233,22 @@ export default (componentModel) => {
 
     // set templateUrl
     configuration.templateUrl = componentModel.getTemplateUrl();
-  } else if (componentModel.hasTemplateMethod()) {
-
-    // set template using Components method
-    configuration.template = (element, attrs) => {
-      let method = componentModel.getTemplateMethod();
-      let template = method(element, attrs);
-
-      if (!isString(template)) {
-        let name = componentModel.getName();
-        throw new RuntimeException(name, 'componentModel', 'result of Component.render() should be a string');
-      }
-
-      return template;
-    }
   }
+  //else if (componentModel.hasRenderMethod()) {
+  //
+  //  // set template using Components method
+  //  configuration.template = (element, attrs) => {
+  //    let method = componentModel.getRenderMethod();
+  //    let template = method(element, attrs);
+  //
+  //    if (!isString(template)) {
+  //      let name = componentModel.getName();
+  //      throw new Error(`"${name}" - result of Component.render() should be a string`);
+  //    }
+  //
+  //    return template;
+  //  }
+  //}
 
   return {
     name: componentModel.getDirectiveName(),
