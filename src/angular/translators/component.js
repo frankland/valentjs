@@ -12,15 +12,16 @@ import DirectiveParams from '../services/directive-params';
 import Scope from '../services/scope';
 
 
-let initController = ($scope, $attrs, componentModel) => {
+let initController = ($scope, $attrs, $element, componentModel) => {
   let instances = [];
+  let directiveParams = new DirectiveParams($scope, $attrs, $element, componentModel);
 
   if (componentModel.hasInterfaces()) {
     // gather interfaces
     let interfaces = componentModel.getInterfaces();
 
     for (let key of Object.keys(interfaces)) {
-      let instance = $scope[key];
+      let instance = directiveParams.parse(key);
 
       if (!instance) {
         throw Error(`directive should implements interface "${key}"`);
@@ -42,7 +43,7 @@ let initController = ($scope, $attrs, componentModel) => {
     let options = componentModel.getOptions();
 
     for (let key of Object.keys(options)) {
-      let interfaceInstance = $scope[key];
+      let interfaceInstance = directiveParams.parse(key);
 
       let instance = null;
       if (interfaceInstance) {
@@ -61,12 +62,12 @@ let initController = ($scope, $attrs, componentModel) => {
   }
 
   let Controller = componentModel.getController();
-  let params = new DirectiveParams($scope, $attrs, componentModel);
-
   let name = componentModel.getName();
+
   let logger = Logger.create(name);
 
-  let controller = new Controller(...instances, params, logger);
+  let controller = new Controller(...instances, directiveParams, logger);
+
   Scope.attach(controller, $scope);
 
   if (componentModel.isIsolated()) {
@@ -110,29 +111,29 @@ let translateParams = (componentModel) => {
   if (componentModel.isIsolated()) {
     angularScope = Object.assign({}, params);
 
-    if (componentModel.hasInterfaces()) {
-      let interfaces = componentModel.getInterfaces();
-
-      for (let key of Object.keys(interfaces)) {
-        angularScope[key] = '=';
-      }
-    }
-
-    if (componentModel.hasOptions()) {
-      let options = componentModel.getOptions();
-
-      for (let key of Object.keys(options)) {
-        angularScope[key] = '=';
-      }
-    }
-
-    if (componentModel.hasPipes()) {
-      let pipes = componentModel.getPipes();
-
-      for (let key of Object.keys(pipes)) {
-        angularScope[key] = '=';
-      }
-    }
+    //if (componentModel.hasInterfaces()) {
+    //  let interfaces = componentModel.getInterfaces();
+    //
+    //  for (let key of Object.keys(interfaces)) {
+    //    angularScope[key] = '=';
+    //  }
+    //}
+    //
+    //if (componentModel.hasOptions()) {
+    //  let options = componentModel.getOptions();
+    //
+    //  for (let key of Object.keys(options)) {
+    //    angularScope[key] = '=';
+    //  }
+    //}
+    //
+    //if (componentModel.hasPipes()) {
+    //  let pipes = componentModel.getPipes();
+    //
+    //  for (let key of Object.keys(pipes)) {
+    //    angularScope[key] = '=';
+    //  }
+    //}
   } else {
     angularScope = false;
   }
@@ -140,47 +141,110 @@ let translateParams = (componentModel) => {
   return angularScope;
 };
 
+let getInterfaces = (directiveParams, componentModel) => {
+  let instances = [];
+  let interfaces = componentModel.getInterfaces();
+
+  for (let key of Object.keys(interfaces)) {
+    let instance = directiveParams.parse(key);
+
+    if (!instance) {
+      throw Error(`directive should implements interface "${key}"`);
+    }
+
+    let InterfaceClass = interfaces[key];
+
+    if (!(instance instanceof InterfaceClass)) {
+      throw Error(`interface "${key}" has wrong class`);
+    }
+
+    instances.push(instance);
+  }
+
+  return instances;
+};
+
+let getOptions = (directiveParams, componentModel) => {
+  let instances = [];
+
+  let options = componentModel.getOptions();
+
+  for (let key of Object.keys(options)) {
+    let interfaceInstance = directiveParams.parse(key);
+
+    let instance = null;
+    if (interfaceInstance) {
+
+      let InterfaceClass = options[key];
+
+      if (!(interfaceInstance instanceof InterfaceClass)) {
+        throw Error(`interface "${key}" has wrong class`);
+      }
+
+      instance = $scope[key];
+    }
+
+    instances.push(instance);
+  }
+
+  return instances;
+};
+
+let getRequiredControllers = (componentModel, require) => {
+  let controllers = {};
+  let configure = componentModel.getRequire();
+  let index = 0;
+
+  for (let required of require) {
+    if (required) {
+      let api = null;
+
+      let key = configure[index];
+      let normalized = key.replace(/[\?\^]*/, '');
+
+      if (required.hasOwnProperty('$valent')) {
+        // means that required component - valent component
+        let namespace = required.$valent.namespace;
+        api = required[namespace];
+
+        if (!api) {
+          throw new Error(`"${normalized}" component has no api`);
+        }
+      } else {
+        // means that required component - valent component
+        api = required;
+      }
+
+
+      controllers[normalized] = api;
+    }
+
+    index++;
+  }
+
+  return controllers;
+};
+
 export default (componentModel) => {
   let module = componentModel.getModule();
   let controller = null;
 
+
   let link = (params, $scope, element, attrs, require) => {
-    // Execute require function
-    if (isArray(require)) {
-      if (isFunction(controller.require)) {
-        let configuredRequire = componentModel.getRequire();
-
-        let requiredControllers = {};
-        let index = 0;
-
-        for (let required of require) {
-          if (required) {
-            let requiredController = required;
-
-            if (required.hasOwnProperty('$valent')) {
-              let namespace = required.$valent.namespace;
-              requiredController = required[namespace];
-            }
-
-            let key = configuredRequire[index];
-            let normalized = key.replace(/[\?\^]*/, '');
-            requiredControllers[normalized] = requiredController;
-
-          }
-          index++;
-        }
-
-        controller.require(requiredControllers);
-      } else {
-        let name = componentModel.getName();
-        throw new Error(`directive "${name}" - Require option is configured but controller does not has "require" method`);
-      }
-    }
-
-    // Execute link function
     if (controller.link) {
+      let requiredControllers = {};
+      let args = [element];
+
+      if (isArray(require)) {
+        requiredControllers = getRequiredControllers(componentModel, require);
+        args.push(requiredControllers);
+      }
+
       let compile = Compiler($scope);
-      controller.link(element, attrs, params, compile, $scope);
+      args.push(compile);
+
+      controller.link(...args);
+      //controller.link(element, attrs, requiredControllers, compile);
     }
 
     // GC
@@ -193,19 +257,49 @@ export default (componentModel) => {
     restrict: translateRestrict(componentModel),
     scope: translateParams(componentModel),
     require: componentModel.getRequire(),
-    controller: ['$scope', '$attrs', function($scope, $attrs) {
+    controller: ['$scope', '$attrs', '$element', function($scope, $attrs, $element) {
       let valentInfo = getValentInfo(componentModel);
       let namespace = valentInfo.namespace;
 
       $scope.$valent = valentInfo;
+      this.$valent = valentInfo;
 
+      let instances = [];
+      let directiveParams = new DirectiveParams($scope, $attrs, $element, componentModel);
 
-      // controller - closed var.
-      controller = initController($scope, $attrs, componentModel);
+      if (componentModel.hasInterfaces()) {
+        let interfaces = getOptions(directiveParams, componentModel);
+        instances.concat(interfaces);
+      }
 
-      // for correct work directive's require
-      this[namespace] = controller;
-      this.$valent = getValentInfo(componentModel);
+      if (componentModel.hasOptions()) {
+        let options = getOptions(directiveParams, componentModel);
+        instances.concat(options);
+      }
+
+      let Controller = componentModel.getController();
+      let name = componentModel.getName();
+
+      let logger = Logger.create(name);
+
+      // controller - closed variable
+      controller = new Controller(...instances, directiveParams, logger);
+
+      Scope.attach(controller, $scope);
+
+      if (componentModel.isIsolated()) {
+        $scope[namespace] = controller;
+      }
+
+      // used for requiring
+      this[namespace] = controller.api;
+
+      // $scope events
+      $scope.$on('$destroy', () => {
+        if (isFunction(controller.destructor)) {
+          controller.destructor();
+        }
+      });
     }],
 
     link: ($scope, element, attrs, require) => {
@@ -226,29 +320,10 @@ export default (componentModel) => {
   }
 
   if (componentModel.hasTemplate()) {
-
-    // set template
     configuration.template = componentModel.getTemplate();
   } else if (componentModel.hasTemplateUrl()) {
-
-    // set templateUrl
     configuration.templateUrl = componentModel.getTemplateUrl();
   }
-  //else if (componentModel.hasRenderMethod()) {
-  //
-  //  // set template using Components method
-  //  configuration.template = (element, attrs) => {
-  //    let method = componentModel.getRenderMethod();
-  //    let template = method(element, attrs);
-  //
-  //    if (!isString(template)) {
-  //      let name = componentModel.getName();
-  //      throw new Error(`"${name}" - result of Component.render() should be a string`);
-  //    }
-  //
-  //    return template;
-  //  }
-  //}
 
   return {
     name: componentModel.getDirectiveName(),

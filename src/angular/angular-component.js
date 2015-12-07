@@ -45,11 +45,11 @@ export default class AngularComponent extends ValentComponent {
 
 
     if (!isValidRequire) {
-      errors.push('require should string of array of strings');
+      errors.push('require should string or array of strings');
     }
 
     if (!isValidTransclude) {
-      errors.push('transclude should be boolean value (or "element")');
+      errors.push('transclude should be boolean value');
     }
 
     if (!isValidModule) {

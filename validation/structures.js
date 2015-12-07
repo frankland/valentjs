@@ -96,7 +96,7 @@ exports.isValidOptions = isValidOptions;
  * @param restrict
  */
 var isValidRestrict = function isValidRestrict(restrict) {
-  return validate(restrict, _tcombValidation2['default'].maybe(_tcombValidation2['default'].enums.of(['A', 'E'])));
+  return validate(restrict, _tcombValidation2['default'].maybe(_tcombValidation2['default'].enums.of(['A', 'E']))).isValid();
 };
 
 exports.isValidRestrict = isValidRestrict;
@@ -105,7 +105,7 @@ exports.isValidRestrict = isValidRestrict;
  * @param compile
  */
 var isValidCompileMethod = function isValidCompileMethod(compile) {
-  return validate(compile, _tcombValidation2['default'].maybe(_tcombValidation2['default'].Function));
+  return validate(compile, _tcombValidation2['default'].maybe(_tcombValidation2['default'].Function)).isValid();
 };
 
 exports.isValidCompileMethod = isValidCompileMethod;
@@ -114,16 +114,16 @@ exports.isValidCompileMethod = isValidCompileMethod;
  * @param url
  */
 var isValidUrl = function isValidUrl(url) {
-  return validate(url, _tcombValidation2['default'].union([_tcombValidation2['default'].list(_tcombValidation2['default'].Str), _tcombValidation2['default'].Str]));
+  return validate(url, _tcombValidation2['default'].union([_tcombValidation2['default'].list(_tcombValidation2['default'].Str), _tcombValidation2['default'].Str])).isValid();
 };
 
 exports.isValidUrl = isValidUrl;
 var isValidStruct = function isValidStruct(struct) {
-  return validate(struct, _tcombValidation2['default'].maybe(_tcombValidation2['default'].dict(_tcombValidation2['default'].Str, _tcombValidation2['default'].Function)));
+  return validate(struct, _tcombValidation2['default'].maybe(_tcombValidation2['default'].dict(_tcombValidation2['default'].Str, _tcombValidation2['default'].Function))).isValid();
 };
 
 exports.isValidStruct = isValidStruct;
 var isValidResolvers = function isValidResolvers(resolvers) {
-  return validate(resolvers, _tcombValidation2['default'].maybe(_tcombValidation2['default'].dict(_tcombValidation2['default'].Str, _tcombValidation2['default'].Function)));
+  return validate(resolvers, _tcombValidation2['default'].maybe(_tcombValidation2['default'].dict(_tcombValidation2['default'].Str, _tcombValidation2['default'].Function))).isValid();
 };
 exports.isValidResolvers = isValidResolvers;

@@ -28,6 +28,8 @@ let getAvailableParams = (componentModel) => {
 
 let _scope = Symbol('$scope');
 let _attrs = Symbol('$attrs');
+let _element = Symbol('$element');
+
 let _isIsolated = Symbol('is-scope-isolated');
 let _definitions = Symbol('definitions');
 let _watcher = Symbol('$watcher');
@@ -35,12 +37,14 @@ let _name = Symbol('name');
 let _pipes = Symbol('pipes');
 
 /**
- * TODO: redevelop component
+ * TODO: redevelop Pipes
  */
 export default class DirectiveParams {
-  constructor($scope, $attrs, componentModel) {
+  constructor($scope, $attrs, $element, componentModel) {
     this[_scope] = $scope;
     this[_attrs] = $attrs;
+    this[_element] = $element;
+
     this[_name] = componentModel.getName();
     this[_isIsolated] = componentModel.isIsolated();
     this[_definitions] = getAvailableParams(componentModel);
@@ -52,14 +56,16 @@ export default class DirectiveParams {
       let pipes = componentModel.getPipes();
 
       for (let key of Object.keys(pipes)) {
-        let translatedKey = camelCase(key);
-
-        this[_pipes][translatedKey] = {
+        this[_pipes][key] = {
           pipe: pipes[key],
           value: null
         };
       }
     }
+  }
+
+  getElement() {
+    return this[_element];
   }
 
   isAvailable(key) {
@@ -116,12 +122,6 @@ export default class DirectiveParams {
     }
 
     let expression = $attrs[key];
-    //let evaluatingScope = null;
-    //if (this[_isIsolated]) {
-    //  evaluatingScope = $scope.$parent;
-    //} else {
-    //  evaluatingScope = $scope;
-    //}
 
     return $scope.$eval(expression);
   }
