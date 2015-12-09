@@ -28,6 +28,7 @@ let getAvailableParams = (componentModel) => {
 
 let _scope = Symbol('$scope');
 let _attrs = Symbol('$attrs');
+let _attrValues = Symbol('attributes-inline-values');
 let _element = Symbol('$element');
 
 let _isIsolated = Symbol('is-scope-isolated');
@@ -42,7 +43,6 @@ let _pipes = Symbol('pipes');
 export default class DirectiveParams {
   constructor($scope, $attrs, $element, componentModel) {
     this[_scope] = $scope;
-    this[_attrs] = $attrs;
     this[_element] = $element;
 
     this[_name] = componentModel.getName();
@@ -50,6 +50,14 @@ export default class DirectiveParams {
     this[_definitions] = getAvailableParams(componentModel);
     this[_watcher] = new Watcher($scope);
 
+
+    this[_attrs] = $attrs;
+    this[_attrValues] = {};
+    for (let key of Object.keys(this[_attrs].$attr)) {
+      this[_attrValues][key] = this[_attrs][key];
+    }
+
+    // setup pipes classes and instances
     this[_pipes] = {};
 
     if (componentModel.hasPipes()) {
@@ -68,6 +76,10 @@ export default class DirectiveParams {
     return this[_element];
   }
 
+  getAttributes() {
+    return this[_attrValues];
+  }
+
   isAvailable(key) {
     return this[_definitions].indexOf(key) != -1;
   }
@@ -84,13 +96,18 @@ export default class DirectiveParams {
       let state = this[_pipes][key];
       let Pipe = state.pipe;
 
+      // parse pipe from attribtues
+      value = this.parse(key);
+
       if (!attrs.hasOwnProperty(key)) {
+        // if pipe's key is not exists in attributes - create it
         if (!state.value) {
           state.value = new Pipe();
         }
 
         value = state.value;
       } else {
+        // if pipe's key is exists in attributes - use it
         if (!(value instanceof Pipe)) {
           throw new Error(`"${this[_name]}" - directive pipe "${key}" has wrong class`);
         }
@@ -117,12 +134,16 @@ export default class DirectiveParams {
     let $scope = this[_scope];
     let $attrs = this[_attrs];
 
-    if (!$attrs.hasOwnProperty(key)) {
-      throw new Error(`"${this[_name]}" - can not parse "${key}" because this params is not passed to attributes`);
+    let parsed = undefined;
+
+    // parse - means that we parse attribute value form parent scope
+    if ($attrs.hasOwnProperty(key)) {
+      let expression = $attrs[key];
+      parsed = $scope.$parent.$eval(expression);
+    } else {
+      //throw new Error(`"${this[_name]}" - can not parse "${key}" because this params is not passed to attributes`);
     }
 
-    let expression = $attrs[key];
-
-    return $scope.$eval(expression);
+    return parsed;
   }
 }

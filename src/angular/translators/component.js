@@ -51,7 +51,7 @@ let initController = ($scope, $attrs, $element, componentModel) => {
         let InterfaceClass = options[key];
 
         if (!(interfaceInstance instanceof InterfaceClass)) {
-          throw Error(`interface "${key}" has wrong class`);
+          throw Error(`option "${key}" has wrong class`);
         }
 
         instance = $scope[key];
@@ -110,30 +110,6 @@ let translateParams = (componentModel) => {
 
   if (componentModel.isIsolated()) {
     angularScope = Object.assign({}, params);
-
-    //if (componentModel.hasInterfaces()) {
-    //  let interfaces = componentModel.getInterfaces();
-    //
-    //  for (let key of Object.keys(interfaces)) {
-    //    angularScope[key] = '=';
-    //  }
-    //}
-    //
-    //if (componentModel.hasOptions()) {
-    //  let options = componentModel.getOptions();
-    //
-    //  for (let key of Object.keys(options)) {
-    //    angularScope[key] = '=';
-    //  }
-    //}
-    //
-    //if (componentModel.hasPipes()) {
-    //  let pipes = componentModel.getPipes();
-    //
-    //  for (let key of Object.keys(pipes)) {
-    //    angularScope[key] = '=';
-    //  }
-    //}
   } else {
     angularScope = false;
   }
@@ -230,13 +206,22 @@ export default (componentModel) => {
   let controller = null;
 
 
-  let link = (params, $scope, element, attrs, require) => {
+  let link = (params, $scope, $element, $attrs, require) => {
     if (controller.link) {
-      let requiredControllers = {};
-      let args = [element];
+
+      let attributes = {};
+      for (let key of Object.keys($attrs.$attr)) {
+        attributes[key] = $attrs[key];
+      }
+
+      let args = [$element, attributes];
+
+      if (params) {
+        args.push(params);
+      }
 
       if (isArray(require)) {
-        requiredControllers = getRequiredControllers(componentModel, require);
+        let requiredControllers = getRequiredControllers(componentModel, require);
         args.push(requiredControllers);
       }
 
@@ -244,7 +229,6 @@ export default (componentModel) => {
       args.push(compile);
 
       controller.link(...args);
-      //controller.link(element, attrs, requiredControllers, compile);
     }
 
     // GC
@@ -262,20 +246,21 @@ export default (componentModel) => {
       let namespace = valentInfo.namespace;
 
       $scope.$valent = valentInfo;
-      this.$valent = valentInfo;
+
 
       let instances = [];
       let directiveParams = new DirectiveParams($scope, $attrs, $element, componentModel);
 
       if (componentModel.hasInterfaces()) {
-        let interfaces = getOptions(directiveParams, componentModel);
-        instances.concat(interfaces);
+        let interfaces = getInterfaces(directiveParams, componentModel);
+        instances = instances.concat(interfaces);
       }
 
       if (componentModel.hasOptions()) {
         let options = getOptions(directiveParams, componentModel);
-        instances.concat(options);
+        instances = instances.concat(options);
       }
+
 
       let Controller = componentModel.getController();
       let name = componentModel.getName();
@@ -293,6 +278,7 @@ export default (componentModel) => {
 
       // used for requiring
       this[namespace] = controller.api;
+      this.$valent = valentInfo;
 
       // $scope events
       $scope.$on('$destroy', () => {
