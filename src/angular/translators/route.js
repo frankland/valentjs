@@ -44,11 +44,19 @@ let getValentResolver = (config, routeModel) => ({
 
     if (config.route.hasResolvers()) {
       result = resolve(globalResolvers, resolverArguments).then(globalResult => {
-        let localResolvers = routeModel.getResolvers();
+        let resolveResult = null;
 
-        return resolve(localResolvers, resolverArguments).then(localResult => {
-          return Object.assign(globalResult, localResult);
-        });
+        if (routeModel.hasResolvers()) {
+          let localResolvers = routeModel.getResolvers();
+
+          resolveResult = resolve(localResolvers, resolverArguments).then(localResult => {
+            return Object.assign({}, globalResult, localResult);
+          });
+        } else {
+          resolveResult = globalResult;
+        }
+
+        return resolveResult;
       });
     } else if (routeModel.hasResolvers()) {
       let localResolvers = routeModel.getResolvers();
