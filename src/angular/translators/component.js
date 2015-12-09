@@ -11,80 +11,6 @@ import Compiler from '../services/compiler';
 import DirectiveParams from '../services/directive-params';
 import Scope from '../services/scope';
 
-
-let initController = ($scope, $attrs, $element, componentModel) => {
-  let instances = [];
-  let directiveParams = new DirectiveParams($scope, $attrs, $element, componentModel);
-
-  if (componentModel.hasInterfaces()) {
-    // gather interfaces
-    let interfaces = componentModel.getInterfaces();
-
-    for (let key of Object.keys(interfaces)) {
-      let instance = directiveParams.parse(key);
-
-      if (!instance) {
-        throw Error(`directive should implements interface "${key}"`);
-      }
-
-      let InterfaceClass = interfaces[key];
-
-      if (!(instance instanceof InterfaceClass)) {
-        throw Error(`interface "${key}" has wrong class`);
-      }
-
-      instances.push(instance);
-    }
-  }
-
-
-  if (componentModel.hasOptions()) {
-    // gather options
-    let options = componentModel.getOptions();
-
-    for (let key of Object.keys(options)) {
-      let interfaceInstance = directiveParams.parse(key);
-
-      let instance = null;
-      if (interfaceInstance) {
-
-        let InterfaceClass = options[key];
-
-        if (!(interfaceInstance instanceof InterfaceClass)) {
-          throw Error(`option "${key}" has wrong class`);
-        }
-
-        instance = $scope[key];
-      }
-
-      instances.push(instance);
-    }
-  }
-
-  let Controller = componentModel.getController();
-  let name = componentModel.getName();
-
-  let logger = Logger.create(name);
-
-  let controller = new Controller(...instances, directiveParams, logger);
-
-  Scope.attach(controller, $scope);
-
-  if (componentModel.isIsolated()) {
-    let namespace = componentModel.getNamespace();
-    $scope[namespace] = controller;
-  }
-
-  // $scope events
-  $scope.$on('$destroy', () => {
-    if (isFunction(controller.destructor)) {
-      controller.destructor();
-    }
-  });
-
-  return controller;
-};
-
 let getValentInfo = (componentModel) => {
   return {
     type: 'component',
@@ -242,12 +168,6 @@ export default (componentModel) => {
     scope: translateParams(componentModel),
     require: componentModel.getRequire(),
     controller: ['$scope', '$attrs', '$element', function($scope, $attrs, $element) {
-      let valentInfo = getValentInfo(componentModel);
-      let namespace = valentInfo.namespace;
-
-      $scope.$valent = valentInfo;
-
-
       let instances = [];
       let directiveParams = new DirectiveParams($scope, $attrs, $element, componentModel);
 
@@ -269,11 +189,16 @@ export default (componentModel) => {
 
       // controller - closed variable
       controller = new Controller(...instances, directiveParams, logger);
-
       Scope.attach(controller, $scope);
+
+      let valentInfo = getValentInfo(componentModel);
+      let namespace = valentInfo.namespace;
 
       if (componentModel.isIsolated()) {
         $scope[namespace] = controller;
+        $scope.$valent = valentInfo;
+      } else {
+        console.log('this case will be resolved in next RC');
       }
 
       // used for requiring
