@@ -10,16 +10,16 @@ export default class AngularUrlManager extends UrlManager {
     this[_queue] = new Map();
   }
 
-  attach($scope) {
-    if (!$scope.hasOwnProperty('$valent')) {
-      throw new Error('can not attach $scope because there is not $valent attribute');
-    }
+  attach(name, context, $scope) {
+    //if (!$scope.hasOwnProperty('$valent')) {
+    //  throw new Error('can not attach $scope because there is not $valent attribute');
+    //}
+    //
+    //let info = $scope.$valent;
+    //let namespace = info.namespace;
+    //let context = $scope[namespace];
 
-    let info = $scope.$valent;
-    let namespace = info.namespace;
-    let context = $scope[namespace];
-
-    let name = info.name;
+    //let name = info.name;
 
     this[_queue].set(name, $scope);
     this[_contexts].set(context, name);

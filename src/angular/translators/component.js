@@ -20,11 +20,15 @@ let getValentInfo = (componentModel) => {
 };
 
 let translateRestrict = (componentModel) => {
-  let restrict = 'E';
+  let restrict = componentModel.getRestrict();
 
-  // TODO: check if we need to compile directive with restrict A
-  if (componentModel.withoutTemplate() && !componentModel.hasCompileMethod()) {
-    restrict = 'A';
+  if (!restrict) {
+    // TODO: check if we need to compile directive with restrict A
+    if (componentModel.withoutTemplate() && !componentModel.hasCompileMethod()) {
+      restrict = 'A';
+    } else {
+      restrict = 'E';
+    }
   }
 
   return restrict;
@@ -106,6 +110,7 @@ let getRequiredControllers = (componentModel, require) => {
 
       if (required.hasOwnProperty('$valent')) {
         // means that required component - valent component
+        //let valentComponentInfo = required.$valent[key];
         let namespace = required.$valent.namespace;
         api = required[namespace];
 
@@ -156,9 +161,6 @@ export default (componentModel) => {
 
       controller.link(...args);
     }
-
-    // GC
-    controller = null;
   };
 
   let configuration = {
@@ -181,7 +183,6 @@ export default (componentModel) => {
         instances = instances.concat(options);
       }
 
-
       let Controller = componentModel.getController();
       let name = componentModel.getName();
 
@@ -194,16 +195,22 @@ export default (componentModel) => {
       let valentInfo = getValentInfo(componentModel);
       let namespace = valentInfo.namespace;
 
-      if (componentModel.isIsolated()) {
-        $scope[namespace] = controller;
-        $scope.$valent = valentInfo;
-      } else {
-        console.log('this case will be resolved in next RC');
+      if (!$scope.hasOwnProperty('$valent')) {
+        $scope.$valent = {};
       }
+
+      let directiveName = componentModel.getDirectiveName();
+      $scope.$valent[directiveName] = valentInfo;
 
       // used for requiring
       this[namespace] = controller.api;
       this.$valent = valentInfo;
+
+      if (componentModel.isIsolated()) {
+        $scope[namespace] = controller;
+      } else {
+        console.log(`component "${name}" - is not isolated. Its controller will not be attached to scope (added in rc4)`);
+      }
 
       // $scope events
       $scope.$on('$destroy', () => {
