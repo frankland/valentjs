@@ -23,11 +23,10 @@ export default (controllerModel, config) => {
     let logger = Logger.create(name);
 
     let args = [];
-    if (valentResolve) {
-      args.push(valentResolve);
-    }
 
     if (valent.url.has(name)) {
+      args.push(valentResolve);
+
       // attach scope to AngularUrl to allow use watch() method
       let url = valent.url.get(name);
       url.attachScope($scope);

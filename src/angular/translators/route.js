@@ -40,7 +40,7 @@ let getValentResolver = (config, routeModel) => ({
 
     let resolverArguments = [name, params];
 
-    let result = null;
+    let result = {};
 
     if (config.route.hasResolvers()) {
       result = resolve(globalResolvers, resolverArguments).then(globalResult => {
