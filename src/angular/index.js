@@ -159,7 +159,7 @@ export default class Angular {
       }
 
       if (isFunction(hooks.success)) {
-        $rootScope.$on('$routeChangeSuccess', (event, current, previous, rejection) => {
+        $rootScope.$on('$routeChangeSuccess', (event, current, previous) => {
           let currentRouteName = current.$$route.controller;
           let previousRouteName = previous ? previous.$$route.controller : null;
 
@@ -170,13 +170,13 @@ export default class Angular {
             previousRouteModel = _routeModels.get(previousRouteName);
           }
 
-          hooks.success(currentRouteModel, previousRouteModel, rejection, () => {
+          hooks.success(currentRouteModel, previousRouteModel, () => {
             event.preventDefault();
           });
         });
       }
 
-      $rootScope.$on('$routeChangeStart', (event, current, previous, rejection) => {
+      $rootScope.$on('$routeChangeStart', (event, current, previous) => {
         Logger.resetColors();
 
         let routeName = current.$$route.controller;
@@ -193,7 +193,7 @@ export default class Angular {
             previousRouteModel = _routeModels.get(previousRouteName);
           }
 
-          hooks.start(currentRouteModel, previousRouteModel, rejection, () => {
+          hooks.start(currentRouteModel, previousRouteModel, () => {
             event.preventDefault();
           });
         }
