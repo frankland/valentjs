@@ -9,6 +9,10 @@ export default class ApplicationConfig {
       this.set('routing.hooks.start', handler);
     },
 
+    onChangeSuccess: (handler) => {
+      this.set('routing.hooks.success', handler);
+    },
+
     onChangeError: (handler) => {
       this.set('routing.hooks.error', handler);
     },

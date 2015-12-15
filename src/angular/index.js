@@ -18,6 +18,8 @@ import AngularUrlManager from './angular-url-manager';
 let _app = Symbol('angular-module');
 let _urlManager = Symbol('url-manager');
 
+let _routeModels = new Map();
+
 export default class Angular {
   component = AngularComponent;
   controller = AngularController;
@@ -48,6 +50,8 @@ export default class Angular {
       urlManager.set(name, translated.url);
 
       let application = translated.module || this[_app];
+
+      _routeModels.set(name, route);
 
       angular.module(application)
         .config(['$routeProvider', ($routeProvider) => {
@@ -91,7 +95,6 @@ export default class Angular {
 
         $provide.decorator('$exceptionHandler', ($delegate) => {
           return (exception, cause) => {
-
             exceptionHandler(exception, cause, $delegate);
           }
         });
@@ -105,7 +108,7 @@ export default class Angular {
      * If remove this factory will be exception
      * "Unknown provider: valent.resolveProvider <- valent.resolve <- root"
      */
-    app.factory('valent.resolve', () => null);
+    app.factory('valent.resolve', () => ({}));
 
 
     app.config(['$locationProvider', '$routeProvider', ($locationProvider, $routeProvider) => {
@@ -139,7 +142,37 @@ export default class Angular {
 
       if (isFunction(hooks.error)) {
         $rootScope.$on('$routeChangeError', (event, current, previous, rejection) => {
-          hooks.error(event, current, previous, rejection);
+          let currentRouteName = current.$$route.controller;
+          let previousRouteName = previous ? previous.$$route.controller : null;
+
+          let currentRouteModel = _routeModels.get(currentRouteName);
+          let previousRouteModel = null;
+
+          if (previousRouteName) {
+            previousRouteModel = _routeModels.get(previousRouteName);
+          }
+
+          hooks.error(currentRouteModel, previousRouteModel, rejection, () => {
+            event.preventDefault();
+          });
+        });
+      }
+
+      if (isFunction(hooks.success)) {
+        $rootScope.$on('$routeChangeSuccess', (event, current, previous, rejection) => {
+          let currentRouteName = current.$$route.controller;
+          let previousRouteName = previous ? previous.$$route.controller : null;
+
+          let currentRouteModel = _routeModels.get(currentRouteName);
+          let previousRouteModel = null;
+
+          if (previousRouteName) {
+            previousRouteModel = _routeModels.get(previousRouteName);
+          }
+
+          hooks.success(currentRouteModel, previousRouteModel, rejection, () => {
+            event.preventDefault();
+          });
         });
       }
 
@@ -150,7 +183,19 @@ export default class Angular {
         valent.url.setCurrentRoute(routeName);
 
         if (isFunction(hooks.start)) {
-          hooks.start(event, current, previous, rejection);
+          let currentRouteName = current.$$route.controller;
+          let previousRouteName = previous ? previous.$$route.controller : null;
+
+          let currentRouteModel = _routeModels.get(currentRouteName);
+          let previousRouteModel = null;
+
+          if (previousRouteName) {
+            previousRouteModel = _routeModels.get(previousRouteName);
+          }
+
+          hooks.start(currentRouteModel, previousRouteModel, rejection, () => {
+            event.preventDefault();
+          });
         }
       });
     }]);
