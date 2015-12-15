@@ -1,6 +1,7 @@
 import isFunction from 'lodash/lang/isFunction';
 
 let _map = Symbol('url-map');
+let _currentRouteName = Symbol('current-route-name');
 
 // Uncaught TypeError: Method Map.prototype.set called on incompatible receiver [object Object] :(
 // export default class UrlManager extends Map {
@@ -25,5 +26,13 @@ export default class UrlManager {
     }
 
     return url;
+  }
+
+  setCurrentRoute(routeName) {
+    this[_currentRouteName] = routeName;
+  }
+  getCurrentRoute() {
+    let currentRouteName = this[_currentRouteName];
+    return this.get(currentRouteName);
   }
 }

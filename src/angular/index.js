@@ -146,6 +146,9 @@ export default class Angular {
       $rootScope.$on('$routeChangeStart', (event, current, previous, rejection) => {
         Logger.resetColors();
 
+        let routeName = current.$$route.controller;
+        valent.url.setCurrentRoute(routeName);
+
         if (isFunction(hooks.start)) {
           hooks.start(event, current, previous, rejection);
         }
