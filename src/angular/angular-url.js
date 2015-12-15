@@ -31,7 +31,6 @@ export default class AngularUrl extends Url {
 
   parse() {
     let $location = Injector.get('$location');
-
     let decoded = this.decode($location.$$url);
 
     this.cacheParams(decoded);
@@ -40,29 +39,23 @@ export default class AngularUrl extends Url {
   }
 
   go(params, options) {
-    let isChanged = this.isEqual(params);
+    let $location = Injector.get('$location');
 
-    if (!isChanged) {
-      let $location = Injector.get('$location');
+    if (options) {
+      let $rootScope = Injector.get('$rootScope');
 
-      if (options) {
-        let $rootScope = Injector.get('$rootScope');
+      let unsubscribe = $rootScope.$on('$routeUpdate', event => {
 
-        let unsubscribe = $rootScope.$on('$routeUpdate', event => {
-
-          Object.assign(event, {
-            $valentEvent: options
-          });
-
-          unsubscribe();
+        Object.assign(event, {
+          $valentEvent: options
         });
-      }
 
-      let url = this.stringify(params);
-      $location.url(url);
+        unsubscribe();
+      });
     }
 
-    return isChanged;
+    let url = this.stringify(params);
+    $location.url(url);
   }
 
   redirect(params = {}) {

@@ -102,6 +102,17 @@ export default class Url {
 
   // -----
 
+  // TODO: implement this method
+  //isCurrentRoute() {
+  //  let pathname = this.getPathname();
+  //
+  //  var splittedPath = pathname.split('?');
+  //  var url = splittedPath[0];
+  //
+  //  let urlPattern = this.getUrlPattern();
+  //  return !!urlPattern.match(url);
+  //}
+
   decode(path) {
     var splittedPath = path.split('?');
     var search = splittedPath.slice(1).join('');
@@ -218,7 +229,6 @@ export default class Url {
 
     // TODO: use cached params
     let existingParams = this.parse();
-
     return isEqual(existingParams, params);
   }
 
