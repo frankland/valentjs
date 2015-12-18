@@ -28,11 +28,7 @@ export default class UrlManager {
     return url;
   }
 
-  setCurrentRoute(routeName) {
-    this[_currentRouteName] = routeName;
-  }
   getCurrentRoute() {
-    let currentRouteName = this[_currentRouteName];
-    return this.get(currentRouteName);
+    throw new Error('depends on framework. Should be implemented at child class');
   }
 }

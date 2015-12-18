@@ -1,4 +1,5 @@
 import UrlManager from '../url-manager';
+import Injector from './services/injector';
 
 let _contexts = Symbol('controller-contexts');
 let _queue = Symbol('contexts-queue');
@@ -11,16 +12,6 @@ export default class AngularUrlManager extends UrlManager {
   }
 
   attach(name, context, $scope) {
-    //if (!$scope.hasOwnProperty('$valent')) {
-    //  throw new Error('can not attach $scope because there is not $valent attribute');
-    //}
-    //
-    //let info = $scope.$valent;
-    //let namespace = info.namespace;
-    //let context = $scope[namespace];
-
-    //let name = info.name;
-
     this[_queue].set(name, $scope);
     this[_contexts].set(context, name);
   }
@@ -44,7 +35,6 @@ export default class AngularUrlManager extends UrlManager {
       let $scope = this[_queue].get(name);
 
       if (!$scope) {
-        // TODO: normalize error message
         // NOTES: seems this case is impossible
         throw new Error('there is not scope to attach to angular url');
       }
@@ -65,5 +55,17 @@ export default class AngularUrlManager extends UrlManager {
     let name = this[_contexts].get(context);
 
     return this.get(name);
+  }
+
+  getCurrentUrl() {
+    let $route = Injector.get('$route');
+
+    let url = null;
+    if ($route.hasOwnProperty('current')) {
+      let $$route = $route.current.$$route;
+      url = this.get($$route.controller);
+    }
+
+    return url;
   }
 }

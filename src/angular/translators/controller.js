@@ -32,6 +32,8 @@ export default (controllerModel, config) => {
       url.attachScope($scope);
 
       args.push(url);
+    } else if (controllerModel.otherwise) {
+      args.push(valentResolve);
     }
 
     args.push(logger);

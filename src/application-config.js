@@ -21,7 +21,7 @@ export default class ApplicationConfig {
       return this.get('routing.hooks', {});
     },
 
-    otherwise: (otherwise) => {
+    otherwise: (...otherwise) => {
       this.set('routing.otherwise', otherwise);
     },
 

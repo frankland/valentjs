@@ -71,7 +71,6 @@ export default (routeModel, config) => {
   let name = routeModel.getName();
   let module = routeModel.getModule();
 
-
   let params = routeModel.getParams();
   let defaultRouteParams = {
     reloadOnSearch: false
@@ -102,18 +101,24 @@ export default (routeModel, config) => {
     configuration.templateUrl = routeModel.hasTemplateUrl();
   }
 
-  let routes = routeModel.getUrl();
-  if (!isArray(routes)) {
-    routes = [routes];
+  let routes = null;
+  let url = null;
+
+  if (!routeModel.isOtherwise()) {
+    routes = routeModel.getUrl();
+    if (!isArray(routes)) {
+      routes = [routes];
+    }
+
+    // create URL
+    let structure = routeModel.getStructure();
+    let pattern = routes[0];
+
+    url = () => { // ?
+      return new AngularUrl(pattern, structure);
+    };
   }
 
-  // create URL
-  let structure = routeModel.getStructure();
-  let pattern = routes[0];
-
-  let url = () => { // ?
-    return new AngularUrl(pattern, structure);
-  };
 
   return {
     name,

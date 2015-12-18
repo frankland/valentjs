@@ -38,6 +38,7 @@ export default class Angular {
       let translated = controllerTranslator(controller, config);
       let application = translated.module || this[_app];
 
+      console.log(application, controller.name, translated.configuration);
       angular.module(application)
         .controller(translated.name, translated.configuration);
     },
@@ -60,6 +61,7 @@ export default class Angular {
             $routeProvider.when(url, translated.configuration);
           }
         }]);
+
     }
   };
 
@@ -110,6 +112,35 @@ export default class Angular {
      */
     app.factory('valent.resolve', () => ({}));
 
+    /**
+     * TODO: validation otherwise
+     */
+    let otherwise = config.get('routing.otherwise');
+    let redirectTo = null;
+    let otherwiseConfig = null;
+    if (otherwise) {
+      if (otherwise.length == 1) {
+        redirectTo = otherwise[0];
+      } else {
+        // otherwise route
+        let otherwiseRoute = new this.route('valent.otherwise', null, otherwise[1]);
+        let translatedRoute = routeTranslator(otherwiseRoute, config);
+
+        otherwiseConfig = translatedRoute.configuration;
+
+        // TODO: rework getting of renderMethod
+        let renderMethod = otherwise[0].render;
+
+        if (isFunction(renderMethod)) {
+          otherwiseConfig.template = renderMethod;
+        }
+
+        // otherwise controller
+        let otherwiseController = new this.controller('valent.otherwise', otherwise[0]);
+        otherwiseController.otherwise = true;
+        this.translate.controller(otherwiseController, config);
+      }
+    }
 
     app.config(['$locationProvider', '$routeProvider', ($locationProvider, $routeProvider) => {
       $locationProvider.html5Mode({
@@ -117,18 +148,11 @@ export default class Angular {
         requireBase: config.get('routing.requireBase')
       });
 
-      let otherwise = config.get('routing.otherwise');
-
-      if (otherwise) {
-        let otherwiseConfig = {};
-
-        if (isString(otherwise)) {
-          otherwiseConfig.redirectTo = otherwise;
-        } else {
-          // TODO: lol
-          throw new Error('That is really lol but this case is not implemented ("otherwise" is not a string)');
-        }
-
+      if (redirectTo) {
+        $routeProvider.otherwise({
+          redirectTo
+        });
+      } else if (otherwiseConfig) {
         $routeProvider.otherwise(otherwiseConfig);
       }
     }]);
@@ -142,49 +166,60 @@ export default class Angular {
 
       if (isFunction(hooks.error)) {
         $rootScope.$on('$routeChangeError', (event, current, previous, rejection) => {
-          let currentRouteName = current.$$route.controller;
-          let previousRouteName = previous ? previous.$$route.controller : null;
 
-          let currentRouteModel = _routeModels.get(currentRouteName);
-          let previousRouteModel = null;
+          let hasRoute = current.hasOwnProperty('$$route');
 
-          if (previousRouteName) {
-            previousRouteModel = _routeModels.get(previousRouteName);
+          if (hasRoute) {
+            let currentRouteName = current.$$route.controller;
+            let previousRouteName = (previous && previous.$$route) ? previous.$$route.controller : null;
+
+            let currentRouteModel = _routeModels.get(currentRouteName);
+            let previousRouteModel = null;
+
+            if (previousRouteName) {
+              previousRouteModel = _routeModels.get(previousRouteName);
+            }
+
+            hooks.error(currentRouteModel, previousRouteModel, rejection, () => {
+              event.preventDefault();
+            });
+          } else {
+            console.info('$routeChangeError fired but $$route.controller is not exist', rejection);
           }
-
-          hooks.error(currentRouteModel, previousRouteModel, rejection, () => {
-            event.preventDefault();
-          });
         });
       }
 
       if (isFunction(hooks.success)) {
         $rootScope.$on('$routeChangeSuccess', (event, current, previous) => {
-          let currentRouteName = current.$$route.controller;
-          let previousRouteName = previous ? previous.$$route.controller : null;
+          let hasRoute = current.hasOwnProperty('$$route');
 
-          let currentRouteModel = _routeModels.get(currentRouteName);
-          let previousRouteModel = null;
+          if (hasRoute) {
+            let currentRouteName = current.$$route.controller;
+            let previousRouteName = (previous && previous.$$route) ? previous.$$route.controller : null;
 
-          if (previousRouteName) {
-            previousRouteModel = _routeModels.get(previousRouteName);
+            let currentRouteModel = _routeModels.get(currentRouteName);
+            let previousRouteModel = null;
+
+            if (previousRouteName) {
+              previousRouteModel = _routeModels.get(previousRouteName);
+            }
+
+            hooks.success(currentRouteModel, previousRouteModel, () => {
+              event.preventDefault();
+            });
+          } else {
+            console.info('$routeChangeSuccess fired but $$route.controller is not exist');
           }
-
-          hooks.success(currentRouteModel, previousRouteModel, () => {
-            event.preventDefault();
-          });
         });
       }
 
       $rootScope.$on('$routeChangeStart', (event, current, previous) => {
         Logger.resetColors();
 
-        let routeName = current.$$route.controller;
-        valent.url.setCurrentRoute(routeName);
-
-        if (isFunction(hooks.start)) {
+        let hasRoute = current.hasOwnProperty('$$route');
+        if (hasRoute && isFunction(hooks.start)) {
           let currentRouteName = current.$$route.controller;
-          let previousRouteName = previous ? previous.$$route.controller : null;
+          let previousRouteName = (previous && previous.$$route) ? previous.$$route.controller : null;
 
           let currentRouteModel = _routeModels.get(currentRouteName);
           let previousRouteModel = null;
@@ -196,6 +231,8 @@ export default class Angular {
           hooks.start(currentRouteModel, previousRouteModel, () => {
             event.preventDefault();
           });
+        } else {
+          console.info('$routeChangeStart fired but $$route.controller is not exist', window.location.pathname);
         }
       });
     }]);

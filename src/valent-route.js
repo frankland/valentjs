@@ -1,17 +1,33 @@
 import * as validation from './validation/structures';
 
 export default class ValentController {
+  otherwise = false;
+
   constructor(name, url, options) {
+    if (!url) {
+      this.otherwise = true;
+    }
+
     this.name = name;
     this.url = url;
     this.options = options;
   }
 
   static validate(name, url, options) {
+    let otherwise = false;
+    if (!url) {
+      otherwise = true;
+    }
+
     let isValidName = validation.isValidName(name);
     let isValidTemplate = validation.isValidTemplate(options.template);
     let isValidTemplateUrl = validation.isValidTemplateUrl(options.templateUrl);
-    let isValidUrl = validation.isValidUrl(url);
+
+    let isValidUrl = true;
+    if (!otherwise) {
+      isValidUrl = validation.isValidUrl(url);
+    }
+
     let isValidStruct = validation.isValidStruct(options.structure);
     let isValidResolvers = validation.isValidResolvers(options.resolvers);
 
@@ -26,7 +42,7 @@ export default class ValentController {
       errors.push('Should have only one - template, templateUrl or static render() option');
     }
 
-    if (!isValidUrl) {
+    if (!otherwise && !isValidUrl) {
       errors.push('Url should be a string of list of strings');
     }
 
@@ -43,6 +59,10 @@ export default class ValentController {
 
   getName() {
     return this.name;
+  }
+
+  isOtherwise() {
+    return this.otherwise;
   }
 
   getController() {

@@ -36,7 +36,6 @@ class Valent {
     let isDevEnvironment = this.config.get('valent.environment.dev', true);
 
     // --- TRANSLATE COMPONENTS(DIRECTIVES)
-
     let FrameworkComponentClass = this[_framework].component;
 
     for (let component of this[_components]) {
@@ -55,7 +54,6 @@ class Valent {
     }
 
     // --- TRANSLATE CONTROLLERS
-
     let FrameworkControllerClass = this[_framework].controller;
 
     for (let controller of this[_controllers]) {
@@ -74,8 +72,7 @@ class Valent {
       this[_framework].translate.controller(frameworkController, this.config);
     }
 
-
-    // --- TRANSLATE ROUTING
+    // --- TRANSLATE ROUTES
     let FrameworkRouteClass = this[_framework].route;
 
     for (let route of this[_routes]) {
@@ -95,9 +92,7 @@ class Valent {
       this[_framework].translate.route(frameworkRoute, this.config);
     }
 
-
     this[_framework].bootstrap(this.config);
-
     this[_bootstrap] = true;
   }
 
