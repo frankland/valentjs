@@ -58,15 +58,21 @@ export default class AngularUrl extends Url {
     $location.url(url);
   }
 
+  // TODO: fix this method
   redirect(params = {}) {
     if (!isObject(params)) {
       throw new Error('params should be an object');
     }
 
     let url = this.stringify(params);
-    let $window = Injector.get('$window');
 
-    $window.location.url(url);
+    let ishtml5Mode = valent.config.get('routing.html5Mode');
+
+    if(ishtml5Mode) {
+      window.location.href = url;
+    } else {
+      window.location.href = `/#/${url}`;
+    }
   }
 
   stringify(params) {

@@ -38,7 +38,6 @@ export default class Angular {
       let translated = controllerTranslator(controller, config);
       let application = translated.module || this[_app];
 
-      console.log(application, controller.name, translated.configuration);
       angular.module(application)
         .controller(translated.name, translated.configuration);
     },
