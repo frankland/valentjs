@@ -57,13 +57,17 @@ export default class AngularUrlManager extends UrlManager {
     return this.get(name);
   }
 
-  getCurrentUrl() {
+  reload() {
+    let $route = Injector.get('$route');
+    $route.reload();
+  }
+
+  getCurrentRoute() {
     let $route = Injector.get('$route');
 
     let url = null;
-    if ($route.hasOwnProperty('current')) {
-      let $$route = $route.current.$$route;
-      url = this.get($$route.controller);
+    if ($route.hasOwnProperty('current') && $route.current.$$route) {
+      url = this.get($route.current.$$route.controller);
     }
 
     return url;

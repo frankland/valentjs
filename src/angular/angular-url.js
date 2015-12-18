@@ -66,12 +66,7 @@ export default class AngularUrl extends Url {
     let url = this.stringify(params);
     let $window = Injector.get('$window');
 
-    $window.location.href = url;
-  }
-
-  reload() {
-    let $route = Injector.get('$route');
-    $route.reload();
+    $window.location.url(url);
   }
 
   stringify(params) {
