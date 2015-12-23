@@ -176,14 +176,16 @@ export default class UrlSerializer extends RenameSerializer {
   constructor(struct, options = {}) {
     super(struct);
 
-    addUrlRules((struct, description) => {
-      this.addRule(struct, description);
-    }, {
+    let serializeOptions = {
       list_delimiter: options.list_delimiter || '~',
       matrix_delimiter: options.matrix_delimiter || '!',
       date_format: options.date_format || 'YYYYMMDD',
       condition_delimiter: options.condition_delimiter || ';'
-    });
+    };
+
+    addUrlRules((struct, description) => {
+      this.addRule(struct, description);
+    }, serializeOptions);
   }
 
   isEncodeAllowed(key, value) {

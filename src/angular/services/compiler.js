@@ -9,7 +9,7 @@ let compileTemplate = function ($scope, template, params) {
   let compileTemplate = $compile(template);
 
   let compilingScope = $scope.$new();
-  Object.assign($scope, params);
+  Object.assign(compilingScope, params);
 
   return compileTemplate(compilingScope);
 };
