@@ -4,6 +4,7 @@ import find from 'lodash/collection/find';
 import moment from 'moment';
 
 import Serializer from './serializer';
+
 import * as primitives from '../utils/struct-primitives';
 
 var DATE_FORMAT = 'YYYYMMDD';
@@ -191,8 +192,26 @@ var addUrlRules = (urlSerializer, options) => {
     }
   };
   urlSerializer.addRule(primitives.ListDat, ListDat);
+  urlSerializer.addRule(primitives.ListMaybeDat, ListDat);
   urlSerializer.addRule(primitives.MaybeListDat, ListDat);
 
+  var ListListDat = {
+    decode: (raw) => {
+      if (!raw || !raw.length) {
+        return null;
+      }
+      return raw.split(options.list_delimiter).map(ListDat.decode);
+    },
+    encode: (value) => {
+      if (!isArray(value)) {
+        return null;
+      }
+      return value.map(ListDat.encode).join(options.list_delimiter);
+    }
+  };
+
+  urlSerializer.addRule(primitives.ListListDat, ListListDat);
+  urlSerializer.addRule(primitives.ListMaybeListDat, ListListDat);
   /**
    * Bools
    */

@@ -17,6 +17,7 @@ export const ListInt = list(Int, 'ListInt');
 export const ListStr = list(Str, 'ListStr');
 export const ListBool = list(Bool, 'ListBool');
 export const ListDat = list(Dat, 'ListDat');
+export const ListMaybeDat = list(Dat, 'ListDat');
 
 
 export const MaybeNum = maybe(Num, 'MaybeNum');
@@ -38,3 +39,10 @@ export const ListMaybeListNum = list(MaybeListNum, 'ListMaybeListNum');
 
 export const ListListStr = list(ListStr, 'ListListStr');
 export const ListMaybeListStr = list(MaybeListStr, 'ListMaybeListStr');
+
+export const ListListDat = list(ListDat, 'ListDat');
+export const ListMaybeListDat = list(MaybeListDat, 'ListMaybeListDat');
+
+
+
+
