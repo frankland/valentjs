@@ -70,6 +70,17 @@ export default class DirectiveParams {
         };
       }
     }
+
+    for (let key of this[_definitions]) {
+      Object.defineProperty(this, key, {
+        set: () => {
+          throw new Error('Can not set directive params property');
+        },
+        get: () => {
+          return this.get(key);
+        }
+      });
+    }
   }
 
   getElement() {
