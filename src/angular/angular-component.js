@@ -49,7 +49,7 @@ export default class AngularComponent extends ValentComponent {
     }
 
     if (!isValidTransclude) {
-      errors.push('transclude should be boolean value');
+      errors.push('transclude should be boolean value or object (for multi-slot transclude)');
     }
 
     if (!isValidModule) {
@@ -82,7 +82,7 @@ export default class AngularComponent extends ValentComponent {
   }
 
   getTransclude() {
-    return !!this.options.transclude;
+    return this.options.transclude;
   }
 
   getRequire() {

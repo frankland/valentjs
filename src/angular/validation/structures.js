@@ -5,9 +5,11 @@ var validate = t.validate;
 
 /**
  * true/false
- * @param restrict
+ * @param transclude
  */
-export const isValidTransclude = restrict => validate(restrict, t.maybe(t.Bool)).isValid();
+export const isValidTransclude = transclude => validate(transclude, t.maybe(
+  t.union([t.Bool,t.dict(t.Str, t.Str)])
+)).isValid();
 
 /**
  * String or array of strings
