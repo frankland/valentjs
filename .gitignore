@@ -10,6 +10,7 @@
 /decorators
 /serializers
 /utils
+/validation
 /application-config.js
 /url.js
 /url-manager.js
