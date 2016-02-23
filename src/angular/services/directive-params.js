@@ -107,7 +107,7 @@ export default class DirectiveParams {
       let state = this[_pipes][key];
       let Pipe = state.pipe;
 
-      // parse pipe from attribtues
+      // parse pipe from attributes
       value = this.parse(key);
 
       if (!attrs.hasOwnProperty(key)) {

@@ -137,7 +137,7 @@ export default (componentModel) => {
   let controller = null;
 
 
-  let link = (params, $scope, $element, $attrs, require) => {
+  let link = (compileResult, $scope, $element, $attrs, require) => {
     if (controller.link) {
 
       let attributes = {};
@@ -147,17 +147,15 @@ export default (componentModel) => {
 
       let args = [$element, attributes];
 
-      if (params != undefined) {
-        args.push(params);
-      }
-
       if (isArray(require)) {
         let requiredControllers = getRequiredControllers(componentModel, require);
         args.push(requiredControllers);
       }
 
-      let compile = Compiler($scope);
-      args.push(compile);
+      args.push({
+        template: Compiler($scope),
+        result: compileResult
+      });
 
       controller.link(...args);
     }
