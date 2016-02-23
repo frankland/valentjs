@@ -29,7 +29,7 @@ export default class ValentComponent {
     let isValidTemplate = validation.isValidTemplate(options.template);
     let isValidTemplateUrl = validation.isValidTemplateUrl(options.templateUrl);
     let isValidRenderMethod = validation.isValidRenderMethod(ComponentClass.render);
-    let isValidParams = validation.isValidParams(options.params);
+    let isValidBindings = validation.isValidBindings(options.bindings);
 
     let isValidInterfaces = validation.isValidInterfaces(options.interfaces);
     let isValidPipes = validation.isValidPipes(options.pipes);
@@ -58,11 +58,11 @@ export default class ValentComponent {
     }
 
     let keys = [];
-    if (!isValidParams) {
-      errors.push('If params are defined - it should be an object');
-    } else if (options.params) {
-      let paramsKeys = Object.keys(options.params);
-      keys.concat(paramsKeys);
+    if (!isValidBindings) {
+      errors.push('If bindings are defined - it should be an object');
+    } else if (options.bindings) {
+      let bindingsKeys = Object.keys(options.bindings);
+      keys.concat(bindingsKeys);
     }
 
     if (!isValidInterfaces) {
@@ -138,8 +138,8 @@ export default class ValentComponent {
     return this.ComponentClass.compile;
   }
 
-  getParams() {
-    return this.options.params;
+  getBindings() {
+    return this.options.bindings;
   }
 
   hasInterfaces() {

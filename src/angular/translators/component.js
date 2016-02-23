@@ -35,11 +35,11 @@ let translateRestrict = (componentModel) => {
 };
 
 let translateParams = (componentModel) => {
-  let params = componentModel.getParams();
+  let bindings = componentModel.getBindings();
   let angularScope = null;
 
   if (componentModel.isIsolated()) {
-    angularScope = Object.assign({}, params);
+    angularScope = Object.assign({}, bindings);
   } else {
     angularScope = false;
   }
@@ -147,7 +147,7 @@ export default (componentModel) => {
 
       let args = [$element, attributes];
 
-      if (params) {
+      if (params != undefined) {
         args.push(params);
       }
 
@@ -209,7 +209,7 @@ export default (componentModel) => {
       if (componentModel.isIsolated()) {
         $scope[namespace] = controller;
       } else {
-        console.log(`component "${name}" - is not isolated. Its controller will not be attached to scope (added in rc4)`);
+        //console.log(`component "${name}" - is not isolated. Its controller will not be attached to scope (added in rc4)`);
       }
 
       // $scope events

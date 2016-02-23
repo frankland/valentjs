@@ -42,12 +42,12 @@ export const isValidTemplate = template => validate(template, templateStruct).is
 export const isValidTemplateUrl = templateUrl => validate(templateUrl, t.Str).isValid();
 
 /**
- * Directive params
+ * Directive bindings
  * if Object - isolated scope
  * otherwise - new scope will not be created
- * @param params
+ * @param bindings
  */
-export const isValidParams = params => validate(params, t.maybe(t.Obj)).isValid();
+export const isValidBindings = bindings => validate(bindings, t.maybe(t.Obj)).isValid();
 
 /**
  * Object with Constructors at values

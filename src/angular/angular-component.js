@@ -77,8 +77,8 @@ export default class AngularComponent extends ValentComponent {
   }
 
   isIsolated() {
-    let params = this.getParams();
-    return isObject(params);
+    let bindings = this.getBindings();
+    return isObject(bindings);
   }
 
   getTransclude() {

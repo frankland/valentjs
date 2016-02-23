@@ -3,11 +3,11 @@ import camelCase from 'lodash/string/camelCase';
 import Watcher from './watcher';
 
 let getAvailableParams = (componentModel) => {
-  let params = componentModel.getParams();
+  let bindings = componentModel.getBindings();
   let keys = [];
 
-  if (isObject(params)) {
-    keys = Object.keys(params);
+  if (isObject(bindings)) {
+    keys = Object.keys(bindings);
   }
 
   if (componentModel.isAttributeComponent()) {
