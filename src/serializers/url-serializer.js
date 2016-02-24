@@ -15,22 +15,22 @@ let createDecoders = (options) => {
     // ------- NUMBER -------
     num: (raw) => raw === null ? null : parseFloat(raw),
     listNum: (raw) => !raw || !raw.length ? null : raw.split(options.listDelimiter).map(decoders.num),
-    matrixNum: (raw) => !raw || !raw.length ? null : raw.split(options.matrix_delimiter).map(decoders.listNum),
+    matrixNum: (raw) => !raw || !raw.length ? null : raw.split(options.matrixDelimiter).map(decoders.listNum),
 
     // ------- STRING -------
     str: (raw) => raw === null ? null : '' + raw,
     listStr: (raw) => !raw || !raw.length ? null : raw.split(options.listDelimiter).map(decoders.str),
-    matrixStr: (raw) => !raw || !raw.length ? null : raw.split(options.matrix_delimiter).map(decoders.listStr),
+    matrixStr: (raw) => !raw || !raw.length ? null : raw.split(options.matrixDelimiter).map(decoders.listStr),
 
     // ------- DATE-------
     date: (raw) => moment.utc(raw, options.dateFormat).toDate(),
     listDate: (raw) => !raw || !raw.length ? null : raw.split(options.listDelimiter).map(decoders.date),
-    matrixDate: (raw) => !raw || !raw.length ? null : raw.split(options.matrix_delimiter).map(decoders.listDate),
+    matrixDate: (raw) => !raw || !raw.length ? null : raw.split(options.matrixDelimiter).map(decoders.listDate),
 
     // ------- BOOL-------
     bool: (raw) => raw !== '0',
     listBool: (raw) => !raw || !raw.length ? null : raw.split(options.listDelimiter).map(decoders.bool),
-    matrixBool: (raw) => !raw || !raw.length ? null : raw.split(options.matrix_delimiter).map(decoders.listBool)
+    matrixBool: (raw) => !raw || !raw.length ? null : raw.split(options.matrixDelimiter).map(decoders.listBool)
   };
 
 
@@ -45,22 +45,22 @@ let createEncoders = (options) => {
       return encoded === 'NaN' ? null : encoded;
     },
     listNum: (value) => !isArray(value) ? null : value.map(encoders.num).join(options.listDelimiter),
-    matrixNum: (value) => !isArray(value) ? null : value.map(encoders.listNum).join(options.matrix_delimiter),
+    matrixNum: (value) => !isArray(value) ? null : value.map(encoders.listNum).join(options.matrixDelimiter),
 
     // ------- STRING -------
     str: (value) => value === null || value === undefined ? null : '' + value,
     listStr: (value) => !isArray(value) ? null : value.map(encoders.str).join(options.listDelimiter),
-    matrixStr: (value) => !isArray(value) ? null : value.map(encoders.listStr).join(options.matrix_delimiter),
+    matrixStr: (value) => !isArray(value) ? null : value.map(encoders.listStr).join(options.matrixDelimiter),
 
     // ------- DATE-------
     date: (value) => moment.utc(value).format(options.dateFormat),
     listDate: (value) => !isArray(value) ? null : value.map(encoders.date).join(options.listDelimiter),
-    matrixDate: (value) => !isArray(value) ? null : value.map(encoders.listDate).join(options.matrix_delimiter),
+    matrixDate: (value) => !isArray(value) ? null : value.map(encoders.listDate).join(options.matrixDelimiter),
 
     // ------- BOOL-------
     bool: (value) => !!value ? '1' : '0',
     listBool: (value) => !isArray(value) ? null : value.map(encoders.bool).join(options.listDelimiter),
-    matrixBool: (value) => !isArray(value) ? null : value.map(encoders.listBool).join(options.matrix_delimiter)
+    matrixBool: (value) => !isArray(value) ? null : value.map(encoders.listBool).join(options.matrixDelimiter)
   };
 
   return encoders;
