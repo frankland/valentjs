@@ -257,19 +257,20 @@ export default class Url {
     }
   }
 
-  apply() {
+  apply(defaults = {}) {
     // TODO: use cached params
     let params = this.parse();
     let links = this[_links];
     let tasks = [];
 
-    for (let key of Object.keys(params)) {
+    let struct = this.getStruct();
+    for (let key of Object.keys(struct)) {
 
       if (links.hasOwnProperty(key)) {
         let value = params[key];
         let link = links[key];
 
-        let task = link(value);
+        let task = link(value || defaults[key]);
         tasks.push(task);
       }
     }

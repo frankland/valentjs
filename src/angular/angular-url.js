@@ -88,12 +88,12 @@ export default class AngularUrl extends Url {
     let $scope = this[_scope];
 
     return $scope.$on('$routeUpdate', (event) => {
-      let valentEvent = event.$valentEvent;
+      let valentEvent = event.$valentEvent || {};
 
       let params = this.parse();
 
+      // TODO: remove diff feature
       let diff = transform(params, (result, n, key) => {
-        // TODO: use cached params instead of state
         let state = this[_state][key];
 
         if (!isEqual(n, state)) {
