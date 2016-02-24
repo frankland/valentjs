@@ -66,9 +66,9 @@ export default class AngularUrl extends Url {
 
     let url = this.stringify(params);
 
-    let ishtml5Mode = valent.config.get('routing.html5Mode');
+    let isHtml5Mode = valent.config.get('routing.html5Mode');
 
-    if(ishtml5Mode) {
+    if(isHtml5Mode) {
       window.location.href = url;
     } else {
       window.location.href = `/#/${url}`;
@@ -86,6 +86,8 @@ export default class AngularUrl extends Url {
 
   watch(callback) {
     let $scope = this[_scope];
+
+    this[_state] = this.parse();
 
     return $scope.$on('$routeUpdate', (event) => {
       let valentEvent = event.$valentEvent || {};
