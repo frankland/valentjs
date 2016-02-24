@@ -2,7 +2,7 @@ import t from 'tcomb-validation';
 
 var validate = t.validate;
 
-let templateStruct = t.union([
+const templateStruct = t.union([
   t.Str,
   t.Function
 ]);
@@ -42,7 +42,7 @@ export const isValidTemplate = template => validate(template, templateStruct).is
 export const isValidTemplateUrl = templateUrl => validate(templateUrl, t.Str).isValid();
 
 /**
- * Directive bindings
+ * Directive params
  * if Object - isolated scope
  * otherwise - new scope will not be created
  * @param bindings
@@ -53,7 +53,7 @@ export const isValidBindings = bindings => validate(bindings, t.maybe(t.Obj)).is
  * Object with Constructors at values
  * @type {{value, errors}|*}
  */
-let interfacesStructure = t.dict(t.Str, t.Function);
+const interfacesStructure = t.dict(t.Str, t.Function);
 export const isValidInterfaces = interfaces => {
   return validate(interfaces, t.maybe(interfacesStructure)).isValid();
 };
@@ -81,6 +81,10 @@ export const isValidCompileMethod = compile => validate(compile, t.maybe(t.Funct
  */
 export const isValidUrl = url => validate(url, t.union([t.list(t.Str), t.Str])).isValid();
 
-export const isValidStruct = struct => validate(struct, t.maybe(t.dict(t.Str, t.Function))).isValid();
+const structField = t.union([
+  t.tuple([t.Str, t.Function]),
+  t.Function]);
+
+export const isValidStruct = struct => validate(struct, t.maybe(t.dict(t.Str, structField))).isValid();
 
 export const isValidResolvers = resolvers => validate(resolvers, t.maybe(t.dict(t.Str, t.Function))).isValid();
