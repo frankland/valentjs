@@ -14,22 +14,22 @@ let createDecoders = (options) => {
   let decoders = {
     // ------- NUMBER -------
     num: (raw) => raw === null ? null : parseFloat(raw),
-    listNum: (raw) => !raw || !raw.length ? null : raw.split(options.list_delimiter).map(decoders.num),
+    listNum: (raw) => !raw || !raw.length ? null : raw.split(options.listDelimiter).map(decoders.num),
     matrixNum: (raw) => !raw || !raw.length ? null : raw.split(options.matrix_delimiter).map(decoders.listNum),
 
     // ------- STRING -------
     str: (raw) => raw === null ? null : '' + raw,
-    listStr: (raw) => !raw || !raw.length ? null : raw.split(options.list_delimiter).map(decoders.str),
+    listStr: (raw) => !raw || !raw.length ? null : raw.split(options.listDelimiter).map(decoders.str),
     matrixStr: (raw) => !raw || !raw.length ? null : raw.split(options.matrix_delimiter).map(decoders.listStr),
 
     // ------- DATE-------
     date: (raw) => moment.utc(raw, options.dateFormat).toDate(),
-    listDate: (raw) => !raw || !raw.length ? null : raw.split(options.list_delimiter).map(decoders.date),
+    listDate: (raw) => !raw || !raw.length ? null : raw.split(options.listDelimiter).map(decoders.date),
     matrixDate: (raw) => !raw || !raw.length ? null : raw.split(options.matrix_delimiter).map(decoders.listDate),
 
     // ------- BOOL-------
     bool: (raw) => raw !== '0',
-    listBool: (raw) => !raw || !raw.length ? null : raw.split(options.list_delimiter).map(decoders.bool),
+    listBool: (raw) => !raw || !raw.length ? null : raw.split(options.listDelimiter).map(decoders.bool),
     matrixBool: (raw) => !raw || !raw.length ? null : raw.split(options.matrix_delimiter).map(decoders.listBool)
   };
 
@@ -44,22 +44,22 @@ let createEncoders = (options) => {
       let encoded = parseFloat(value).toString(10);
       return encoded === 'NaN' ? null : encoded;
     },
-    listNum: (value) => !isArray(value) ? null : value.map(encoders.num).join(options.list_delimiter),
+    listNum: (value) => !isArray(value) ? null : value.map(encoders.num).join(options.listDelimiter),
     matrixNum: (value) => !isArray(value) ? null : value.map(encoders.listNum).join(options.matrix_delimiter),
 
     // ------- STRING -------
     str: (value) => value === null || value === undefined ? null : '' + value,
-    listStr: (value) => !isArray(value) ? null : value.map(encoders.str).join(options.list_delimiter),
+    listStr: (value) => !isArray(value) ? null : value.map(encoders.str).join(options.listDelimiter),
     matrixStr: (value) => !isArray(value) ? null : value.map(encoders.listStr).join(options.matrix_delimiter),
 
     // ------- DATE-------
     date: (value) => moment.utc(value).format(options.dateFormat),
-    listDate: (value) => !isArray(value) ? null : value.map(encoders.date).join(options.list_delimiter),
+    listDate: (value) => !isArray(value) ? null : value.map(encoders.date).join(options.listDelimiter),
     matrixDate: (value) => !isArray(value) ? null : value.map(encoders.listDate).join(options.matrix_delimiter),
 
     // ------- BOOL-------
     bool: (value) => !!value ? '1' : '0',
-    listBool: (value) => !isArray(value) ? null : value.map(encoders.bool).join(options.list_delimiter),
+    listBool: (value) => !isArray(value) ? null : value.map(encoders.bool).join(options.listDelimiter),
     matrixBool: (value) => !isArray(value) ? null : value.map(encoders.listBool).join(options.matrix_delimiter)
   };
 
@@ -177,10 +177,10 @@ export default class UrlSerializer extends RenameSerializer {
     super(struct);
 
     let serializeOptions = {
-      list_delimiter: options.list_delimiter || '~',
-      matrix_delimiter: options.matrix_delimiter || '!',
-      date_format: options.date_format || 'YYYYMMDD',
-      condition_delimiter: options.condition_delimiter || ';'
+      listDelimiter: options.listDelimiter || '~',
+      matrixDelimiter: options.matrixDelimiter || '!',
+      dateFormat: options.dateFormat || 'YYYYMMDD',
+      conditionDelimiter: options.conditionDelimiter || ';'
     };
 
     addUrlRules((struct, description) => {
@@ -189,7 +189,8 @@ export default class UrlSerializer extends RenameSerializer {
   }
 
   isEncodeAllowed(key, value) {
-    return !isEmpty(value);
+    return true;
+    //return value && value.length;
   }
 
   decode(params) {
