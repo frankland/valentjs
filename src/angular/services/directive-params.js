@@ -183,8 +183,11 @@ export default class DirectiveParams {
   }
 
   attr(key) {
-    let $attrs = this[_attrs];
-    return $attrs[key];
+    return this[_attrValues][key];
+  }
+
+  hasAttr(key) {
+    return this[_attrValues].hasOwnProperty(key);
   }
 
   parse(key) {
