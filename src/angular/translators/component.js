@@ -1,4 +1,5 @@
 import camelCase from 'lodash/string/camelCase';
+
 import isObject from 'lodash/lang/isObject';
 import isString from 'lodash/lang/isString';
 import isFunction from 'lodash/lang/isFunction';
@@ -70,32 +71,6 @@ let getInterfaces = (directiveParams, componentModel) => {
   return instances;
 };
 
-let getOptions = (directiveParams, componentModel) => {
-  let instances = [];
-
-  let options = componentModel.getOptions();
-
-  for (let key of Object.keys(options)) {
-    let interfaceInstance = directiveParams.parse(key);
-
-    let instance = null;
-    if (interfaceInstance) {
-
-      let InterfaceClass = options[key];
-
-      if (!(interfaceInstance instanceof InterfaceClass)) {
-        throw Error(`interface "${key}" has wrong class`);
-      }
-
-      instance = $scope[key];
-    }
-
-    instances.push(instance);
-  }
-
-  return instances;
-};
-
 let getRequiredControllers = (componentModel, require) => {
   let controllers = {};
   let configure = componentModel.getRequire();
@@ -109,8 +84,6 @@ let getRequiredControllers = (componentModel, require) => {
       let normalized = key.replace(/[\?\^]*/, '');
 
       if (required.hasOwnProperty('$valent')) {
-        // means that required component - valent component
-        //let valentComponentInfo = required.$valent[key];
         let namespace = required.$valent.namespace;
         api = required[namespace];
 
@@ -118,10 +91,9 @@ let getRequiredControllers = (componentModel, require) => {
           throw new Error(`"${normalized}" component has no api`);
         }
       } else {
-        // means that required component - valent component
+        // means that required component - is not valent component
         api = required;
       }
-
 
       controllers[normalized] = api;
     }
@@ -169,16 +141,12 @@ export default (componentModel) => {
     require: componentModel.getRequire(),
     controller: ['$scope', '$attrs', '$element', function($scope, $attrs, $element) {
       let instances = [];
+
       let directiveParams = new DirectiveParams($scope, $attrs, $element, componentModel);
 
       if (componentModel.hasInterfaces()) {
         let interfaces = getInterfaces(directiveParams, componentModel);
         instances = instances.concat(interfaces);
-      }
-
-      if (componentModel.hasOptions()) {
-        let options = getOptions(directiveParams, componentModel);
-        instances = instances.concat(options);
       }
 
       let Controller = componentModel.getController();

@@ -1,5 +1,6 @@
 import isObject from 'lodash/lang/isPlainObject';
 import camelCase from 'lodash/string/camelCase';
+
 import Watcher from './watcher';
 
 let getAvailableParams = (componentModel) => {
@@ -23,8 +24,72 @@ let getAvailableParams = (componentModel) => {
     }
   }
 
+  if (componentModel.getOptions()) {
+    let options = componentModel.getOptions();
+    for (let key of Object.keys(options)) {
+      let translatedKey = camelCase(key);
+      keys.push(translatedKey);
+    }
+  }
+
   return keys;
 };
+
+const processPipes = (componentModel, attrs, parse) => {
+  let normalizedPipes = {};
+
+  if (componentModel.hasPipes()) {
+    let pipes = componentModel.getPipes();
+
+    for (let key of Object.keys(pipes)) {
+      let Pipe = pipes[key];
+
+      // parse pipe from attributes
+      let value = parse(key);
+
+      if (!attrs.hasOwnProperty(key)) {
+        // if pipe's key is not exists in attributes - create it
+        value = new Pipe();
+      } else {
+        // if pipe's key is exists in attributes - use it
+        if (!(value instanceof Pipe)) {
+          throw new Error(`"${this[_name]}" - directive pipe "${key}" has wrong class`);
+        }
+      }
+
+      normalizedPipes[key] = value;
+    }
+  }
+
+  return normalizedPipes;
+};
+
+const processOptions = (componentModel, parse) => {
+  let normalizedOptions = {};
+
+  if (componentModel.hasOptions()) {
+    let options = componentModel.getOptions();
+
+    for (let key of Object.keys(options)) {
+      let optionInstance = parse(key);
+
+      if (optionInstance) {
+        let OptionClass = options[key];
+
+        if (!(optionInstance instanceof OptionClass)) {
+          throw Error(`options "${key}" has wrong class`);
+        }
+
+        normalizedOptions[key] = optionInstance;
+      } else {
+        normalizedOptions[key] = null;
+      }
+    }
+  }
+
+  return normalizedOptions;
+};
+
 
 let _scope = Symbol('$scope');
 let _attrs = Symbol('$attrs');
@@ -36,10 +101,8 @@ let _definitions = Symbol('definitions');
 let _watcher = Symbol('$watcher');
 let _name = Symbol('name');
 let _pipes = Symbol('pipes');
+let _options = Symbol('options');
 
-/**
- * TODO: redevelop Pipes
- */
 export default class DirectiveParams {
   constructor($scope, $attrs, $element, componentModel) {
     this[_scope] = $scope;
@@ -53,24 +116,22 @@ export default class DirectiveParams {
 
     this[_attrs] = $attrs;
     this[_attrValues] = {};
+
     for (let key of Object.keys(this[_attrs].$attr)) {
       this[_attrValues][key] = this[_attrs][key];
     }
 
-    // setup pipes classes and instances
-    this[_pipes] = {};
+    // setup pipes
+    this[_pipes] = processPipes(componentModel, $attrs, (key) => {
+      return this.parse(key);
+    });
 
-    if (componentModel.hasPipes()) {
-      let pipes = componentModel.getPipes();
+    // setup options
+    this[_options] = processOptions(componentModel, (key) => {
+      return this.parse(key);
+    });
 
-      for (let key of Object.keys(pipes)) {
-        this[_pipes][key] = {
-          pipe: pipes[key],
-          value: null
-        };
-      }
-    }
-
+    // initialize getters
     for (let key of this[_definitions]) {
       Object.defineProperty(this, key, {
         set: () => {
@@ -100,29 +161,14 @@ export default class DirectiveParams {
       throw new Error(`"${this[_name]}" - directive param "${key}" is not defined at directive config`);
     }
 
-    let value = this[_scope][key];
-    let attrs = this[_attrs].$attr;
+    let value = null;
 
-    if (this[_pipes].hasOwnProperty(key)) {
-      let state = this[_pipes][key];
-      let Pipe = state.pipe;
-
-      // parse pipe from attributes
-      value = this.parse(key);
-
-      if (!attrs.hasOwnProperty(key)) {
-        // if pipe's key is not exists in attributes - create it
-        if (!state.value) {
-          state.value = new Pipe();
-        }
-
-        value = state.value;
-      } else {
-        // if pipe's key is exists in attributes - use it
-        if (!(value instanceof Pipe)) {
-          throw new Error(`"${this[_name]}" - directive pipe "${key}" has wrong class`);
-        }
-      }
+    if (this[_options].hasOwnProperty(key)) {
+      value = this[_options][key];
+    } else if (this[_pipes].hasOwnProperty(key)) {
+      value = this[_pipes][key];
+    } else {
+      value = this[_scope][key];
     }
 
     return value;
@@ -150,7 +196,9 @@ export default class DirectiveParams {
     // parse - means that we parse attribute value form parent scope
     if ($attrs.hasOwnProperty(key)) {
       let expression = $attrs[key];
-      parsed = $scope.$parent.$eval(expression);
+      let scopeToParse = this[_isIsolated] ? $scope.$parent : $scope;
+
+      parsed = scopeToParse.$eval(expression);
     } else {
       //throw new Error(`"${this[_name]}" - can not parse "${key}" because this params is not passed to attributes`);
     }
