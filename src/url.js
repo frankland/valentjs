@@ -267,10 +267,10 @@ export default class Url {
     for (let key of Object.keys(struct)) {
 
       if (links.hasOwnProperty(key)) {
-        let value = params[key];
+        let value = params.hasOwnProperty(key) ? params[key] : defaults[key];
         let link = links[key];
 
-        let task = link(value || defaults[key]);
+        let task = link(value);
         tasks.push(task);
       }
     }
