@@ -57,7 +57,8 @@ export default (left, right, callOptions) => {
           });
 
         } else if (chunk.kind == 'D') {
-
+          let path = chunk.path ? chunk.path.join('.') : 'root';
+          
           description.push({
             description: `Deleted property _${path}_`,
             value: chunk.lhs
