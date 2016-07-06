@@ -111,7 +111,7 @@ export default (componentModel) => {
     let directiveName = componentModel.getDirectiveName();
     let controller = $scope.$valent[directiveName].controller;
 
-    if (controller && controller.link) {
+    if (controller.link) {
 
       let attributes = {};
       for (let key of Object.keys($attrs.$attr)) {
