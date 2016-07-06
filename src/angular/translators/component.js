@@ -106,11 +106,12 @@ let getRequiredControllers = (componentModel, require) => {
 
 export default (componentModel) => {
   let module = componentModel.getModule();
-  let controller = null;
-
 
   let link = (compileResult, $scope, $element, $attrs, require) => {
-    if (controller.link) {
+    let directiveName = componentModel.getDirectiveName();
+    let controller = $scope.$valent[directiveName].controller;
+
+    if (controller && controller.link) {
 
       let attributes = {};
       for (let key of Object.keys($attrs.$attr)) {
@@ -155,10 +156,11 @@ export default (componentModel) => {
       let logger = Logger.create(name);
 
       // controller - closed variable
-      controller = new Controller(...instances, directiveParams, logger);
+      let controller = new Controller(...instances, directiveParams, logger);
       Scope.attach(controller, $scope);
 
       let valentInfo = getValentInfo(componentModel);
+      valentInfo.controller = controller;
       let namespace = valentInfo.namespace;
 
       if (!$scope.hasOwnProperty('$valent')) {
