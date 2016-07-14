@@ -77,7 +77,12 @@ let addUrlRules = (addRule, options) => {
   };
 
   addRule(primitives.Num, num);
+  addRule(primitives.MaybeNum, num);
   addRule(primitives.ListNum, num);
+
+  addRule(primitives.Int, num);
+  addRule(primitives.MaybeInt, num);
+  addRule(primitives.ListInt, num);
 
   let numList = {
     decode: decoders.listNum,
@@ -86,6 +91,7 @@ let addUrlRules = (addRule, options) => {
 
   addRule(primitives.ListNum, numList);
   addRule(primitives.MaybeListNum, numList);
+  addRule(primitives.MaybeListInt, numList);
 
   let matrixNum = {
     encode: encoders.matrixNum,
