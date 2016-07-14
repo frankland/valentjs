@@ -81,6 +81,11 @@ var addUrlRules = (urlSerializer, options) => {
 
   urlSerializer.addRule(primitives.Num, Num);
   urlSerializer.addRule(primitives.ListNum, Num);
+  urlSerializer.addRule(primitives.MaybeNum, Num);
+
+  urlSerializer.addRule(primitives.Int, Num);
+  urlSerializer.addRule(primitives.MaybeInt, Num);
+  urlSerializer.addRule(primitives.ListInt, Num);
 
   var ListNum = {
     decode: (raw) => {
@@ -99,6 +104,7 @@ var addUrlRules = (urlSerializer, options) => {
 
   urlSerializer.addRule(primitives.ListNum, ListNum);
   urlSerializer.addRule(primitives.MaybeListNum, ListNum);
+  urlSerializer.addRule(primitives.MaybeListInt, ListNum);
 
   var ListListNum = {
     decode: (raw) => {
