@@ -98,7 +98,7 @@ export default (routeModel, config) => {
   } else if (routeModel.hasTemplateUrl()) {
 
     // set templateUrl
-    configuration.templateUrl = routeModel.hasTemplateUrl();
+    configuration.templateUrl = routeModel.getTemplateUrl();
   }
 
   let routes = null;
