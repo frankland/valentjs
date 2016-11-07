@@ -91,17 +91,19 @@ export default class AngularUrl extends Url {
 
     return $scope.$on('$routeUpdate', (event) => {
       let valentEvent = event.$valentEvent || {};
-
       let params = this.parse();
 
       // TODO: remove diff feature
-      let diff = transform(params, (result, n, key) => {
-        let state = this[_state][key];
+      let state = this[_state];
+      let allkeys = union(Object.keys(params), Object.keys(state));
 
-        if (!isEqual(n, state)) {
-          result[key] = n;
+      let diff = reduce(allkeys, function (result, key) {
+        if (!isEqual(params[key], state[key])) {
+          result[key] = params[key];
         }
-      });
+
+        return result;
+      }, {});
 
       this[_state] = cloneDeep(params);
 
