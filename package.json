@@ -1,6 +1,6 @@
 {
   "name": "valent",
-  "version": "0.1.0-rc18",
+  "version": "0.1.0-rc19",
   "repository": "https://github.com/frankland/valent",
   "description": "Helpfull ES6 runtime for angular",
   "scripts": {
