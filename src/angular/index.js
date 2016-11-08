@@ -25,14 +25,22 @@ export default class Angular {
   controller = AngularController;
   route = AngularRoute;
 
+  state = 'prepare';
+
   translate = {
     component: (component, config) => {
       let translated = componentTranslator(component, config);
       let application = translated.module || this[_app];
 
-      angular.module(application)
-        .directive(translated.name, () => translated.configuration);
+      if (this.state == 'started') {
+        console.log('compile diretive', translated.name);
+        this.compileProvider.directive(translated.name, () => translated.configuration);
+      } else {
+        angular.module(application)
+          .directive(translated.name, () => translated.configuration);
+      }
     },
+
 
     controller: (controller, config) => {
       let translated = controllerTranslator(controller, config);
@@ -60,7 +68,6 @@ export default class Angular {
             $routeProvider.when(url, translated.configuration);
           }
         }]);
-
     }
   };
 
@@ -87,6 +94,8 @@ export default class Angular {
   }
 
   bootstrap(config) {
+    this.state = 'bootstrap';
+
     let module = this[_app];
 
     // initialize exception handler
@@ -142,102 +151,108 @@ export default class Angular {
       }
     }
 
-    app.config(['$locationProvider', '$routeProvider', ($locationProvider, $routeProvider) => {
-      $locationProvider.html5Mode({
-        enabled: config.get('routing.html5Mode'),
-        requireBase: config.get('routing.requireBase')
-      });
+    app.config(['$locationProvider', '$routeProvider', '$compileProvider',
+      ($locationProvider, $routeProvider, $compileProvider) => {
+        this.compileProvider = $compileProvider;
+        this.state = 'config';
 
-      if (redirectTo) {
-        $routeProvider.otherwise({
-          redirectTo
+        $locationProvider.html5Mode({
+          enabled: config.get('routing.html5Mode'),
+          requireBase: config.get('routing.requireBase')
         });
-      } else if (otherwiseConfig) {
-        $routeProvider.otherwise(otherwiseConfig);
-      }
-    }]);
 
-    app.run(['$injector', '$rootScope', '$location', ($injector, $rootScope, $location) => {
-      // initialize injector
-      Injector.setInjector($injector);
+        if (redirectTo) {
+          $routeProvider.otherwise({
+            redirectTo
+          });
+        } else if (otherwiseConfig) {
+          $routeProvider.otherwise(otherwiseConfig);
+        }
+      }]);
 
-      // initialize route events
-      let hooks = config.route.getHooks();
+      app.run(['$injector', '$rootScope', '$location', ($injector, $rootScope, $location) => {
+        this.state = 'run';
 
-      if (isFunction(hooks.error)) {
-        $rootScope.$on('$routeChangeError', (event, current, previous, rejection) => {
+        // initialize injector
+        Injector.setInjector($injector);
+
+        // initialize route events
+        let hooks = config.route.getHooks();
+
+        if (isFunction(hooks.error)) {
+          $rootScope.$on('$routeChangeError', (event, current, previous, rejection) => {
+            let hasRoute = current.hasOwnProperty('$$route');
+
+            let currentRouteName = 'valent.otherwise';
+            if (hasRoute) {
+              currentRouteName = current.$$route.controller;
+            }
+
+            let previousRouteName = (previous && previous.$$route) ? previous.$$route.controller : null;
+
+            let currentRouteModel = _routeModels.get(currentRouteName);
+            let previousRouteModel = null;
+
+            if (previousRouteName) {
+              previousRouteModel = _routeModels.get(previousRouteName);
+            }
+
+            hooks.error(currentRouteModel, previousRouteModel, rejection, () => {
+              event.preventDefault();
+            });
+          });
+        }
+
+        if (isFunction(hooks.success)) {
+          $rootScope.$on('$routeChangeSuccess', (event, current, previous) => {
+            let hasRoute = current.hasOwnProperty('$$route');
+
+            let currentRouteName = 'valent.otherwise';
+            if (hasRoute) {
+              currentRouteName = current.$$route.controller;
+            }
+
+            let previousRouteName = (previous && previous.$$route) ? previous.$$route.controller : null;
+
+            let currentRouteModel = _routeModels.get(currentRouteName);
+            let previousRouteModel = null;
+
+            if (previousRouteName) {
+              previousRouteModel = _routeModels.get(previousRouteName);
+            }
+
+            hooks.success(currentRouteModel, previousRouteModel, () => {
+              event.preventDefault();
+            });
+          });
+        }
+
+        $rootScope.$on('$routeChangeStart', (event, current, previous) => {
+          Logger.resetColors();
+
           let hasRoute = current.hasOwnProperty('$$route');
-
           let currentRouteName = 'valent.otherwise';
           if (hasRoute) {
             currentRouteName = current.$$route.controller;
           }
 
+          if (isFunction(hooks.start)) {
+            let previousRouteName = (previous && previous.$$route) ? previous.$$route.controller : null;
 
-          let previousRouteName = (previous && previous.$$route) ? previous.$$route.controller : null;
+            let currentRouteModel = _routeModels.get(currentRouteName);
+            let previousRouteModel = null;
 
-          let currentRouteModel = _routeModels.get(currentRouteName);
-          let previousRouteModel = null;
+            if (previousRouteName) {
+              previousRouteModel = _routeModels.get(previousRouteName);
+            }
 
-          if (previousRouteName) {
-            previousRouteModel = _routeModels.get(previousRouteName);
+            hooks.start(currentRouteModel, previousRouteModel, () => {
+              event.preventDefault();
+            });
           }
-
-          hooks.error(currentRouteModel, previousRouteModel, rejection, () => {
-            event.preventDefault();
-          });
         });
-      }
 
-      if (isFunction(hooks.success)) {
-        $rootScope.$on('$routeChangeSuccess', (event, current, previous) => {
-          let hasRoute = current.hasOwnProperty('$$route');
-
-          let currentRouteName = 'valent.otherwise';
-          if (hasRoute) {
-            currentRouteName = current.$$route.controller;
-          }
-
-          let previousRouteName = (previous && previous.$$route) ? previous.$$route.controller : null;
-
-          let currentRouteModel = _routeModels.get(currentRouteName);
-          let previousRouteModel = null;
-
-          if (previousRouteName) {
-            previousRouteModel = _routeModels.get(previousRouteName);
-          }
-
-          hooks.success(currentRouteModel, previousRouteModel, () => {
-            event.preventDefault();
-          });
-
-        });
-      }
-
-      $rootScope.$on('$routeChangeStart', (event, current, previous) => {
-        Logger.resetColors();
-
-        let hasRoute = current.hasOwnProperty('$$route');
-        let currentRouteName = 'valent.otherwise';
-        if (hasRoute) {
-          currentRouteName = current.$$route.controller;
-        }
-
-        if (isFunction(hooks.start)) {
-          let previousRouteName = (previous && previous.$$route) ? previous.$$route.controller : null;
-
-          let currentRouteModel = _routeModels.get(currentRouteName);
-          let previousRouteModel = null;
-
-          if (previousRouteName) {
-            previousRouteModel = _routeModels.get(previousRouteName);
-          }
-
-          hooks.start(currentRouteModel, previousRouteModel, () => {
-            event.preventDefault();
-          });
-        }
-      });
+        this.state = 'started';
     }]);
   }
 }

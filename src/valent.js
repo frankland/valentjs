@@ -8,6 +8,26 @@ let _routes = Symbol('routes');
 let _framework = Symbol('framework');
 let _bootstrap = Symbol('bootstrap');
 
+const translateComponents = (framework, components, config) => {
+  let isDevEnvironment = config.get('valent.environment.dev', true);
+  let FrameworkComponentClass = framework.component;
+
+  for (let component of components) {
+    let args = [component.name, component.controller, component.options];
+
+    if (isDevEnvironment) {
+      let errors = FrameworkComponentClass.validate(...args);
+
+      if (errors.length) {
+        throw new RegisterException(component.name, 'valent-component', errors);
+      }
+    }
+
+    let frameworkComponent = new FrameworkComponentClass(...args);
+    framework.translate.component(frameworkComponent, config);
+  }
+};
+
 class Valent {
   version = '0.1.0';
 
@@ -36,22 +56,7 @@ class Valent {
     let isDevEnvironment = this.config.get('valent.environment.dev', true);
 
     // --- TRANSLATE COMPONENTS(DIRECTIVES)
-    let FrameworkComponentClass = this[_framework].component;
-
-    for (let component of this[_components]) {
-      let args = [component.name, component.controller, component.options];
-
-      if (isDevEnvironment) {
-        let errors = FrameworkComponentClass.validate(...args);
-
-        if (errors.length) {
-          throw new RegisterException(component.name, 'valent-component', errors);
-        }
-      }
-
-      let frameworkComponent = new FrameworkComponentClass(...args);
-      this[_framework].translate.component(frameworkComponent, this.config);
-    }
+    translateComponents(this[_framework], this[_components], this.config);
 
     // --- TRANSLATE CONTROLLERS
     let FrameworkControllerClass = this[_framework].controller;
@@ -97,15 +102,19 @@ class Valent {
   }
 
   component(name, Component, options = {}) {
-    if (this[_bootstrap]) {
-      throw new Error('component could no be registered after bootstrap');
-    }
-
-    this[_components].add({
+    const component = {
       name,
       controller: Component,
       options
-    });
+    };
+
+    if (this[_bootstrap]) {
+      console.info(`register comopnent "${name}" as lazy component`);
+      translateComponents(this[_framework], [component], this.config);
+      // throw new Error('component could no be registered after bootstrap');
+    } else {
+      this[_components].add(component);
+    }
   }
 
   controller(name, Controller, options = {}) {
