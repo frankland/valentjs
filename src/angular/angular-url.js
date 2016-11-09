@@ -2,7 +2,8 @@ import isObject from 'lodash/lang/isObject';
 import isEqual from 'lodash/lang/isEqual';
 import cloneDeep from 'lodash/lang/cloneDeep';
 
-import transform from 'lodash/object/transform';
+import union from 'lodash/array/union';
+import reduce from 'lodash/collection/reduce';
 
 import Url from '../url';
 
