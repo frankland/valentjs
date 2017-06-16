@@ -1,7 +1,7 @@
-import isFunction from 'lodash/lang/isFunction';
-import isObject from 'lodash/lang/isObject';
-import isArray from 'lodash/lang/isArray';
-import isEmpty from 'lodash/lang/isEmpty';
+import isFunction from 'lodash/isFunction';
+import isObject from 'lodash/isObject';
+import isArray from 'lodash/isArray';
+import isEmpty from 'lodash/isEmpty';
 
 import t from 'tcomb';
 
@@ -28,7 +28,9 @@ export default class Serializer {
     }
 
     if (!isFunction(serializer.encode) || !isFunction(serializer.decode)) {
-      throw new Error('Serialize rule should implement both @encode and @decode methods');
+      throw new Error(
+        'Serialize rule should implement both @encode and @decode methods'
+      );
     }
     this[_rules].set(namespace, serializer);
   }
@@ -40,7 +42,6 @@ export default class Serializer {
     let encodedObject = {};
 
     for (let key of Object.keys(struct)) {
-
       if (params.hasOwnProperty(key)) {
         let structItem = struct[key];
 
@@ -56,7 +57,9 @@ export default class Serializer {
             try {
               structItem(value);
             } catch (e) {
-              throw new Error(`value with id "${key}" has wrong struct. Expected "${structItem.displayName}", but value is "${value}"`);
+              throw new Error(
+                `value with id "${key}" has wrong struct. Expected "${structItem.displayName}", but value is "${value}"`
+              );
             }
           }
 
@@ -70,7 +73,6 @@ export default class Serializer {
     return encodedObject;
   }
 
-
   decode(params) {
     let struct = this.getStruct();
     let rules = this.getRules();
@@ -78,7 +80,6 @@ export default class Serializer {
 
     //let props = struct;
     for (let key of Object.keys(struct)) {
-
       if (params.hasOwnProperty(key)) {
         let structItem = struct[key];
         if (!rules.has(structItem)) {

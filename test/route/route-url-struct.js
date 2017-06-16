@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import * as primitives from '../../src/utils/struct-primitives';
+import * as primitives from '../../src/utils/primitives';
 import t from 'tcomb';
 
 import RouteFlow from '../../src/route/route-flow';
@@ -11,7 +11,7 @@ import Url from '../../src/components/url';
 describe('Route url struct', () => {
   var urlSerializer = new Url('/test/serializer', {
     id: primitives.Num,
-    name: primitives.Str
+    name: primitives.Str,
   });
 
   Url.clear();
@@ -20,10 +20,12 @@ describe('Route url struct', () => {
   it('should work encode correctly', () => {
     var url = Url.get('test.route');
 
-    expect(url.stringify({
-      id: 1,
-      name: 'sads'
-    })).to.be.equal('/test/serializer?id=1&name=sads');
+    expect(
+      url.stringify({
+        id: 1,
+        name: 'sads',
+      })
+    ).to.be.equal('/test/serializer?id=1&name=sads');
   });
 
   it('should work decode correctly', () => {
@@ -31,7 +33,7 @@ describe('Route url struct', () => {
 
     expect(url.decode('/test/serializer?id=1&name=sads')).to.be.eql({
       id: 1,
-      name: 'sads'
+      name: 'sads',
     });
   });
 });

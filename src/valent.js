@@ -1,7 +1,6 @@
 import ApplicationConfig from './application-config';
 import RegisterException from './exceptions/register';
 
-
 let _controllers = Symbol('controllers');
 let _components = Symbol('components');
 let _routes = Symbol('routes');
@@ -36,9 +35,9 @@ class Valent {
       version: this.version,
       environment: {
         dev: true,
-        debug: false
-      }
-    }
+        debug: false,
+      },
+    },
   });
 
   constructor() {
@@ -70,7 +69,11 @@ class Valent {
         let errors = FrameworkControllerClass.validate(...args);
 
         if (errors.length) {
-          throw new RegisterException(controller.name, 'valent-controller', errors);
+          throw new RegisterException(
+            controller.name,
+            'valent-controller',
+            errors
+          );
         }
       }
 
@@ -93,7 +96,6 @@ class Valent {
         }
       }
 
-
       this[_framework].translate.route(frameworkRoute, this.config);
     }
 
@@ -105,7 +107,7 @@ class Valent {
     const component = {
       name,
       controller: Component,
-      options
+      options,
     };
 
     if (this[_bootstrap]) {
@@ -125,7 +127,7 @@ class Valent {
     this[_controllers].add({
       name,
       controller: Controller,
-      options
+      options,
     });
   }
 
@@ -137,11 +139,10 @@ class Valent {
     this[_routes].add({
       name,
       url,
-      options
+      options,
     });
   }
 }
-
 
 let valent = null;
 let context = typeof window !== 'undefined' ? window : global;

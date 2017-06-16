@@ -1,9 +1,9 @@
-import isObject from 'lodash/lang/isPlainObject';
-import camelCase from 'lodash/string/camelCase';
+import isObject from 'lodash/isPlainObject';
+import camelCase from 'lodash/camelCase';
 
 import Watcher from './watcher';
 
-let getAvailableParams = (componentModel) => {
+let getAvailableParams = componentModel => {
   let bindings = componentModel.getBindings();
   let keys = [];
 
@@ -53,7 +53,9 @@ const processPipes = (componentModel, attrs, parse) => {
       } else {
         // if pipe's key is exists in attributes - use it
         if (!(value instanceof Pipe)) {
-          throw new Error(`"${this[_name]}" - directive pipe "${key}" has wrong class`);
+          throw new Error(
+            `"${this[_name]}" - directive pipe "${key}" has wrong class`
+          );
         }
       }
 
@@ -90,7 +92,6 @@ const processOptions = (componentModel, parse) => {
   return normalizedOptions;
 };
 
-
 let _scope = Symbol('$scope');
 let _attrs = Symbol('$attrs');
 let _attrValues = Symbol('attributes-inline-values');
@@ -113,7 +114,6 @@ export default class DirectiveParams {
     this[_definitions] = getAvailableParams(componentModel);
     this[_watcher] = new Watcher($scope);
 
-
     this[_attrs] = $attrs;
     this[_attrValues] = {};
 
@@ -122,12 +122,12 @@ export default class DirectiveParams {
     }
 
     // setup pipes
-    this[_pipes] = processPipes(componentModel, $attrs, (key) => {
+    this[_pipes] = processPipes(componentModel, $attrs, key => {
       return this.parse(key);
     });
 
     // setup options
-    this[_options] = processOptions(componentModel, (key) => {
+    this[_options] = processOptions(componentModel, key => {
       return this.parse(key);
     });
 
@@ -139,7 +139,7 @@ export default class DirectiveParams {
         },
         get: () => {
           return this.get(key);
-        }
+        },
       });
     }
   }
@@ -158,7 +158,11 @@ export default class DirectiveParams {
 
   get(key) {
     if (!this.isAvailable(key)) {
-      throw new Error(`"${this[_name]}" - directive param "${key}" is not defined at directive config`);
+      throw new Error(
+        `"${this[
+          _name
+        ]}" - directive param "${key}" is not defined at directive config`
+      );
     }
 
     let value = null;
@@ -176,7 +180,11 @@ export default class DirectiveParams {
 
   watch(key, cb) {
     if (!this.isAvailable(key)) {
-      throw new Error(`"${this[_name]}" - can not initialize watcher for "${key}" because this params is not defined at directive config`);
+      throw new Error(
+        `"${this[
+          _name
+        ]}" - can not initialize watcher for "${key}" because this params is not defined at directive config`
+      );
     }
 
     return this[_watcher].watch(key, cb);

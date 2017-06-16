@@ -1,5 +1,5 @@
-import isString from 'lodash/lang/isString';
-import isFunction from 'lodash/lang/isFunction';
+import isString from 'lodash/isString';
+import isFunction from 'lodash/isFunction';
 
 import Injector from './services/injector';
 import Logger from '../utils/logger';
@@ -34,19 +34,23 @@ export default class Angular {
 
       if (this.state == 'started') {
         console.log('compile diretive', translated.name);
-        this.compileProvider.directive(translated.name, () => translated.configuration);
+        this.compileProvider.directive(
+          translated.name,
+          () => translated.configuration
+        );
       } else {
-        angular.module(application)
+        angular
+          .module(application)
           .directive(translated.name, () => translated.configuration);
       }
     },
-
 
     controller: (controller, config) => {
       let translated = controllerTranslator(controller, config);
       let application = translated.module || this[_app];
 
-      angular.module(application)
+      angular
+        .module(application)
         .controller(translated.name, translated.configuration);
     },
 
@@ -61,14 +65,15 @@ export default class Angular {
 
       _routeModels.set(name, route);
 
-      angular.module(application)
-        .config(['$routeProvider', ($routeProvider) => {
-
+      angular.module(application).config([
+        '$routeProvider',
+        $routeProvider => {
           for (let url of translated.routes) {
             $routeProvider.when(url, translated.configuration);
           }
-        }]);
-    }
+        },
+      ]);
+    },
   };
 
   constructor(app, options = {}) {
@@ -101,14 +106,16 @@ export default class Angular {
     // initialize exception handler
     let exceptionHandler = config.exception.getHandler();
     if (isFunction(exceptionHandler)) {
-      angular.module(module).config(['$provide', ($provide) => {
-
-        $provide.decorator('$exceptionHandler', ($delegate) => {
-          return (exception, cause) => {
-            exceptionHandler(exception, cause, $delegate);
-          }
-        });
-      }]);
+      angular.module(module).config([
+        '$provide',
+        $provide => {
+          $provide.decorator('$exceptionHandler', $delegate => {
+            return (exception, cause) => {
+              exceptionHandler(exception, cause, $delegate);
+            };
+          });
+        },
+      ]);
     }
 
     let app = this.getAngularModule();
@@ -138,39 +145,54 @@ export default class Angular {
           otherwise[1].template = renderMethod;
         }
 
-        let otherwiseRoute = new this.route('valent.otherwise', null, otherwise[1]);
+        let otherwiseRoute = new this.route(
+          'valent.otherwise',
+          null,
+          otherwise[1]
+        );
         let translatedRoute = routeTranslator(otherwiseRoute, config);
 
         otherwiseConfig = translatedRoute.configuration;
         _routeModels.set('valent.otherwise', otherwiseRoute);
 
         // otherwise controller
-        let otherwiseController = new this.controller('valent.otherwise', otherwise[0]);
+        let otherwiseController = new this.controller(
+          'valent.otherwise',
+          otherwise[0]
+        );
         otherwiseController.otherwise = true;
         this.translate.controller(otherwiseController, config);
       }
     }
 
-    app.config(['$locationProvider', '$routeProvider', '$compileProvider',
+    app.config([
+      '$locationProvider',
+      '$routeProvider',
+      '$compileProvider',
       ($locationProvider, $routeProvider, $compileProvider) => {
         this.compileProvider = $compileProvider;
         this.state = 'config';
 
         $locationProvider.html5Mode({
           enabled: config.get('routing.html5Mode'),
-          requireBase: config.get('routing.requireBase')
+          requireBase: config.get('routing.requireBase'),
         });
 
         if (redirectTo) {
           $routeProvider.otherwise({
-            redirectTo
+            redirectTo,
           });
         } else if (otherwiseConfig) {
           $routeProvider.otherwise(otherwiseConfig);
         }
-      }]);
+      },
+    ]);
 
-      app.run(['$injector', '$rootScope', '$location', ($injector, $rootScope, $location) => {
+    app.run([
+      '$injector',
+      '$rootScope',
+      '$location',
+      ($injector, $rootScope, $location) => {
         this.state = 'run';
 
         // initialize injector
@@ -180,27 +202,37 @@ export default class Angular {
         let hooks = config.route.getHooks();
 
         if (isFunction(hooks.error)) {
-          $rootScope.$on('$routeChangeError', (event, current, previous, rejection) => {
-            let hasRoute = current.hasOwnProperty('$$route');
+          $rootScope.$on(
+            '$routeChangeError',
+            (event, current, previous, rejection) => {
+              let hasRoute = current.hasOwnProperty('$$route');
 
-            let currentRouteName = 'valent.otherwise';
-            if (hasRoute) {
-              currentRouteName = current.$$route.controller;
+              let currentRouteName = 'valent.otherwise';
+              if (hasRoute) {
+                currentRouteName = current.$$route.controller;
+              }
+
+              let previousRouteName = previous && previous.$$route
+                ? previous.$$route.controller
+                : null;
+
+              let currentRouteModel = _routeModels.get(currentRouteName);
+              let previousRouteModel = null;
+
+              if (previousRouteName) {
+                previousRouteModel = _routeModels.get(previousRouteName);
+              }
+
+              hooks.error(
+                currentRouteModel,
+                previousRouteModel,
+                rejection,
+                () => {
+                  event.preventDefault();
+                }
+              );
             }
-
-            let previousRouteName = (previous && previous.$$route) ? previous.$$route.controller : null;
-
-            let currentRouteModel = _routeModels.get(currentRouteName);
-            let previousRouteModel = null;
-
-            if (previousRouteName) {
-              previousRouteModel = _routeModels.get(previousRouteName);
-            }
-
-            hooks.error(currentRouteModel, previousRouteModel, rejection, () => {
-              event.preventDefault();
-            });
-          });
+          );
         }
 
         if (isFunction(hooks.success)) {
@@ -212,7 +244,9 @@ export default class Angular {
               currentRouteName = current.$$route.controller;
             }
 
-            let previousRouteName = (previous && previous.$$route) ? previous.$$route.controller : null;
+            let previousRouteName = previous && previous.$$route
+              ? previous.$$route.controller
+              : null;
 
             let currentRouteModel = _routeModels.get(currentRouteName);
             let previousRouteModel = null;
@@ -237,7 +271,9 @@ export default class Angular {
           }
 
           if (isFunction(hooks.start)) {
-            let previousRouteName = (previous && previous.$$route) ? previous.$$route.controller : null;
+            let previousRouteName = previous && previous.$$route
+              ? previous.$$route.controller
+              : null;
 
             let currentRouteModel = _routeModels.get(currentRouteName);
             let previousRouteModel = null;
@@ -253,6 +289,7 @@ export default class Angular {
         });
 
         this.state = 'started';
-    }]);
+      },
+    ]);
   }
 }

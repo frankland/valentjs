@@ -3,7 +3,6 @@ import { expect } from 'chai';
 import { RouteConfig } from '../../src/route/route-config';
 import routeConfig from '../../src/route/route-config';
 
-
 describe('Route Config', () => {
   it('should be an object', () => {
     expect(routeConfig).to.be.an('object');
@@ -30,7 +29,10 @@ describe('Route Config', () => {
     expect(routeConfig.isHtml5Mode()).to.equal(false);
 
     expect(routeConfig.getResolvers()).to.be.an('object');
-    expect(routeConfig.getResolvers()).have.all.keys(['access.guest', 'access.admin']);
+    expect(routeConfig.getResolvers()).have.all.keys([
+      'access.guest',
+      'access.admin',
+    ]);
   });
 
   it('should accept otherwise as string', () => {
@@ -52,9 +54,11 @@ describe('Route Config', () => {
   it('should not accept otherwise as object', () => {
     var routeConfig = new RouteConfig();
 
-    expect(() => routeConfig.setOtherwise({
-      template: '404.html',
-      controller: 'application.not-found.controller'
-    })).to.throw(Error);
+    expect(() =>
+      routeConfig.setOtherwise({
+        template: '404.html',
+        controller: 'application.not-found.controller',
+      })
+    ).to.throw(Error);
   });
 });

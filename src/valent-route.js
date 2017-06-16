@@ -34,12 +34,17 @@ export default class ValentController {
     let errors = [];
 
     if (!isValidName) {
-      errors.push('Component\'s name could not be empty or with spaces');
+      errors.push("Component's name could not be empty or with spaces");
     }
 
     // if al least two template options are defined
-    if ((isValidTemplate && isValidTemplateUrl) || (!isValidTemplate && !isValidTemplateUrl)) {
-      errors.push('Should have only one - template, templateUrl or static render() option');
+    if (
+      (isValidTemplate && isValidTemplateUrl) ||
+      (!isValidTemplate && !isValidTemplateUrl)
+    ) {
+      errors.push(
+        'Should have only one - template, templateUrl or static render() option'
+      );
     }
 
     if (!otherwise && !isValidUrl) {
@@ -47,11 +52,11 @@ export default class ValentController {
     }
 
     if (!isValidStruct) {
-      errors.push('Struct should be an object of tcomb models')
+      errors.push('Struct should be an object of tcomb models');
     }
 
     if (!isValidResolvers) {
-      errors.push('Struct should be an object of functions')
+      errors.push('Struct should be an object of functions');
     }
 
     return errors;

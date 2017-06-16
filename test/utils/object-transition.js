@@ -2,7 +2,6 @@ import { expect } from 'chai';
 
 import ObjectTransition from '../../src/utils/object-transition';
 
-
 describe('Object transition', () => {
   it('should not change source object without .push()', () => {
     var o1 = {};
@@ -25,9 +24,9 @@ describe('Object transition', () => {
 
     expect(o1).to.eql({
       foo: {
-        bar: 1
+        bar: 1,
       },
-      test: 2
+      test: 2,
     });
   });
 
@@ -39,8 +38,8 @@ describe('Object transition', () => {
 
     expect(o1).to.eql({
       foo: {
-        bar: 3
-      }
+        bar: 3,
+      },
     });
   });
 

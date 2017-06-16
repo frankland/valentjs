@@ -9,7 +9,6 @@ var applicationName2 = 'valent.route';
 
 var template = '<div>Hello World</div>';
 
-
 describe('Controller model', () => {
   it('controller and route application name (first set controller model)', () => {
     var controllerModel = new ControllerModel('home.dashboard');

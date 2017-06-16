@@ -1,16 +1,15 @@
-import camelCase from 'lodash/string/camelCase';
+import camelCase from 'lodash/camelCase';
 
-import isObject from 'lodash/lang/isPlainObject';
-import isBoolean from 'lodash/lang/isBoolean';
-import isString from 'lodash/lang/isString';
-import isFunction from 'lodash/lang/isFunction';
-import isArray from 'lodash/lang/isArray';
+import isObject from 'lodash/isPlainObject';
+import isBoolean from 'lodash/isBoolean';
+import isString from 'lodash/isString';
+import isFunction from 'lodash/isFunction';
+import isArray from 'lodash/isArray';
 
 import RegisterException from '../exceptions/register';
 import ValentComponent from '../valent-component';
 
 import * as validation from './validation/structures';
-
 
 let normalize = options => {
   let require = options.require;
@@ -25,7 +24,7 @@ let normalize = options => {
   }
 
   return Object.assign({}, options, {
-    require: normalizedRequire
+    require: normalizedRequire,
   });
 };
 
@@ -43,13 +42,14 @@ export default class AngularComponent extends ValentComponent {
     let isValidModule = validation.isValidModule(options.module);
     let isValidNamespace = validation.isValidNamespace(options.as);
 
-
     if (!isValidRequire) {
       errors.push('require should string or array of strings');
     }
 
     if (!isValidTransclude) {
-      errors.push('transclude should be boolean value or object (for multi-slot transclude)');
+      errors.push(
+        'transclude should be boolean value or object (for multi-slot transclude)'
+      );
     }
 
     if (!isValidModule) {

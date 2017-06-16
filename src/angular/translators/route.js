@@ -1,8 +1,7 @@
-import isArray from 'lodash/lang/isArray';
-import isFunction from 'lodash/lang/isFunction';
+import isArray from 'lodash/isArray';
+import isFunction from 'lodash/isFunction';
 
 import AngularUrl from '../angular-url';
-
 
 let resolve = (resolvers, args = {}) => {
   let dependencies = Object.keys(resolvers);
@@ -43,13 +42,19 @@ let getValentResolver = (config, routeModel) => ({
     let result = {};
 
     if (config.route.hasResolvers()) {
-      result = resolve(globalResolvers, resolverArguments).then(globalResult => {
+      result = resolve(
+        globalResolvers,
+        resolverArguments
+      ).then(globalResult => {
         let resolveResult = null;
 
         if (routeModel.hasResolvers()) {
           let localResolvers = routeModel.getResolvers();
 
-          resolveResult = resolve(localResolvers, resolverArguments).then(localResult => {
+          resolveResult = resolve(
+            localResolvers,
+            resolverArguments
+          ).then(localResult => {
             return Object.assign({}, globalResult, localResult);
           });
         } else {
@@ -64,7 +69,7 @@ let getValentResolver = (config, routeModel) => ({
     }
 
     return result;
-  }
+  },
 });
 
 export default (routeModel, config) => {
@@ -73,11 +78,11 @@ export default (routeModel, config) => {
 
   let params = routeModel.getParams();
   let defaultRouteParams = {
-    reloadOnSearch: false
+    reloadOnSearch: false,
   };
 
   let configuration = Object.assign(defaultRouteParams, params, {
-    controller: name
+    controller: name,
   });
 
   let globalResolvers = config.route.getResolvers();
@@ -87,7 +92,6 @@ export default (routeModel, config) => {
   }
 
   if (routeModel.hasTemplate()) {
-
     // set template
     let template = routeModel.getTemplate();
     if (isFunction(template)) {
@@ -96,7 +100,6 @@ export default (routeModel, config) => {
       configuration.template = template;
     }
   } else if (routeModel.hasTemplateUrl()) {
-
     // set templateUrl
     configuration.templateUrl = routeModel.getTemplateUrl();
   }
@@ -114,17 +117,17 @@ export default (routeModel, config) => {
     let structure = routeModel.getStructure();
     let pattern = routes[0];
 
-    url = () => { // ?
+    url = () => {
+      // ?
       return new AngularUrl(pattern, structure);
     };
   }
-
 
   return {
     name,
     module,
     routes,
     url,
-    configuration
-  }
-}
+    configuration,
+  };
+};

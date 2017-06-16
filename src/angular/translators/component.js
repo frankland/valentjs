@@ -1,9 +1,9 @@
-import camelCase from 'lodash/string/camelCase';
+import camelCase from 'lodash/camelCase';
 
-import isObject from 'lodash/lang/isObject';
-import isString from 'lodash/lang/isString';
-import isFunction from 'lodash/lang/isFunction';
-import isArray from 'lodash/lang/isArray';
+import isObject from 'lodash/isObject';
+import isString from 'lodash/isString';
+import isFunction from 'lodash/isFunction';
+import isArray from 'lodash/isArray';
 
 import Logger from '../../utils/logger';
 import Injector from '../services/injector';
@@ -12,20 +12,23 @@ import Compiler from '../services/compiler';
 import DirectiveParams from '../services/directive-params';
 import Scope from '../services/scope';
 
-let getValentInfo = (componentModel) => {
+let getValentInfo = componentModel => {
   return {
     type: 'component',
     name: componentModel.getName(),
-    namespace: componentModel.getNamespace()
+    namespace: componentModel.getNamespace(),
   };
 };
 
-let translateRestrict = (componentModel) => {
+let translateRestrict = componentModel => {
   let restrict = componentModel.getRestrict();
 
   if (!restrict) {
     // TODO: check if we need to compile directive with restrict A
-    if (componentModel.withoutTemplate() && !componentModel.hasCompileMethod()) {
+    if (
+      componentModel.withoutTemplate() &&
+      !componentModel.hasCompileMethod()
+    ) {
       restrict = 'A';
     } else {
       restrict = 'E';
@@ -35,7 +38,7 @@ let translateRestrict = (componentModel) => {
   return restrict;
 };
 
-let translateParams = (componentModel) => {
+let translateParams = componentModel => {
   let bindings = componentModel.getBindings();
   let angularScope = null;
 
@@ -104,7 +107,7 @@ let getRequiredControllers = (componentModel, require) => {
   return controllers;
 };
 
-export default (componentModel) => {
+export default componentModel => {
   let module = componentModel.getModule();
 
   let link = (compileResult, $scope, $element, $attrs, require) => {
@@ -112,7 +115,6 @@ export default (componentModel) => {
     let controller = $scope.$valent[directiveName].controller;
 
     if (controller.link) {
-
       let attributes = {};
       for (let key of Object.keys($attrs.$attr)) {
         attributes[key] = $attrs[key];
@@ -121,13 +123,16 @@ export default (componentModel) => {
       let args = [$element, attributes];
 
       if (isArray(require)) {
-        let requiredControllers = getRequiredControllers(componentModel, require);
+        let requiredControllers = getRequiredControllers(
+          componentModel,
+          require
+        );
         args.push(requiredControllers);
       }
 
       args.push({
         template: Compiler($scope),
-        result: compileResult
+        result: compileResult,
       });
 
       controller.link(...args);
@@ -140,57 +145,67 @@ export default (componentModel) => {
     restrict: translateRestrict(componentModel),
     scope: translateParams(componentModel),
     require: componentModel.getRequire(),
-    controller: ['$scope', '$attrs', '$element', function($scope, $attrs, $element) {
-      let instances = [];
+    controller: [
+      '$scope',
+      '$attrs',
+      '$element',
+      function($scope, $attrs, $element) {
+        let instances = [];
 
-      let directiveParams = new DirectiveParams($scope, $attrs, $element, componentModel);
+        let directiveParams = new DirectiveParams(
+          $scope,
+          $attrs,
+          $element,
+          componentModel
+        );
 
-      if (componentModel.hasInterfaces()) {
-        let interfaces = getInterfaces(directiveParams, componentModel);
-        instances = instances.concat(interfaces);
-      }
-
-      let Controller = componentModel.getController();
-      let name = componentModel.getName();
-
-      let logger = Logger.create(name);
-
-      // controller - closed variable
-      let controller = new Controller(...instances, directiveParams, logger);
-      Scope.attach(controller, $scope);
-
-      let valentInfo = getValentInfo(componentModel);
-      valentInfo.controller = controller;
-      let namespace = valentInfo.namespace;
-
-      if (!$scope.hasOwnProperty('$valent')) {
-        $scope.$valent = {};
-      }
-
-      let directiveName = componentModel.getDirectiveName();
-      $scope.$valent[directiveName] = valentInfo;
-
-      // used for requiring
-      this[namespace] = controller.api;
-      this.$valent = valentInfo;
-
-      if (componentModel.isIsolated()) {
-        $scope[namespace] = controller;
-      } else {
-        //console.log(`component "${name}" - is not isolated. Its controller will not be attached to scope (added in rc4)`);
-      }
-
-      // $scope events
-      $scope.$on('$destroy', () => {
-        if (isFunction(controller.destructor)) {
-          controller.destructor();
+        if (componentModel.hasInterfaces()) {
+          let interfaces = getInterfaces(directiveParams, componentModel);
+          instances = instances.concat(interfaces);
         }
-      });
-    }],
+
+        let Controller = componentModel.getController();
+        let name = componentModel.getName();
+
+        let logger = Logger.create(name);
+
+        // controller - closed variable
+        let controller = new Controller(...instances, directiveParams, logger);
+        Scope.attach(controller, $scope);
+
+        let valentInfo = getValentInfo(componentModel);
+        valentInfo.controller = controller;
+        let namespace = valentInfo.namespace;
+
+        if (!$scope.hasOwnProperty('$valent')) {
+          $scope.$valent = {};
+        }
+
+        let directiveName = componentModel.getDirectiveName();
+        $scope.$valent[directiveName] = valentInfo;
+
+        // used for requiring
+        this[namespace] = controller.api;
+        this.$valent = valentInfo;
+
+        if (componentModel.isIsolated()) {
+          $scope[namespace] = controller;
+        } else {
+          //console.log(`component "${name}" - is not isolated. Its controller will not be attached to scope (added in rc4)`);
+        }
+
+        // $scope events
+        $scope.$on('$destroy', () => {
+          if (isFunction(controller.destructor)) {
+            controller.destructor();
+          }
+        });
+      },
+    ],
 
     link: ($scope, element, attrs, require) => {
-      link(null, $scope, element, attrs, require)
-    }
+      link(null, $scope, element, attrs, require);
+    },
   };
 
   let Controller = componentModel.getController();
@@ -201,7 +216,7 @@ export default (componentModel) => {
 
       return ($scope, element, attrs, require) => {
         link(params, $scope, element, attrs, require);
-      }
+      };
     };
   }
 
@@ -214,6 +229,6 @@ export default (componentModel) => {
   return {
     name: componentModel.getDirectiveName(),
     module,
-    configuration
-  }
-}
+    configuration,
+  };
+};

@@ -1,9 +1,8 @@
-import isString from 'lodash/lang/isString';
-import isFunction from 'lodash/lang/isFunction';
-import uniq from 'lodash/array/uniq';
+import isString from 'lodash/isString';
+import isFunction from 'lodash/isFunction';
+import uniq from 'lodash/uniq';
 
 import * as validation from './validation/structures';
-
 
 let normalize = (ComponentClass, options) => {
   let renderMethod = ComponentClass.render;
@@ -28,7 +27,9 @@ export default class ValentComponent {
     let isValidController = validation.isValidConstructor(ComponentClass);
     let isValidTemplate = validation.isValidTemplate(options.template);
     let isValidTemplateUrl = validation.isValidTemplateUrl(options.templateUrl);
-    let isValidRenderMethod = validation.isValidRenderMethod(ComponentClass.render);
+    let isValidRenderMethod = validation.isValidRenderMethod(
+      ComponentClass.render
+    );
     let isValidBindings = validation.isValidBindings(options.bindings);
 
     let isValidInterfaces = validation.isValidInterfaces(options.interfaces);
@@ -41,19 +42,28 @@ export default class ValentComponent {
     let errors = [];
 
     if (!isValidName) {
-      errors.push('Component\'s name could not be empty or with spaces');
+      errors.push("Component's name could not be empty or with spaces");
     }
 
     if (!isValidController) {
-      errors.push('Component\'s class should be a constructor');
+      errors.push("Component's class should be a constructor");
     }
 
     // if al least two template options are defined
-    if (isValidTemplate == isValidTemplateUrl ? isValidTemplate : isValidRenderMethod) {
-      errors.push('Should have only one - template, templateUrl or static render() option');
+    if (
+      isValidTemplate == isValidTemplateUrl
+        ? isValidTemplate
+        : isValidRenderMethod
+    ) {
+      errors.push(
+        'Should have only one - template, templateUrl or static render() option'
+      );
     }
 
-    if (options.restrict == 'A' && (isValidTemplate || isValidTemplateUrl || isValidRenderMethod)) {
+    if (
+      options.restrict == 'A' &&
+      (isValidTemplate || isValidTemplateUrl || isValidRenderMethod)
+    ) {
       errors.push('Attribute directives should be without template');
     }
 
@@ -85,7 +95,6 @@ export default class ValentComponent {
       let optionsKeys = Object.keys(options.options);
       keys.concat(optionsKeys);
     }
-
 
     if (keys.length) {
       let uniqueKeys = uniq(keys);

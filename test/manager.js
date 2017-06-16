@@ -5,7 +5,6 @@ import { Manager } from '../src/index';
 
 import ControllerModel from '../src/controller/controller-model';
 
-
 class CustomControllerModel extends ControllerModel {}
 
 describe('Manager', () => {
@@ -36,4 +35,3 @@ describe('Manager', () => {
     expect(() => manager.addController(customControllerModel)).to.be.ok;
   });
 });
-

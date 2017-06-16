@@ -22,7 +22,6 @@ export default class Scope {
         let scope = scopes.get(context);
         resolve(scope);
       } else {
-
         // TODO: fix for case if scope is not yet created but already deleted!
         queue.set(context, resolve);
       }

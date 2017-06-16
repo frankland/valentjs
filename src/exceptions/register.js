@@ -5,12 +5,11 @@ export default class RegisterException extends Exception {
     let message = `Could not register ${type} - "${name}".`;
 
     for (let error of errors) {
-      message += "\n - " + error;
+      message += '\n - ' + error;
     }
 
-    message += "\n";
+    message += '\n';
 
     super(message);
   }
 }
-

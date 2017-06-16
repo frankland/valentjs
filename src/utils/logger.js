@@ -18,7 +18,7 @@ let colors = [
   '#5F9C6D',
   '#FD7400',
   '#16193B',
-  '#7FB2F0'
+  '#7FB2F0',
 ];
 
 let counter = 0;
@@ -31,23 +31,31 @@ let getColor = () => {
   return colors[counter++];
 };
 
-let formats = [{
-  regex: /\*([^\*]+)\*/,
-  replacer: (m, p1) => `%c${p1}%c`,
-  styles: () => ['font-style: italic', '']
-}, {
-  regex: /\_([^\_]+)\_/,
-  replacer: (m, p1) => `%c${p1}%c`,
-  styles: () => ['font-weight: bold', '']
-}, {
-  regex: /\`([^\`]+)\`/,
-  replacer: (m, p1) => `%c${p1}%c`,
-  styles: () => ['background: rgb(255, 255, 219); padding: 1px 5px; border: 1px solid rgba(0, 0, 0, 0.1)', '']
-}, {
-  regex: /\[c\=(?:\"|\')?((?:(?!(?:\"|\')\]).)*)(?:\"|\')?\]((?:(?!\[c\]).)*)\[c\]/,
-  replacer: (m, p1, p2) => `%c${p2}%c`,
-  styles: (match) =>  [match[1], '']
-}];
+let formats = [
+  {
+    regex: /\*([^\*]+)\*/,
+    replacer: (m, p1) => `%c${p1}%c`,
+    styles: () => ['font-style: italic', ''],
+  },
+  {
+    regex: /\_([^\_]+)\_/,
+    replacer: (m, p1) => `%c${p1}%c`,
+    styles: () => ['font-weight: bold', ''],
+  },
+  {
+    regex: /\`([^\`]+)\`/,
+    replacer: (m, p1) => `%c${p1}%c`,
+    styles: () => [
+      'background: rgb(255, 255, 219); padding: 1px 5px; border: 1px solid rgba(0, 0, 0, 0.1)',
+      '',
+    ],
+  },
+  {
+    regex: /\[c\=(?:\"|\')?((?:(?!(?:\"|\')\]).)*)(?:\"|\')?\]((?:(?!\[c\]).)*)\[c\]/,
+    replacer: (m, p1, p2) => `%c${p2}%c`,
+    styles: match => [match[1], ''],
+  },
+];
 
 function hasMatches(str) {
   let hasMatches = false;
@@ -71,7 +79,7 @@ function getOrderedMatches(str) {
     if (match) {
       matches.push({
         format: format,
-        match: match
+        match: match,
       });
 
       break;
@@ -134,7 +142,6 @@ export default class Logger {
 
   log(message, ...rest) {
     if (this.isEnabled) {
-
       let customized = stringToArgs(message);
       let completeMessage = customized[0];
       let styles = customized.slice(1);
@@ -144,7 +151,8 @@ export default class Logger {
         `background:${this.background}; color:${this.color}; font-weight:bold`,
         '',
         ...styles,
-        ...rest);
+        ...rest
+      );
     }
   }
 }

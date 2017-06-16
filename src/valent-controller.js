@@ -1,4 +1,4 @@
-import isFunction from 'lodash/lang/isFunction';
+import isFunction from 'lodash/isFunction';
 
 import * as validation from './validation/structures';
 
@@ -33,11 +33,11 @@ export default class ValentController {
     let errors = [];
 
     if (!isValidName) {
-      errors.push('Controller\'s name could not be empty or with spaces');
+      errors.push("Controller's name could not be empty or with spaces");
     }
 
     if (!isValidController) {
-      errors.push('Controller\'s class should be a constructor');
+      errors.push("Controller's class should be a constructor");
     }
 
     return errors;

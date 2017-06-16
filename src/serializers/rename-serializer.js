@@ -1,7 +1,7 @@
-import isFunction from 'lodash/lang/isFunction';
-import isObject from 'lodash/lang/isObject';
-import isArray from 'lodash/lang/isArray';
-import isString from 'lodash/lang/isString';
+import isFunction from 'lodash/isFunction';
+import isObject from 'lodash/isObject';
+import isArray from 'lodash/isArray';
+import isString from 'lodash/isString';
 import Serializer from './serializer';
 import t from 'tcomb';
 
@@ -83,7 +83,6 @@ export default class RenameSerializer extends Serializer {
         if (!struct.hasOwnProperty(key)) {
           throw new Error(`Url param "${key}" is not described at struct`);
         } else {
-
           // NOTE: Seems this case is impossible
           throw new Error(`Can not find origin name for "${key}"`);
         }

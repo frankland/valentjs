@@ -1,15 +1,15 @@
 import { expect } from 'chai';
 
 // import UrlStruct from '../../src/components/url-struct';
-import UrlSerializer from '../../src/components/url-serializer';
+import UrlSerializer from '../../src/serializers/url-serializer';
 
-import * as primitives from '../../src/utils/struct-primitives';
+import * as primitives from '../../src/utils/primitives';
 import t from 'tcomb';
 
 var UserStruct = t.struct({
   id: t.Num,
   name: t.Str,
-  nickname: t.maybe(t.Str)
+  nickname: t.maybe(t.Str),
 });
 
 class CustomSerializer extends UrlSerializer {
@@ -18,11 +18,10 @@ class CustomSerializer extends UrlSerializer {
 
     this.addRule(UserStruct, {
       encode: () => {},
-      decode: () => {}
+      decode: () => {},
     });
   }
 }
-
 
 describe('Url struct', () => {
   it('should encode correctly', () => {
@@ -32,13 +31,13 @@ describe('Url struct', () => {
       mango: primitives.ListNum,
       octarine: primitives.ListStr,
       octopus: primitives.ListDat,
-      cat: ['c', primitives.Dat]
+      cat: ['c', primitives.Dat],
     });
 
     var encoded = serializer.encode({
       apple: 'a',
       orange: 1,
-      mango: [1,2,3],
+      mango: [1, 2, 3],
       octarine: ['a', 'b', 'c'],
       //octopus: [new Date(), new Date()],
       //cat: new Date()
@@ -61,7 +60,7 @@ describe('Url struct', () => {
       mango: primitives.ListNum,
       octarine: primitives.ListStr,
       octopus: primitives.ListDat,
-      cat: ['c', primitives.Dat]
+      cat: ['c', primitives.Dat],
     });
 
     var decoded = serializer.decode({
@@ -76,11 +75,11 @@ describe('Url struct', () => {
     expect(decoded).to.be.eql({
       apple: 'a',
       orange: 1,
-      mango: [1,2,3],
+      mango: [1, 2, 3],
       octarine: ['a', 'b', 'c'],
     });
   });
-  // 
+  //
   // it('custom serializer', () => {
   //   var urlSerializer = new CustomSerializer({
   //     a: primitives.Str,
@@ -91,7 +90,7 @@ describe('Url struct', () => {
   //     f: primitives.Dat
   //   });
 
-    // var urlStruct = new UrlStruct('/home/index');
-    // urlStruct.setSerializer(urlSerializer);
+  // var urlStruct = new UrlStruct('/home/index');
+  // urlStruct.setSerializer(urlSerializer);
   // });
 });

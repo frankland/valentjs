@@ -3,8 +3,7 @@ import Scope from './scope';
 
 //let _scope = Symbol('$scope');
 
-
-let compileTemplate = function ($scope, template, params) {
+let compileTemplate = function($scope, template, params) {
   let $compile = Injector.get('$compile');
   let compileTemplate = $compile(template);
 
@@ -14,9 +13,7 @@ let compileTemplate = function ($scope, template, params) {
   return compileTemplate(compilingScope);
 };
 
-
 let Compiler = function($scope) {
-
   let compile = function(template, params = {}) {
     return compileTemplate($scope, template, params);
   };
