@@ -1,12 +1,8 @@
 import camelCase from 'lodash/camelCase';
 
 import isObject from 'lodash/isPlainObject';
-import isBoolean from 'lodash/isBoolean';
-import isString from 'lodash/isString';
-import isFunction from 'lodash/isFunction';
 import isArray from 'lodash/isArray';
 
-import RegisterException from '../exceptions/register';
 import ValentComponent from '../valent-component';
 
 import * as validation from './validation/structures';

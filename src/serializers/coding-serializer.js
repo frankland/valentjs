@@ -2,7 +2,6 @@ import isString from 'lodash/isString';
 import isArray from 'lodash/isArray';
 import isObject from 'lodash/isObject';
 import isFunction from 'lodash/isFunction';
-import * as primitives from '../../src/utils/primitives';
 
 let _alias = {};
 let _rules = {};

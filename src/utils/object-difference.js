@@ -1,5 +1,4 @@
 import deepDiff from 'deep-diff';
-import valueAt from 'lodash/get';
 
 let defaultOptions = {
   ignored: ['$$hashKey'],
@@ -26,12 +25,16 @@ export default (left, right, callOptions) => {
             });
           } else if (chunk.item.kind == 'E') {
             description.push({
-              description: `Added element to array _${path}_ at _${chunk.index}_ index:`,
+              description: `Added element to array _${path}_ at _${
+                chunk.index
+              }_ index:`,
               value: [chunk.item.lhs, chunk.item.rhs],
             });
           } else if (chunk.item.kind == 'D') {
             description.push({
-              description: `Deleted element from array _${path}_ at _${chunk.index}_ index:`,
+              description: `Deleted element from array _${path}_ at _${
+                chunk.index
+              }_ index:`,
               value: chunk.item.lhs,
             });
           }
