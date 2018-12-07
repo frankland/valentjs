@@ -1,9 +1,4 @@
 import isFunction from 'lodash/isFunction';
-import isObject from 'lodash/isObject';
-import isArray from 'lodash/isArray';
-import isEmpty from 'lodash/isEmpty';
-
-import t from 'tcomb';
 
 let _struct = Symbol('struct');
 let _rules = Symbol('rules');
@@ -58,7 +53,9 @@ export default class Serializer {
               structItem(value);
             } catch (e) {
               throw new Error(
-                `value with id "${key}" has wrong struct. Expected "${structItem.displayName}", but value is "${value}"`
+                `value with id "${key}" has wrong struct. Expected "${
+                  structItem.displayName
+                }", but value is "${value}"`
               );
             }
           }

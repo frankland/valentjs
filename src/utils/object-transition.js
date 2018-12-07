@@ -1,6 +1,4 @@
-import getter from 'lodash/get';
 import setter from 'lodash/set';
-import clone from 'lodash/cloneDeep';
 
 let _transition = Symbol('transition');
 let _source = Symbol('source');

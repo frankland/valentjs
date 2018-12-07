@@ -1,12 +1,7 @@
-import camelCase from 'lodash/camelCase';
-
-import isObject from 'lodash/isObject';
-import isString from 'lodash/isString';
 import isFunction from 'lodash/isFunction';
 import isArray from 'lodash/isArray';
 
 import Logger from '../../utils/logger';
-import Injector from '../services/injector';
 import Compiler from '../services/compiler';
 
 import DirectiveParams from '../services/directive-params';

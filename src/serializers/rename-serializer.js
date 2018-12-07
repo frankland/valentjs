@@ -1,9 +1,6 @@
-import isFunction from 'lodash/isFunction';
-import isObject from 'lodash/isObject';
 import isArray from 'lodash/isArray';
 import isString from 'lodash/isString';
 import Serializer from './serializer';
-import t from 'tcomb';
 
 export default class RenameSerializer extends Serializer {
   constructor(struct) {

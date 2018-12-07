@@ -1,4 +1,3 @@
-import isString from 'lodash/isString';
 import isObject from 'lodash/isObject';
 import isEqual from 'lodash/isEqual';
 import isArray from 'lodash/isArray';

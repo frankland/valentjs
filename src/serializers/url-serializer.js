@@ -1,7 +1,5 @@
-import isObject from 'lodash/isObject';
 import isArray from 'lodash/isArray';
 import isString from 'lodash/isString';
-import isEmpty from 'lodash/isEmpty';
 
 import moment from 'moment';
 
@@ -230,7 +228,7 @@ export default class UrlSerializer extends RenameSerializer {
     let serializeOptions = {
       listDelimiter: options.listDelimiter || '~',
       matrixDelimiter: options.matrixDelimiter || '!',
-      dateFormat: options.dateFormat || 'YYYYMMDD',
+      dateFormat: options.dateFormat || 'YYYYMMDDTHHmmss[Z]',
       conditionDelimiter: options.conditionDelimiter || ';',
     };
 
