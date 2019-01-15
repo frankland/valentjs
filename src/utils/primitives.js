@@ -28,6 +28,8 @@ export const MaybeListStr = maybe(ListStr, 'MaybeListStr');
 export const MaybeListBool = maybe(ListBool, 'MaybeListBool');
 export const MaybeListDat = maybe(ListDat, 'MaybeListDat');
 
+export const Period = maybe(ListDat, 'MaybeListDat');
+export const ComparePeriod = list(MaybeListDat, 'MatrixMaybeDate');
 
 // [[1,..n],[1...m]...k]
 export const MatrixNum = list(ListNum, 'MatrixNum');
