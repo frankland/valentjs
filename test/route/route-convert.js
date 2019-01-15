@@ -19,7 +19,12 @@ describe('Route converter', () => {
     var model = routeFlow.model;
 
     var config = RouteConvert.getConfig(model);
-    expect(config).have.all.keys(['controller', 'reloadOnSearch', 'resolve', 'template']);
+    expect(config).have.all.keys([
+      'controller',
+      'reloadOnSearch',
+      'resolve',
+      'template',
+    ]);
 
     expect(config.controller).to.equal(controllerName);
     expect(config.reloadOnSearch).to.equal(false);
@@ -39,7 +44,12 @@ describe('Route converter', () => {
     var model = routeFlow.model;
 
     var config = RouteConvert.getConfig(model);
-    expect(config).have.all.keys(['controller', 'reloadOnSearch', 'resolve', 'templateUrl']);
+    expect(config).have.all.keys([
+      'controller',
+      'reloadOnSearch',
+      'resolve',
+      'templateUrl',
+    ]);
 
     expect(config.templateUrl).to.equal('/template/url.html');
   });
@@ -47,8 +57,7 @@ describe('Route converter', () => {
   it('should throw error if there are no template or templateUrl', () => {
     var routeFlow = new RouteFlow(controllerName);
 
-    routeFlow
-      .url('/home');
+    routeFlow.url('/home');
 
     var model = routeFlow.model;
 
@@ -57,12 +66,12 @@ describe('Route converter', () => {
 
   it('should convert otherwise as string', () => {
     expect(RouteConvert.convertOtherwise('/404.html')).to.eql({
-      redirectTo: '/404.html'
+      redirectTo: '/404.html',
     });
   });
 
   it('should throw exception if otherwise is in wrong format', () => {
     expect(() => RouteConvert.convertOtherwise([1, 2, 3])).to.throw(Error);
-    expect(() => RouteConvert.convertOtherwise({a: 1})).to.throw(Error);
+    expect(() => RouteConvert.convertOtherwise({ a: 1 })).to.throw(Error);
   });
 });

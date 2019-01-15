@@ -1,9 +1,9 @@
-import without from 'lodash/array/without';
-import isString from 'lodash/lang/isString';
+import without from 'lodash/without';
+import isString from 'lodash/isString';
 
-function getTestDataFor(types = ''){
+function getTestDataFor(types = '') {
   var typesArr = [];
-  if(isString(types)){
+  if (isString(types)) {
     typesArr = [types];
   } else {
     typesArr = types;
@@ -11,26 +11,25 @@ function getTestDataFor(types = ''){
 
   var data = {
     array: ['a', 'b', 'c'],
-    obj: {a:'b'},
+    obj: { a: 'b' },
     int: 1,
     bool: true,
     fn: () => {},
     str: 'some',
     zero: 0,
     nl: null,
-    undef: undefined
+    undef: undefined,
   };
 
   var testDataTypes = Object.values(data);
-  for(let type of typesArr){
-    if(Object.keys(data).indexOf(type) > -1){
+  for (let type of typesArr) {
+    if (Object.keys(data).indexOf(type) > -1) {
       testDataTypes = without(testDataTypes, data[type]);
     }
   }
   return testDataTypes;
-
 }
 
 module.exports = {
-  getTestDataFor : getTestDataFor
+  getTestDataFor: getTestDataFor,
 };

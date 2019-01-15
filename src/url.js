@@ -1,13 +1,12 @@
-import isString from 'lodash/lang/isString';
-import isObject from 'lodash/lang/isObject';
-import isEqual from 'lodash/lang/isEqual';
-import isArray from 'lodash/lang/isArray';
+import isObject from 'lodash/isObject';
+import isEqual from 'lodash/isEqual';
+import isArray from 'lodash/isArray';
 
 import UrlPattern from 'url-pattern';
 
 import UrlSerializer from './serializers/url-serializer';
 
-let decodeSearchString = (queryString) => {
+let decodeSearchString = queryString => {
   let queryParams = {};
   let queryPairs = queryString.split('&');
 
@@ -22,7 +21,7 @@ let decodeSearchString = (queryString) => {
   return queryParams;
 };
 
-let encodeSearchString = (params) => {
+let encodeSearchString = params => {
   let parts = [];
 
   for (let param of Object.keys(params)) {
@@ -34,7 +33,6 @@ let encodeSearchString = (params) => {
 
   return parts.join('&');
 };
-
 
 let _pattern = Symbol('pattern');
 let _links = Symbol('mappings');
@@ -55,7 +53,8 @@ export default class Url {
     this[_pattern] = pattern;
     this[_urlPattern] = urlPattern;
 
-    let urlParams = urlPattern.ast.filter(item => item.tag === 'named')
+    let urlParams = urlPattern.ast
+      .filter(item => item.tag === 'named')
       .map(item => item.value);
 
     let searchParams = [];
@@ -65,7 +64,9 @@ export default class Url {
         searchParams.push(key);
       } else {
         if (serializer.hasRenameOption(key)) {
-          throw new Error('url params with placeholders cant have rename config');
+          throw new Error(
+            'url params with placeholders cant have rename config'
+          );
         }
       }
     }
@@ -73,7 +74,6 @@ export default class Url {
     this[_searchParamsKeys] = searchParams;
     this[_urlParamsKeys] = urlParams;
     this[_links] = {};
-
   }
 
   getSerializer() {
@@ -124,7 +124,9 @@ export default class Url {
 
     if (!urlParams) {
       let pattern = this.getPattern();
-      throw new Error(`Wrong url pattern. Expected "${pattern}", got "${path}"`);
+      throw new Error(
+        `Wrong url pattern. Expected "${pattern}", got "${path}"`
+      );
     }
 
     let searchParams = {};
@@ -176,7 +178,6 @@ export default class Url {
     }
 
     let urlPattern = this.getUrlPattern();
-
 
     let url = urlPattern.stringify(urlParams);
     let search = encodeSearchString(searchParams);
@@ -247,10 +248,9 @@ export default class Url {
 
     for (let key of Object.keys(struct)) {
       if (!params.length || params.indexOf(key) != -1) {
-
         this.link(key, value => {
           Object.assign(store, {
-            key: value
+            key: value,
           });
         });
       }
@@ -265,7 +265,6 @@ export default class Url {
 
     let struct = this.getStruct();
     for (let key of Object.keys(struct)) {
-
       if (links.hasOwnProperty(key)) {
         let value = params.hasOwnProperty(key) ? params[key] : defaults[key];
         let link = links[key];

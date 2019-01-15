@@ -1,34 +1,31 @@
 import { expect } from 'chai';
-import cloneDeep from 'lodash/lang/cloneDeep';
-import testUtils from '../test-utils'
+import cloneDeep from 'lodash/cloneDeep';
+import testUtils from '../test-utils';
 import UrlSerializer from '../../src/serializers/url-serializer';
-import * as primitives  from '../../src/utils/primitives';
-
+import * as primitives from '../../src/utils/primitives';
 
 describe('UrlSerializer', () => {
-
   var struct = {
     id: primitives.Num,
     foo: ['f', primitives.ListNum],
-    bar: ['b', primitives.Str]
+    bar: ['b', primitives.Str],
   };
 
   var serializer = new UrlSerializer(struct);
 
   var original = {
     id: 42,
-    foo: [1,2,3,5,8,13,21,34],
-    bar: 'param'
+    foo: [1, 2, 3, 5, 8, 13, 21, 34],
+    bar: 'param',
   };
 
   var converted = {
     id: '42',
     f: '1~2~3~5~8~13~21~34',
-    b: 'param'
+    b: 'param',
   };
 
   describe('encode', () => {
-
     it('should encode params to link correctly', () => {
       expect(serializer.encode(original)).to.be.eql(converted);
     });
@@ -47,11 +44,9 @@ describe('UrlSerializer', () => {
         serializer.encode(fakeOriginal);
       }).to.throw(Error);
     });
-
   });
 
   describe('decode', () => {
-
     it('should decode link correctly', () => {
       expect(serializer.decode(converted)).to.be.eql(original);
     });
@@ -60,7 +55,7 @@ describe('UrlSerializer', () => {
       var fakeConverted = cloneDeep(converted);
       fakeConverted.extra = '';
       expect(() => {
-        serializer.decode(fakeConverted)
+        serializer.decode(fakeConverted);
       }).to.throw(Error);
     });
 
@@ -71,7 +66,5 @@ describe('UrlSerializer', () => {
         serializer.decode(fakeConverted);
       }).to.throw(Error);
     });
-
   });
-
 });

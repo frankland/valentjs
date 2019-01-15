@@ -23,9 +23,9 @@ describe('Route flow', () => {
   it('should throw exception if both template and templateUrl are defined', () => {
     var routeFlow = new RouteFlow(controllerName);
 
-    expect(() => routeFlow
-      .template(template)
-      .templateUrl('/template/url.html')).to.throw(Error);
+    expect(() =>
+      routeFlow.template(template).templateUrl('/template/url.html')
+    ).to.throw(Error);
   });
 
   it('should contain RouteModel with correct values', () => {
@@ -44,7 +44,10 @@ describe('Route flow', () => {
     expect(model.getUrls()).to.an('array');
     expect(model.getUrls()).to.eql(['/home', '/home/:state']);
     expect(model.getResolvers()).to.be.an('object');
-    expect(model.getResolvers()).have.all.keys(['access.guest', 'access.admin']);
+    expect(model.getResolvers()).have.all.keys([
+      'access.guest',
+      'access.admin',
+    ]);
     expect(model.getTemplate()).to.equal(template);
   });
 

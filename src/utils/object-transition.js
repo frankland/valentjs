@@ -1,11 +1,8 @@
-import getter from 'lodash/object/get';
-import setter from 'lodash/object/set';
-import clone from 'lodash/lang/cloneDeep';
+import setter from 'lodash/set';
 
 let _transition = Symbol('transition');
 let _source = Symbol('source');
 let _counter = Symbol('counter');
-
 
 export default class ObjectTransition {
   constructor(obj) {
@@ -36,7 +33,6 @@ export default class ObjectTransition {
   push(...args) {
     if (args.length == 2) {
       this.commit(...args);
-
     } else if (!!args.length) {
       throw new Error('Wrong arguments for ObjectTransition.push');
     }
@@ -50,4 +46,3 @@ export default class ObjectTransition {
     this.clear();
   }
 }
-

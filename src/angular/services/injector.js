@@ -22,4 +22,4 @@ class Injector {
   }
 }
 
-export default new Injector;
+export default new Injector();

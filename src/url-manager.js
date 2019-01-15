@@ -1,4 +1,4 @@
-import isFunction from 'lodash/lang/isFunction';
+import isFunction from 'lodash/isFunction';
 
 let _map = Symbol('url-map');
 let _currentRouteName = Symbol('current-route-name');
@@ -29,6 +29,8 @@ export default class UrlManager {
   }
 
   getCurrentRoute() {
-    throw new Error('depends on framework. Should be implemented at child class');
+    throw new Error(
+      'depends on framework. Should be implemented at child class'
+    );
   }
 }

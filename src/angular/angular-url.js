@@ -1,9 +1,9 @@
-import isObject from 'lodash/lang/isObject';
-import isEqual from 'lodash/lang/isEqual';
-import cloneDeep from 'lodash/lang/cloneDeep';
+import isObject from 'lodash/isObject';
+import isEqual from 'lodash/isEqual';
+import cloneDeep from 'lodash/cloneDeep';
 
-import union from 'lodash/array/union';
-import reduce from 'lodash/collection/reduce';
+import union from 'lodash/union';
+import reduce from 'lodash/reduce';
 
 import Url from '../url';
 
@@ -46,9 +46,8 @@ export default class AngularUrl extends Url {
       let $rootScope = Injector.get('$rootScope');
 
       let unsubscribe = $rootScope.$on('$routeUpdate', event => {
-
         Object.assign(event, {
-          $valentEvent: options
+          $valentEvent: options,
         });
 
         unsubscribe();
@@ -69,7 +68,7 @@ export default class AngularUrl extends Url {
 
     let isHtml5Mode = valent.config.get('routing.html5Mode');
 
-    if(isHtml5Mode) {
+    if (isHtml5Mode) {
       window.location.href = url;
     } else {
       window.location.href = `/#/${url}`;
@@ -90,7 +89,7 @@ export default class AngularUrl extends Url {
 
     this[_state] = this.parse();
 
-    return $scope.$on('$routeUpdate', (event) => {
+    return $scope.$on('$routeUpdate', event => {
       let valentEvent = event.$valentEvent || {};
       let params = this.parse();
 
@@ -98,13 +97,17 @@ export default class AngularUrl extends Url {
       let state = this[_state];
       let allkeys = union(Object.keys(params), Object.keys(state));
 
-      let diff = reduce(allkeys, function (result, key) {
-        if (!isEqual(params[key], state[key])) {
-          result[key] = params[key];
-        }
+      let diff = reduce(
+        allkeys,
+        function(result, key) {
+          if (!isEqual(params[key], state[key])) {
+            result[key] = params[key];
+          }
 
-        return result;
-      }, {});
+          return result;
+        },
+        {}
+      );
 
       this[_state] = cloneDeep(params);
 

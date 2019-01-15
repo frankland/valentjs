@@ -1,5 +1,5 @@
-import isFunction from 'lodash/lang/isFunction';
-import endsWith from 'lodash/string/endsWith';
+import isFunction from 'lodash/isFunction';
+import endsWith from 'lodash/endsWith';
 import Logger from '../utils/logger';
 
 const CONSTRUCTOR_NAME_FUNC = 'Function';
@@ -22,7 +22,7 @@ export const getClassName = object => {
   let constructorName = object.prototype.constructor.name;
 
   // anonymous functions don't have constructor name
-  if ((CONSTRUCTOR_NAME_FUNC === constructorName) || !constructorName.length) {
+  if (CONSTRUCTOR_NAME_FUNC === constructorName || !constructorName.length) {
     return null;
   }
 
@@ -40,7 +40,9 @@ export const getControllerName = object => {
   var controllerName = null;
 
   if (endsWith(constructorName, CONTROLLER_NAME_SUFFIX)) {
-    logger.log(`Controller name should ends with "${CONTROLLER_NAME_SUFFIX}" suffix`);
+    logger.log(
+      `Controller name should ends with "${CONTROLLER_NAME_SUFFIX}" suffix`
+    );
     controllerName = constructorName;
   } else {
     controllerName = constructorName.slice(0, CONTROLLER_NAME_SUFFIX.length);

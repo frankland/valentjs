@@ -2,7 +2,6 @@ import ValentController from '../valent-controller';
 
 import * as validation from './validation/structures';
 
-
 export default class AngularController extends ValentController {
   constructor(name, ControllerClass, options) {
     super(name, ControllerClass, options);

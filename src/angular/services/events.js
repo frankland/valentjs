@@ -12,12 +12,11 @@ export default class Events {
 
     let off = null;
 
-    Scope.get(context)
-      .then($scope => {
-        if (!off) {
-          off = $scope.$on(event, fn)
-        }
-      });
+    Scope.get(context).then($scope => {
+      if (!off) {
+        off = $scope.$on(event, fn);
+      }
+    });
 
     return () => {
       if (off) {
@@ -31,14 +30,12 @@ export default class Events {
   broadcast(event, args) {
     let context = this[_context];
 
-    Scope.get(context)
-      .then($scope => $scope.$broadcast(event, args));
+    Scope.get(context).then($scope => $scope.$broadcast(event, args));
   }
 
   emit(event, args) {
     let context = this[_context];
 
-    Scope.get(context)
-      .then($scope => $scope.$emit(event, args));
+    Scope.get(context).then($scope => $scope.$emit(event, args));
   }
 }

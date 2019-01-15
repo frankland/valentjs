@@ -1,13 +1,11 @@
 import Injector from '../services/injector';
 import digest from '../services/digest';
 
-
-let proxy = (name) => {
+let proxy = name => {
   console.info(`"${name}" could be implemented in child class`);
 };
 
 export default class BaseScreenController {
-
   digest = () => digest(this);
 
   injector = Injector;

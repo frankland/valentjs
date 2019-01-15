@@ -18,7 +18,9 @@ export default class AngularUrlManager extends UrlManager {
 
   detach($scope) {
     if (!$scope.hasOwnProperty('$valent')) {
-      throw new Error('can not attach $scope because there is not $valent attribute');
+      throw new Error(
+        'can not attach $scope because there is not $valent attribute'
+      );
     }
 
     let info = $scope.$valent;
@@ -49,7 +51,9 @@ export default class AngularUrlManager extends UrlManager {
 
   create(context) {
     if (!this[_contexts].has(context)) {
-      throw new Error(`can not get url by context. Seems $scope is not attached yet`);
+      throw new Error(
+        `can not get url by context. Seems $scope is not attached yet`
+      );
     }
 
     let name = this[_contexts].get(context);

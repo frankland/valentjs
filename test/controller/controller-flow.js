@@ -6,9 +6,7 @@ var controllerName = 'valent.controller';
 var applicationName = 'valent';
 var template = '<div>Hello World</div>';
 
-class ValentController {
-}
-
+class ValentController {}
 
 describe('Controller flow and model getters', () => {
   it('flow should be a function', () => {
@@ -22,9 +20,9 @@ describe('Controller flow and model getters', () => {
   it('flow should throw exception if template and templateUrl exists (RouteFlow behaviour)', () => {
     var controllerFlow = new ControllerFlow(controllerName);
 
-    expect(() => controllerFlow
-      .template(template)
-      .templateUrl('/template/url.html')).to.throw(Error);
+    expect(() =>
+      controllerFlow.template(template).templateUrl('/template/url.html')
+    ).to.throw(Error);
   });
 
   it('flow and model', () => {
@@ -53,7 +51,10 @@ describe('Controller flow and model getters', () => {
     expect(routeModel.getUrls()).to.eql(['/home/dashboard']);
 
     expect(routeModel.getResolvers()).to.be.an('object');
-    expect(routeModel.getResolvers()).have.all.keys(['access.guest', 'access.admin']);
+    expect(routeModel.getResolvers()).have.all.keys([
+      'access.guest',
+      'access.admin',
+    ]);
 
     expect(routeModel.getTemplate()).to.be.equal(template);
   });

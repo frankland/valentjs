@@ -1,19 +1,19 @@
-import getter from 'lodash/object/get';
-import setter from 'lodash/object/set';
+import getter from 'lodash/get';
+import setter from 'lodash/set';
 
 let _config = Symbol('config');
 
 export default class ApplicationConfig {
   route = {
-    onChangeStart: (handler) => {
+    onChangeStart: handler => {
       this.set('routing.hooks.start', handler);
     },
 
-    onChangeSuccess: (handler) => {
+    onChangeSuccess: handler => {
       this.set('routing.hooks.success', handler);
     },
 
-    onChangeError: (handler) => {
+    onChangeError: handler => {
       this.set('routing.hooks.error', handler);
     },
 
@@ -33,11 +33,11 @@ export default class ApplicationConfig {
       return this.get('routing.resolvers', {});
     },
 
-    hasResolvers:() => {
+    hasResolvers: () => {
       return !!this.get('routing.resolvers');
     },
 
-    requireBase: (requireBase) => {
+    requireBase: requireBase => {
       this.set('routing.requireBase', requireBase);
     },
 
@@ -47,24 +47,24 @@ export default class ApplicationConfig {
 
     disableHistoryApi: () => {
       this.set('routing.html5Mode', false);
-    }
+    },
   };
 
   exception = {
-    handler: (handler) => {
+    handler: handler => {
       this.set('exception.handler', handler);
     },
 
     getHandler: () => {
       return this.get('exception.handler');
-    }
+    },
   };
 
   constructor(config) {
     this[_config] = Object.assign(config, {
       routing: {
-        html5Mode: true
-      }
+        html5Mode: true,
+      },
     });
   }
 
