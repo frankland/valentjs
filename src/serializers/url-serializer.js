@@ -10,7 +10,6 @@ import * as primitives from '../utils/primitives';
 import RenameSerializer from './rename-serializer';
 
 const datesToPeriod = dates => {
-  console.log('datesToPeriod', dates);
   return [
     moment.utc(dates[0]).startOf('day').toDate(),
     moment.utc(dates[1]).endOf('day').toDate()
