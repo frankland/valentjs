@@ -1,5 +1,5 @@
 import t from 'tcomb';
-const { Num, Str, Bool, Dat, list, maybe, subtype } = t;
+const { Num, Str, Bool, Dat, list, maybe, subtype, struct } = t;
 
 // subtypes
 let Int = subtype(Num, number => number % 1 === 0, 'Int');
@@ -29,6 +29,9 @@ export const MaybeListStr = maybe(ListStr, 'MaybeListStr');
 export const MaybeListBool = maybe(ListBool, 'MaybeListBool');
 export const MaybeListDat = maybe(ListDat, 'MaybeListDat');
 
+export const Period = maybe(ListDat, 'MaybeListDat');
+export const ComparePeriod = list(MaybeListDat, 'MatrixMaybeDate');
+
 // [[1,..n],[1...m]...k]
 export const MatrixNum = list(ListNum, 'MatrixNum');
 // [[1, undefined, .n],[1 undefined,..m]...k]
@@ -44,3 +47,5 @@ export const MatrixMaybeDate = list(MaybeListDat, 'MatrixMaybeDate');
 
 export const MatrixBool = list(ListBool, 'MatrixBool');
 export const MatrixMaybeBool = list(MaybeListBool, 'MatrixMaybeBool');
+
+export const Struct = params => struct(params);

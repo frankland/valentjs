@@ -7,7 +7,14 @@ import * as primitives from '../utils/primitives';
 
 import RenameSerializer from './rename-serializer';
 
-let createDecoders = options => {
+const datesToPeriod = dates => {
+  return [
+    moment.utc(dates[0]).startOf('day').toDate(),
+    moment.utc(dates[1]).endOf('day').toDate()
+  ]
+};
+
+let createDecoders = (options) => {
   let decoders = {
     // ------- NUMBER -------
     num: raw => (raw === null ? null : parseFloat(raw)),
@@ -41,6 +48,21 @@ let createDecoders = options => {
       !raw || !raw.length
         ? null
         : raw.split(options.matrixDelimiter).map(decoders.listDate),
+
+    // ------- PERIOD-------
+    period: (raw) => {
+      if (!raw || !raw.length)
+        return null;
+      let dates = raw.split(options.listDelimiter).map(decoders.date);
+      return datesToPeriod(dates);
+    },
+    comparePeriod: (raw) => {
+      if (!raw || !raw.length)
+        return null;
+
+      let dates = raw.split(options.matrixDelimiter).map(decoders.listDate);
+      return dates.map(datesToPeriod);
+    },
 
     // ------- BOOL-------
     bool: raw => raw !== '0',
@@ -94,6 +116,10 @@ let createEncoders = options => {
       !isArray(value)
         ? null
         : value.map(encoders.listDate).join(options.matrixDelimiter),
+
+    // ------- PERIOD-------
+    period: (value) => !isArray(value) ? null : value.map(encoders.date).join(options.listDelimiter),
+    comparePeriod: (value) => !isArray(value) ? null : value.map(encoders.listDate).join(options.matrixDelimiter),
 
     // ------- BOOL-------
     bool: value => (!!value ? '1' : '0'),
@@ -194,6 +220,18 @@ let addUrlRules = (addRule, options) => {
 
   addRule(primitives.MatrixDate, matrixDate);
   addRule(primitives.MatrixMaybeDate, matrixDate);
+
+
+  // ------- PERIOD-------
+
+  addRule(primitives.Period, {
+    decode: decoders.period,
+    encode: encoders.period
+  });
+  addRule(primitives.ComparePeriod,  {
+    decode: decoders.comparePeriod,
+    encode: encoders.comparePeriod
+  });
 
   // ------ BOOL-----
   let bool = {
